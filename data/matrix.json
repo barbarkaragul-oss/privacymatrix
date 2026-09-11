@@ -941,13 +941,12 @@
       "app": "meta-ai",
       "question": "training_opt_out",
       "value": "partial",
-      "quote": "If you submit an objection after a training run has started, we may still use your information for that training run, but we will not use it for future training.",
-      "evidence_url": "https://mbasic.facebook.com/privacy/genai/?locale=en_US",
-      "notes": "Opt-out is an 'objection request' form submitted while logged in to a Facebook, Instagram or Meta account (a separate form for WhatsApp), not an in-product toggle; it applies to the account and its Accounts Centre accounts, only to future training, and the GenAI page says the appropriate forms depend on your region.",
-      "confidence": "high",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "quote": "Info shared with AI at Meta features is used to improve AI at Meta unless you have objected.",
+      "evidence_url": "https://mbasic.facebook.com/privacy/policy/printable/?locale=en_US",
+      "notes": "There is no in-product toggle. The Privacy Policy says information shared with AI at Meta features is used to improve AI at Meta unless the user has objected, and the objection is a request form whose availability depends on the region: the EU and UK version of the GenAI page documents an objection form (submitted while logged in, covering the account and its Accounts Centre accounts, and not covering a training run that has already started), while the US version documents a request form only for personal information Meta obtained from third parties. A form-based, region-dependent objection is partial under the rubric.",
+      "confidence": "medium",
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "meta-ai",
@@ -964,13 +963,12 @@
       "app": "meta-ai",
       "question": "business_no_training",
       "value": "no",
-      "quote": "Information from third parties that provide content, including information from products and services built by external developers using our free models provided through APIs",
+      "quote": "Information from third parties that provide content, including information from products and services built by external developers using our",
       "evidence_url": "https://mbasic.facebook.com/privacy/genai/?locale=en_US",
-      "notes": "The GenAI privacy page lists information from products and services built by external developers on Meta's free API models as a training source and states no exclusion, which the revised rubric scores as NO. The sentence frames these as 'third parties that provide content', so it may describe developers who choose to contribute data, and Meta's separate Llama API and Business AI terms are JavaScript-rendered and could not be checked, hence medium confidence. No fetchable document offers a training exclusion for business or enterprise customers.",
+      "notes": "The GenAI privacy page lists information from products and services built by external developers on Meta's API models as a training source and states no exclusion, which the rubric scores as no. The sentence ends differently by region (\"contributor tier models provided through APIs\" in the US version, \"free models provided through APIs\" elsewhere), so the quote stops where the variants agree. The wording frames these as third parties that provide content, so it may describe developers who choose to contribute data; Meta's separate Llama API and Business AI terms are JavaScript-rendered and could not be checked, hence medium confidence.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "meta-ai",
@@ -1009,13 +1007,12 @@
       "app": "meta-ai",
       "question": "data_export",
       "value": "yes",
-      "quote": "You have rights to view and download the information that we have about you",
+      "quote": "We offer you a variety of tools to view, manage, download and delete your information below.",
       "evidence_url": "https://mbasic.facebook.com/privacy/policy/printable/?locale=en_US",
-      "notes": "Self-service 'Download your information' and 'Port your information' tools are listed in the Privacy Policy for all users; the fetchable documents do not explicitly confirm that Meta AI conversations are included in the download.",
+      "notes": "The Privacy Policy lists self-service Download your information and Port your information tools for all users, alongside Access your information and Delete your information or account. The fetchable documents do not explicitly confirm that Meta AI conversations are included in the download.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "meta-ai",
@@ -1076,13 +1073,12 @@
       "app": "meta-ai",
       "question": "rights_channel",
       "value": "yes",
-      "quote": "To exercise your rights, visit our Help Centres, your settings for Facebook and Instagram and your device-based settings.",
+      "quote": "To exercise your rights, visit our Help Centers, your settings for Facebook and Instagram and your device-based settings.",
       "evidence_url": "https://mbasic.facebook.com/privacy/policy/printable/?locale=en_US",
-      "notes": "In-product tools (Access, Download, Port, Delete your information) are documented for all users, plus an online contact form and postal address (Meta Platforms, Inc., Privacy Operations, Menlo Park); the AI-training objection form is separate and region-dependent.",
+      "notes": "In-product tools (Access, Download, Port and Delete your information) are documented for all users, plus an online contact form and a postal address (Meta Platforms, Inc., Privacy Operations, Menlo Park). The AI-training objection form is separate and region-dependent. The quoted sentence is from the US-English variant of the policy; other regions serve the same sentence with British spelling (\"Help Centres\").",
       "confidence": "high",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "deepseek",
@@ -3245,24 +3241,22 @@
       "question": "no_training_default",
       "value": "no",
       "quote": "To do that, we use your Alexa requests to train our speech recognition and natural language understanding systems using machine learning.",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246937031",
-      "notes": "Amazon's Alexa Privacy Hub states Alexa requests are used to train Alexa systems, and the settings guide says all voice recordings are saved by default with a separate opt-out toggle ('Use voice recordings' / 'Use messages to improve transcriptions' under Help Improve Alexa). Source is the UK regional hub describing classic Alexa data flows; Alexa+-specific LLM training is not addressed in any fetchable Amazon document.",
-      "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "evidence_url": "https://www.amazon.com/b/?node=23608617011",
+      "notes": "The Alexa Privacy Hub states that Alexa requests are used by default to train speech recognition and natural language understanding systems, and that voice recordings, transcripts and typed requests help Alexa learn preferences; saving is on by default. The pages predate Alexa+ branding but cover the same Alexa requests; no Alexa+-specific exclusion is documented.",
+      "confidence": "high",
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",
       "question": "training_opt_out",
       "value": "partial",
-      "quote": "If you would rather not have your requests used for this purpose, it’s easy to opt out:",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246936031",
-      "notes": "A self-service opt-out is documented (Alexa Privacy Settings or app > More > Alexa Privacy > Manage Your Alexa Data > Help Improve Alexa: switch off 'Use voice recordings' and 'Use messages to improve transcriptions', or say 'Alexa, turn off human review of my voice recordings'), and the UK hub says it stops requests being used 'for this purpose', meaning training and human review. Its documented scope is voice recordings and Alexa messages; the pages predate Alexa+ and do not say whether typed Alexa+ chats in the app or on Alexa.com, or shared documents and photos, are covered, so the exclusion is stated for only some data types. The separate 'Don't save recordings' retention option is not the training opt-out; choosing it also disables voice ID.",
+      "quote": "If you would rather not have your voice recordings used to develop new features or manually reviewed to improve Alexa, it’s easy to opt-out through Alexa Privacy Settings in the Alexa app",
+      "evidence_url": "https://www.amazon.com/b/?node=23608617011",
+      "notes": "A self-service control exists (Alexa app: More > Alexa Privacy > Manage Your Alexa Data), but it is scoped to voice recordings being used to develop new features or manually reviewed; typed Alexa+ chats and attachments are not addressed, and the training statement itself covers all Alexa requests, so the cell is partial.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",
@@ -3290,13 +3284,12 @@
       "app": "alexa-plus",
       "question": "temporary_chat",
       "value": "partial",
-      "quote": "All previously saved recordings will also be deleted. You will still be able to review the transcripts of your Alexa requests for 30 days before we begin automatically deleting them.",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246936031",
-      "notes": "There is no per-session incognito mode; the closest is the account-level 'Don't save recordings' option (Manage Your Alexa Data > Choose how long to save recordings), under which recordings are deleted after processing and transcripts auto-delete after 30 days, but use for improving Alexa is governed by a separate toggle so conversations may still be used for training unless that is also switched off; it can take up to 36 hours to apply.",
+      "quote": "If you update your settings to “Don’t save recordings” (Settings > Alexa Privacy > Manage Your Alexa Data > Choose how long to save recordings), all previously saved voice recordings will be deleted, and future voice recordings will not be saved.",
+      "evidence_url": "https://www.amazon.com/b/?node=23608614011",
+      "notes": "There is no per-chat incognito mode; the closest control is the account-level Don’t save recordings option among four retention choices (save until deleted, 18 months, 3 months, don’t save). Even then transcripts and typed requests are kept until the chat has been inactive for 30 days so the history can be reviewed, and the page does not say whether requests under this setting are excluded from training, which makes an account-level setting partial under the rubric.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",
@@ -3313,13 +3306,12 @@
       "app": "alexa-plus",
       "question": "user_deletion",
       "value": "partial",
-      "quote": "All of your voice recordings are saved by default, but you can choose to delete them at any time and there are a number of ways to do that.",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246936031",
-      "notes": "Individual or bulk deletion of recordings/transcripts is self-service (Review Voice History > Delete Selected Recordings, 'Alexa, delete what I just said' / 'delete everything I've ever said', auto-delete after 3 or 18 months); Amazon confirms the same Alexa Privacy dashboard covers Alexa+ interactions. Amazon account closure is handled by a help page that could not be fetched, so account deletion is not evidenced here.",
+      "quote": "All of your voice recordings and transcripts are saved by default, but you can change how long they are saved or choose to delete them at any time.",
+      "evidence_url": "https://www.amazon.com/b/?node=23608614011",
+      "notes": "Individual recordings and transcripts can be deleted self-service online, in the Alexa app or on Echo Show devices (by day, device or profile), and a retention period can be set. Deleting the Amazon account itself is not described on the Alexa privacy pages and is a separate account-wide process, so only the conversation half is documented here.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",
@@ -3336,13 +3328,12 @@
       "app": "alexa-plus",
       "question": "deletion_timeline",
       "value": "partial",
-      "quote": "You will still be able to review the transcripts of your Alexa requests for 30 days before we begin automatically deleting them.",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246936031",
-      "notes": "Under the account-level Don't save recordings option, recordings are deleted after processing and transcripts are deleted automatically after 30 days, and Amazon states that manually deleted recordings and their transcripts are deleted from its cloud, but no period is stated for completing manual or account deletion. A period stated for one mode only is partial under the rubric. The quoted page is the UK Alexa privacy hub; the US page did not return text to the crawler.",
+      "quote": "So you can review your chat history, we will save the transcipts and any typed requests until the associated chat has been inactive for 30 days, after which those transcripts will automatically be deleted.",
+      "evidence_url": "https://www.amazon.com/b/?node=23608614011",
+      "notes": "A 30-day automatic deletion is stated for transcripts and typed requests of inactive chats, and manually deleted recordings and transcripts are said to be deleted from Amazon’s cloud, but no period is given for completing a manual deletion or an account deletion, and the Don’t save recordings setting can take up to 36 hours to apply. A period stated for one mechanism only is partial. The quote reproduces the page’s own spelling of transcripts.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",
@@ -3371,12 +3362,11 @@
       "question": "human_review_limited",
       "value": "partial",
       "quote": "Training Alexa relies in part on supervised machine learning, also referred to as “manual” or “human” review. This is an industry-standard practice conducted by trained specialists to help Alexa understand the correct interpretation of a request and provide the appropriate response in the future.",
-      "evidence_url": "https://www.amazon.co.uk/b?ie=UTF8&node=27246937031",
-      "notes": "Human review is disclosed for model-improvement purposes (an 'extremely small sample of requests' reviewed by trained specialists) and is on by default, with an opt-out via Manage Your Alexa Data > Help Improve Alexa or 'Alexa, turn off human review of my voice recordings'; not limited to safety/abuse cases.",
+      "evidence_url": "https://www.amazon.com/b/?node=23608617011",
+      "notes": "Human review of requests is disclosed as part of training and quality improvement, not limited to safety or support cases, with a self-service opt-out for voice recordings; that is the rubric’s partial branch (review for broader purposes with a documented limit).",
       "confidence": "high",
-      "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-11"
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "alexa-plus",

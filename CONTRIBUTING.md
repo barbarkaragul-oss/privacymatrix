@@ -46,7 +46,7 @@ One entry per app × question:
 }
 ```
 
-- `quote`: 12 to 400 characters, one contiguous excerpt, copied exactly. Smart quotes, markdown emphasis, capitalisation, punctuation and whitespace differences are tolerated; different wording is not.
+- `quote`: 12 to 400 characters, one contiguous excerpt, copied exactly. Smart quotes, markdown emphasis, capitalisation, punctuation and whitespace differences are tolerated; different wording is not. Some vendors serve a regional variant of the same page depending on the reader's IP address (Meta's policy says "Help Centers" to a US reader and "Help Centres" elsewhere). The weekly check runs from a GitHub runner in the United States, so quote the US variant or, better, a sentence that is identical in every variant; the `Debug fetch` workflow shows the text the runner receives.
 - `evidence_url`: the page that contains the quote. Fragments (`#section`) are fine.
 - `value: "unknown"` cells have an empty quote and `verified: false`. Silence in the documents is always *unknown*, never *no*.
 - Leave `verified` and `verified_at` alone; `npm run check -- --fix` sets them.
