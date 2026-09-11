@@ -31,13 +31,13 @@ jobs:
       - name: Fetch and dump every evidence page
         run: |
           if [ -n "$APP_INPUT" ]; then
-            npm run check -- --soft --app "$APP_INPUT" --dump .debug-dump
+            npm run check -- --soft --app "$APP_INPUT" --dump debug-dump
           else
-            npm run check -- --soft --dump .debug-dump
+            npm run check -- --soft --dump debug-dump
           fi
-          cp data/check-report.json .debug-dump/check-report.json
+          cp data/check-report.json debug-dump/check-report.json
       - uses: actions/upload-artifact@v7
         with:
           name: fetched-pages${{ env.APP_INPUT && format('-{0}', env.APP_INPUT) || '' }}
-          path: .debug-dump
+          path: debug-dump
           retention-days: 7

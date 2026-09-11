@@ -8,4 +8,4 @@ scripts/.cache_*
 .cache_*
 data/check-report.json
 .claude/
-.debug-dump/
+debug-dump/
