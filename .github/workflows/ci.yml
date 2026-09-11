@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Regenerate README tables and site
+        run: npm run build
+      - name: Generated files must be committed
+        run: |
+          if ! git diff --quiet -- README.md docs/; then
+            echo "README.md or docs/ is out of date. Run 'npm run build' and commit the result." >&2
+            git --no-pager diff --stat -- README.md docs/
+            exit 1
+          fi
+
+  quotes:
+    # Every quote in data/matrix.json must still be found at its source. Pages that cannot be
+    # fetched are reported, not failed, so a vendor outage does not block unrelated work.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check

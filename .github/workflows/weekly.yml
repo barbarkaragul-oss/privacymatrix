@@ -1,0 +1,159 @@
+name: Weekly verification
+
+# Free mode (default): re-fetch every source page and re-check every quote. Quotes that vanished
+# demote their cell to "unknown"; a pull request and an issue are opened for a human.
+# Claude mode: only when the ANTHROPIC_API_KEY secret is set (or mode=claude is chosen), every
+# cell is re-derived from the documentation with the Claude API, then verified the same way.
+#
+# Repository prerequisite: Settings > Actions > General > Workflow permissions must be
+# "Read and write" with "Allow GitHub Actions to create and approve pull requests" enabled.
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Mondays 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'auto = Claude if ANTHROPIC_API_KEY is set, otherwise free; free = re-check quotes only; claude = re-derive with Claude'
+        type: choice
+        options: [auto, free, claude]
+        default: auto
+      app:
+        description: 'Only re-verify one app id (blank = all)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: weekly-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      MODE_INPUT: ${{ github.event.inputs.mode || 'auto' }}
+      APP_INPUT: ${{ github.event.inputs.app || '' }}
+      HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Decide mode
+        id: mode
+        run: |
+          if [ "$MODE_INPUT" = "claude" ] || { [ "$MODE_INPUT" = "auto" ] && [ "$HAS_KEY" = "true" ]; }; then
+            echo "mode=claude" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=free" >> "$GITHUB_OUTPUT"
+          fi
+          tail -n 1 "$GITHUB_OUTPUT"
+
+      - name: Re-derive cells with Claude
+        if: steps.mode.outputs.mode == 'claude'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PRIVACYMATRIX_MODEL: ${{ vars.PRIVACYMATRIX_MODEL }}
+        run: |
+          if [ -n "$APP_INPUT" ]; then
+            npm run verify -- --app "$APP_INPUT"
+          else
+            npm run verify
+          fi
+
+      - name: Re-check every quote against its source (free mode)
+        if: steps.mode.outputs.mode == 'free'
+        run: |
+          if [ -n "$APP_INPUT" ]; then
+            npm run check -- --fix --soft --app "$APP_INPUT"
+          else
+            npm run check -- --fix --soft
+          fi
+
+      - name: Refuse to publish a run that verified nothing
+        if: steps.mode.outputs.mode == 'free'
+        run: |
+          node -e "const r=require('./data/check-report.json'); console.log('ok', r.ok, 'failed', r.failed, 'errors', r.errors); if (r.ok === 0 && r.errors > 0) { console.error('Every page failed to fetch; not publishing this run.'); process.exit(1); }"
+
+      - name: Regenerate README tables and site
+        run: npm run build
+
+      - name: Typecheck and test the result
+        run: npm run typecheck && npm test
+
+      - name: Summarise the run
+        id: changes
+        run: |
+          node -e "
+            const fs = require('fs');
+            const c = require('./data/changes.json');
+            let summary = c.changes.length + ' value changes';
+            if (fs.existsSync('./data/check-report.json')) {
+              const r = require('./data/check-report.json');
+              summary += ', ' + r.ok + ' quotes present, ' + r.errors + ' pages unreachable';
+            }
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'summary=' + summary + '\n');
+            console.log(summary);
+          "
+
+      - name: Commit refreshed verification dates (no value changes)
+        id: commit
+        if: steps.changes.outputs.count == '0'
+        continue-on-error: true
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          SUMMARY: ${{ steps.changes.outputs.summary }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/matrix.json data/changes.json data/changes.md README.md docs/
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+          else
+            git commit -m "matrix: weekly re-verification ($MODE mode): $SUMMARY"
+            git push
+          fi
+
+      - name: Open pull request (value changes, or the direct push was rejected)
+        if: steps.changes.outputs.count != '0' || steps.commit.outcome == 'failure'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: bot/weekly-verification
+          delete-branch: true
+          commit-message: 'matrix: weekly re-verification (${{ steps.mode.outputs.mode }} mode): ${{ steps.changes.outputs.summary }}'
+          title: 'matrix: weekly re-verification (${{ steps.changes.outputs.summary }})'
+          body-path: data/changes.md
+          labels: weekly-verification
+          add-paths: |
+            data/matrix.json
+            data/changes.json
+            data/changes.md
+            README.md
+            docs/
+
+      - name: Find the open recheck issue, if any (free mode)
+        id: issue
+        if: steps.changes.outputs.count != '0' && steps.mode.outputs.mode == 'free'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NUMBER=$(gh issue list --label needs-recheck --state open --limit 1 --json number --jq '.[0].number // ""')
+          echo "number=$NUMBER" >> "$GITHUB_OUTPUT"
+          echo "Existing issue: ${NUMBER:-none}"
+
+      - name: Open or update the issue for cells that need a human (free mode)
+        if: steps.changes.outputs.count != '0' && steps.mode.outputs.mode == 'free'
+        uses: peter-evans/create-issue-from-file@v6
+        with:
+          issue-number: ${{ steps.issue.outputs.number }}
+          title: 'Policy text changed: ${{ steps.changes.outputs.count }} cell(s) need a fresh quote'
+          content-filepath: data/changes.md
+          labels: needs-recheck, good first issue

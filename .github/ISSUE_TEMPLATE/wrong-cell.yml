@@ -1,0 +1,47 @@
+name: Wrong cell
+description: A cell in the matrix does not match the vendor's policy
+title: "Wrong cell: <app> / <question>"
+labels: [wrong-cell]
+body:
+  - type: input
+    id: app
+    attributes:
+      label: App
+      placeholder: e.g. Claude
+    validations:
+      required: true
+  - type: input
+    id: question
+    attributes:
+      label: Question
+      placeholder: e.g. Chats excluded from training by default
+    validations:
+      required: true
+  - type: dropdown
+    id: value
+    attributes:
+      label: What should the value be?
+      options: ["yes", "partial", "no", "unknown"]
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Link to the vendor's policy, terms or help page that shows it
+      placeholder: https://...
+    validations:
+      required: true
+  - type: textarea
+    id: quote
+    attributes:
+      label: The exact sentence from that page
+      description: Copy it verbatim; it becomes the evidence quote for the cell. Leave empty if you are proposing "unknown" and there is no sentence to quote.
+    validations:
+      required: false
+  - type: input
+    id: region
+    attributes:
+      label: Region or plan, if the answer depends on it
+      placeholder: e.g. EU users, paid plan
+    validations:
+      required: false

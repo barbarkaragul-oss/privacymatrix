@@ -1,0 +1,10 @@
+node_modules/
+.cache/
+*.log
+.env
+.env.*
+.DS_Store
+scripts/.cache_*
+.cache_*
+data/check-report.json
+.claude/

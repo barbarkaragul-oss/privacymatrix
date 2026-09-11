@@ -1,0 +1,32 @@
+name: Add an app
+description: Propose an AI assistant app for the matrix
+title: "Add app: <name>"
+labels: [add-app, good first issue]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: App name and vendor
+      placeholder: e.g. Example Assistant (Example Inc.)
+    validations:
+      required: true
+  - type: input
+    id: homepage
+    attributes:
+      label: Homepage
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Policy URLs the pipeline should read
+      description: One per line. The privacy policy, terms of use, and help-center or trust pages about training, retention, deletion, memory, advertising and data rights. Prefer pages whose text loads without JavaScript.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: It is a consumer AI assistant with an individual plan (not an API-only or business-only product)
+          required: true

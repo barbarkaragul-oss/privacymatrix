@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrivacyMatrix — does this AI app train on your chats?</title>
+<meta name="description" content="28 AI assistant apps, 14 privacy questions. Every cell quotes the vendor's own privacy policy or help pages, and every quote is re-checked against its source weekly. Yes means better for your privacy.">
+<meta name="repo" content="__REPO_URL__">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111827'/%3E%3Crect x='6' y='6' width='8' height='8' rx='2' fill='%237fdba6'/%3E%3Crect x='18' y='6' width='8' height='8' rx='2' fill='%23f2c66b'/%3E%3Crect x='6' y='18' width='8' height='8' rx='2' fill='%23f39a9a'/%3E%3Crect x='18' y='18' width='8' height='8' rx='2' fill='%237fdba6'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #ffffff; --bg-1: #f6f7f9; --bg-2: #eceef2; --text: #14171a; --text-2: #5b6470; --text-3: #8a93a0;
+    --border: #d9dde3; --border-2: #b9c0c9; --accent: #2456d6;
+    --yes-bg: #e3f6ec; --yes-fg: #0b6b3a; --partial-bg: #fff3d6; --partial-fg: #8a5a00;
+    --no-bg: #fde8e8; --no-fg: #a12525; --unk-bg: #f0f1f3; --unk-fg: #6b7380;
+    --radius: 10px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1216; --bg-1: #161a20; --bg-2: #1f242c; --text: #e8ebef; --text-2: #a4acb8; --text-3: #737c89;
+      --border: #2a313b; --border-2: #3b4450; --accent: #7aa2ff;
+      --yes-bg: #10331f; --yes-fg: #7fdba6; --partial-bg: #3a2c05; --partial-fg: #f2c66b;
+      --no-bg: #3d1414; --no-fg: #f39a9a; --unk-bg: #22262d; --unk-fg: #9aa3ae;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1216; --bg-1: #161a20; --bg-2: #1f242c; --text: #e8ebef; --text-2: #a4acb8; --text-3: #737c89;
+    --border: #2a313b; --border-2: #3b4450; --accent: #7aa2ff;
+    --yes-bg: #10331f; --yes-fg: #7fdba6; --partial-bg: #3a2c05; --partial-fg: #f2c66b;
+    --no-bg: #3d1414; --no-fg: #f39a9a; --unk-bg: #22262d; --unk-fg: #9aa3ae;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 var(--sans); }
+  a { color: var(--accent); }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 24px 20px 60px; }
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .tagline { color: var(--text-2); margin: 0; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 10px; font-size: 13px; color: var(--text-2); }
+  .stats b { color: var(--text); font-weight: 600; }
+  .actions { display: flex; gap: 8px; align-items: center; }
+  button, .btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; text-decoration: none; }
+  button:hover, .btn:hover { border-color: var(--border-2); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0; }
+  .controls input[type="search"] { font: inherit; font-size: 14px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); min-width: 240px; }
+  .chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-1); color: var(--text-2); cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-2); margin-left: auto; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+  .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); max-height: 78vh; }
+  table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 900px; }
+  th, td { border-bottom: 1px solid var(--border); padding: 0; }
+  thead th { position: sticky; top: 0; z-index: 3; background: var(--bg-1); font-size: 12.5px; font-weight: 600; text-align: center; padding: 10px 8px; white-space: nowrap; }
+  thead th:first-child { text-align: left; left: 0; z-index: 4; }
+  tbody th { position: sticky; left: 0; z-index: 2; background: var(--bg); text-align: left; font-weight: 500; font-size: 13.5px; padding: 6px 12px; white-space: nowrap; border-right: 1px solid var(--border); }
+  tr.group th { background: var(--bg-2); color: var(--text-2); font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; padding: 7px 12px; }
+  tr.group td { background: var(--bg-2); }
+  td.cell { text-align: center; padding: 3px; }
+  .v { width: 100%; height: 34px; border: 0; border-radius: 6px; font: 600 13px/1 var(--sans); cursor: pointer; background: var(--unk-bg); color: var(--unk-fg); display: inline-flex; align-items: center; justify-content: center; gap: 4px; }
+  .v.yes { background: var(--yes-bg); color: var(--yes-fg); }
+  .v.partial { background: var(--partial-bg); color: var(--partial-fg); }
+  .v.no { background: var(--no-bg); color: var(--no-fg); }
+  .v:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .v.unverified { opacity: 0.6; }
+  .v .badge { font-size: 10px; font-weight: 500; opacity: 0.8; }
+  .hidden { display: none !important; }
+  dialog { border: 1px solid var(--border); border-radius: 14px; background: var(--bg); color: var(--text); padding: 0; max-width: 620px; width: calc(100% - 32px); }
+  dialog::backdrop { background: rgba(0,0,0,0.45); }
+  .d-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 20px 6px; }
+  .d-head h2 { margin: 0; font-size: 18px; }
+  .d-body { padding: 0 20px 20px; }
+  .pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+  .pill.yes { background: var(--yes-bg); color: var(--yes-fg); } .pill.partial { background: var(--partial-bg); color: var(--partial-fg); }
+  .pill.no { background: var(--no-bg); color: var(--no-fg); } .pill.unknown { background: var(--unk-bg); color: var(--unk-fg); }
+  blockquote { margin: 12px 0; padding: 12px 14px; border-left: 3px solid var(--border-2); background: var(--bg-1); border-radius: 0 8px 8px 0; font-size: 14.5px; }
+  .meta { font-size: 13px; color: var(--text-2); display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin-top: 10px; }
+  .meta a { word-break: break-all; }
+  .q { color: var(--text-2); font-size: 13.5px; margin: 6px 0 0; }
+  section.changes { margin-top: 28px; }
+  section.changes h2 { font-size: 18px; margin: 0 0 8px; }
+  .chg { display: grid; gap: 6px; }
+  .chg div { font-size: 14px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-1); }
+  .chg .from { color: var(--text-3); } .chg .to { font-weight: 600; }
+  footer { margin-top: 36px; color: var(--text-3); font-size: 13px; }
+  kbd { font: 12px var(--mono); background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+  .count { font-size: 11px; font-weight: 500; color: var(--text-3); display: block; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>PrivacyMatrix</h1>
+      <p class="tagline">Does this AI app train on your chats? Can you opt out? When is a deleted chat really gone? Every cell quotes the vendor's own privacy policy or help pages, and every quote is re-checked against its source weekly. Yes means better for your privacy. Not legal advice; consumer plan, default settings.</p>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="actions">
+      <a class="btn" id="repo-link" href="#" rel="noopener">GitHub</a>
+      <a class="btn" href="matrix.json">JSON</a>
+      <button id="theme" type="button" aria-label="Toggle color theme">Theme</button>
+    </div>
+  </header>
+
+  <div class="controls">
+    <input id="search" type="search" placeholder="Filter questions (e.g. training, delete, ads)" aria-label="Filter questions">
+    <div id="groups" role="group" aria-label="Question groups"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--yes-bg);border:1px solid var(--yes-fg)"></i>yes (better for your privacy)</span>
+      <span><i class="dot" style="background:var(--partial-bg);border:1px solid var(--partial-fg)"></i>partial</span>
+      <span><i class="dot" style="background:var(--no-bg);border:1px solid var(--no-fg)"></i>no</span>
+      <span><i class="dot" style="background:var(--unk-bg);border:1px solid var(--unk-fg)"></i>unknown</span>
+    </div>
+  </div>
+
+  <div class="table-wrap" id="table-wrap"></div>
+
+  <section class="changes" id="changes"></section>
+
+  <footer>
+    Built from <code>data/matrix.json</code>. A cell is only shown as yes, partial or no when its quote was found verbatim at the linked source. Click any cell to read the evidence. Keyboard: <kbd>Tab</kbd> to a cell, <kbd>Enter</kbd> to open.
+  </footer>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="d-head">
+    <div>
+      <h2 id="dlg-title"></h2>
+      <p class="q" id="dlg-q"></p>
+    </div>
+    <button type="button" id="dlg-close" aria-label="Close">✕</button>
+  </div>
+  <div class="d-body" id="dlg-body"></div>
+</dialog>
+
+<script>
+/*__PRIVACYMATRIX_DATA__*/
+</script>
+<script>
+(function () {
+  const D = window.PRIVACYMATRIX;
+  if (!D) { document.getElementById('table-wrap').textContent = 'No data embedded. Run npm run build.'; return; }
+  const LABEL = { yes: 'Yes', partial: 'Partial', no: 'No', unknown: 'Unknown' };
+  const GLYPH = { yes: '✓', partial: '◐', no: '✕', unknown: '?' };
+  const byKey = new Map(D.cells.map((c) => [c.app + '|' + c.question, c]));
+  const appById = new Map(D.apps.map((a) => [a.id, a]));
+  const questionById = new Map(D.questions.map((c) => [c.id, c]));
+
+  const repoLink = document.getElementById('repo-link');
+  const metaRepo = (document.querySelector('meta[name="repo"]') || {}).content || '';
+  const metaUsable = /^https:\/\/github\.com\/[^/]+\/[^/]+/.test(metaRepo) && !/\/OWNER\//.test(metaRepo);
+  repoLink.href = metaUsable ? metaRepo : 'https://github.com/' + (location.hostname.split('.')[0] || '') + '/' + (location.pathname.split('/')[1] || 'privacymatrix');
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
+  function isHttp(u) { return typeof u === 'string' && /^https?:\/\/\S+$/.test(u); }
+  function plain(s) {
+    return String(s)
+      .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/\[([^\]]*)\]\[[^\]]*\]/g, '$1')
+      .replace(/(\*\*|__)(.+?)\1/g, '$2')
+      .replace(/`([^`]*)`/g, '$1')
+      .replace(/^[\s|>#-]+|[\s|]+$/g, '')
+      .replace(/\s+/g, ' ');
+  }
+
+  const stats = document.getElementById('stats');
+  const verified = D.cells.filter((c) => c.verified).length;
+  const dates = D.cells.map((c) => c.verified_at).filter(Boolean).sort();
+  const counts = { yes: 0, partial: 0, no: 0, unknown: 0 };
+  D.cells.forEach((c) => { counts[c.value] = (counts[c.value] || 0) + 1; });
+  stats.innerHTML = '<span><b>' + D.apps.length + '</b> apps</span><span><b>' + D.questions.length + '</b> questions</span><span><b>' + verified + '/' + D.cells.length + '</b> cells verified at source</span><span>last verification <b>' + esc(dates.length ? dates[dates.length - 1] : 'never') + '</b></span>';
+
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* storage unavailable (file:, data:, private mode) */ } },
+  };
+  const theme = document.getElementById('theme');
+  const saved = store.get('am-theme');
+  if (saved) document.documentElement.dataset.theme = saved;
+  theme.addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    store.set('am-theme', next);
+  });
+
+  const state = { group: null, q: '' };
+  const groupsEl = document.getElementById('groups');
+  const allChip = document.createElement('button');
+  allChip.type = 'button'; allChip.className = 'chip'; allChip.textContent = 'All'; allChip.setAttribute('aria-pressed', 'true');
+  allChip.addEventListener('click', () => { state.group = null; render(); });
+  groupsEl.appendChild(allChip);
+  D.groups.forEach((g) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.textContent = g.name; b.dataset.group = g.id; b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => { state.group = state.group === g.id ? null : g.id; render(); });
+    groupsEl.appendChild(b);
+  });
+  document.getElementById('search').addEventListener('input', (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
+
+  function render() {
+    groupsEl.querySelectorAll('.chip').forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.group || null) === state.group)));
+    const qs = D.questions.filter((c) => (!state.group || c.group === state.group) && (!state.q || (c.name + ' ' + c.question + ' ' + c.id).toLowerCase().includes(state.q)));
+    const head = '<tr><th scope="col">Question</th>' + D.apps.map((a) => {
+      const cs = D.cells.filter((c) => c.app === a.id);
+      const y = cs.filter((c) => c.value === 'yes').length, p = cs.filter((c) => c.value === 'partial').length;
+      return '<th scope="col">' + esc(a.name) + '<span class="count">' + y + ' yes · ' + p + ' partial</span></th>';
+    }).join('') + '</tr>';
+    let body = '';
+    D.groups.forEach((g) => {
+      const gc = qs.filter((c) => c.group === g.id);
+      if (!gc.length) return;
+      body += '<tr class="group"><th scope="row">' + esc(g.name) + '</th><td colspan="' + D.apps.length + '"></td></tr>';
+      gc.forEach((cap) => {
+        body += '<tr><th scope="row" title="' + esc(cap.question) + '">' + esc(cap.name) + '</th>';
+        D.apps.forEach((a) => {
+          const cell = byKey.get(a.id + '|' + cap.id) || { value: 'unknown', verified: false };
+          const v = cell.value || 'unknown';
+          const cls = 'v ' + v + (v !== 'unknown' && !cell.verified ? ' unverified' : '');
+          const label = esc(a.name) + ' — ' + esc(cap.name) + ': ' + LABEL[v] + (cell.verified ? ', verified ' + esc(cell.verified_at) : '');
+          body += '<td class="cell"><button type="button" class="' + cls + '" data-a="' + esc(a.id) + '" data-c="' + esc(cap.id) + '" aria-label="' + label + '">' + GLYPH[v] + '</button></td>';
+        });
+        body += '</tr>';
+      });
+    });
+    document.getElementById('table-wrap').innerHTML = '<table><thead>' + head + '</thead><tbody>' + (body || '<tr><td colspan="' + (D.apps.length + 1) + '" style="padding:16px;color:var(--text-2)">No questions match.</td></tr>') + '</tbody></table>';
+  }
+
+  document.getElementById('table-wrap').addEventListener('click', (e) => {
+    const b = e.target.closest('button.v');
+    if (!b) return;
+    openCell(b.dataset.a, b.dataset.c);
+  });
+
+  const dlg = document.getElementById('dlg');
+  document.getElementById('dlg-close').addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && dlg.open) dlg.close(); });
+
+  function openCell(appId, capId) {
+    const a = appById.get(appId), cap = questionById.get(capId);
+    const cell = byKey.get(appId + '|' + capId) || { value: 'unknown', quote: '', evidence_url: '', notes: '', confidence: '', verified: false, verified_at: '' };
+    document.getElementById('dlg-title').textContent = a.name + ' · ' + cap.name;
+    document.getElementById('dlg-q').textContent = cap.question;
+    let html = '<span class="pill ' + cell.value + '">' + LABEL[cell.value] + '</span>';
+    if (cell.notes) html += '<p>' + esc(cell.notes) + '</p>';
+    if (cell.quote) html += '<blockquote title="Verbatim from the source, markdown syntax removed for display">“' + esc(plain(cell.quote)) + '”</blockquote>';
+    html += '<div class="meta">';
+    if (isHttp(cell.evidence_url)) html += '<span>Source</span><a href="' + esc(cell.evidence_url) + '" target="_blank" rel="noopener">' + esc(cell.evidence_url) + '</a>';
+    html += '<span>Verified</span><span>' + (cell.verified ? 'quote found at source on ' + esc(cell.verified_at) : 'not verified — shown as unknown') + '</span>';
+    if (cell.confidence) html += '<span>Confidence</span><span>' + esc(cell.confidence) + '</span>';
+    html += '<span>Rubric</span><span>' + esc(cap.rubric) + '</span>';
+    html += '</div>';
+    html += '<p class="q" style="margin-top:14px">Wrong? <a href="' + repoLink.href + '/issues/new?template=wrong-cell.yml&title=' + encodeURIComponent('Wrong cell: ' + a.name + ' / ' + cap.name) + '" target="_blank" rel="noopener">Report this cell</a> with a link to the docs.</p>';
+    document.getElementById('dlg-body').innerHTML = html;
+    dlg.showModal();
+  }
+
+  const ch = document.getElementById('changes');
+  if (D.changes && D.changes.changes && D.changes.changes.length) {
+    const items = D.changes.changes.slice(0, 20).map((c) => {
+      const a = appById.get(c.app), cap = questionById.get(c.question);
+      return '<div><b>' + esc(a ? a.name : c.app) + '</b> · ' + esc(cap ? cap.name : c.question) + ': <span class="from">' + LABEL[c.from] + '</span> → <span class="to">' + LABEL[c.to] + '</span>' + (isHttp(c.evidence_url) ? ' · <a href="' + esc(c.evidence_url) + '" target="_blank" rel="noopener">source</a>' : '') + '</div>';
+    }).join('');
+    ch.innerHTML = '<h2>Changed in the last verification run (' + esc((D.changes.run_at || '').slice(0, 10)) + ')</h2><div class="chg">' + items + '</div>';
+  } else {
+    ch.innerHTML = '<h2>Recent changes</h2><p class="q">No value changes in the last verification run.</p>';
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

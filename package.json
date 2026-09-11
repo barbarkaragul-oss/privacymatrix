@@ -1,0 +1,33 @@
+{
+  "name": "privacymatrix",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Does this AI app train on your chats? 28 AI assistant apps, 14 privacy questions; every cell quotes the vendor's own policy and is re-checked weekly.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/barbarkaragul-oss/privacymatrix"
+  },
+  "homepage": "https://barbarkaragul-oss.github.io/privacymatrix/",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "tsx src/check.ts",
+    "verify": "tsx src/verify.ts",
+    "build": "tsx src/generate.ts",
+    "test": "node --import tsx --test \"tests/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "ci": "npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
+    "zod": "^4.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  }
+}
