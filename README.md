@@ -16,7 +16,7 @@
 </p>
 
 <!-- stats:start -->
-**28 apps × 14 questions · 304/392 cells verified against their source · last verification 2026-09-11** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
+**28 apps × 14 questions · 314/392 cells verified against their source · last verification 2026-09-11** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
 <!-- stats:end -->
 
 Privacy policies are long, change quietly, and are almost never compared side by side with the actual sentences that matter. When someone asks "does ChatGPT train on my conversations?" the answer usually comes from a months-old news article. This repository answers from the policies themselves, and shows its work:
