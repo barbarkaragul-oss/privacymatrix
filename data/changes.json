@@ -1,0 +1,12 @@
+{
+  "run_at": "2026-09-11T07:54:08.074Z",
+  "model": "none (mechanical quote re-check)",
+  "changes": [],
+  "stats": {
+    "apps_checked": 28,
+    "apps_failed": [],
+    "cells_total": 392,
+    "cells_verified": 314,
+    "cells_unknown": 78
+  }
+}
