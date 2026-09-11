@@ -51,7 +51,15 @@ function shorten(s: string, max: number): string {
   return t.length > max ? t.slice(0, max - 1) + '…' : t;
 }
 
-export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions: Question[], fetchErrors: string[] = []): string {
+/** A quote that was not found at its URL in this run; the cell is kept until it has been missing for a week. */
+export interface PendingQuote {
+  app: string;
+  question: string;
+  evidence_url: string;
+  since: string;
+}
+
+export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions: Question[], fetchErrors: string[] = [], pending: PendingQuote[] = []): string {
   const appName = new Map(apps.map((a) => [a.id, a.name]));
   const questionName = new Map(questions.map((c) => [c.id, c.name]));
   const lines: string[] = [];
@@ -63,9 +71,16 @@ export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions:
     lines.push('');
     lines.push(`Apps that could not be checked this run (previous values kept): ${file.stats.apps_failed.map((a) => escapeMd(appName.get(a) ?? a)).join(', ')}`);
   }
+  if (pending.length > 0) {
+    lines.push('');
+    lines.push(`Quotes not found at their source this run (${pending.length}). The cells keep their value for now and are demoted to unknown if the quote is still missing a week later. A human look now is cheaper than a demotion later:`);
+    for (const p of pending) {
+      lines.push(`- ${escapeMd(appName.get(p.app) ?? p.app)} / ${escapeMd(questionName.get(p.question) ?? p.question)} — missing since ${p.since} — [source](${mdUrl(p.evidence_url)})`);
+    }
+  }
   if (fetchErrors.length > 0) {
     lines.push('');
-    lines.push(`Pages that could not be fetched this run (cells left untouched, ${fetchErrors.length}):`);
+    lines.push(`Pages that could not be fetched this run (cells left untouched):`);
     for (const e of fetchErrors.slice(0, 30)) lines.push(`- ${escapeMd(e)}`);
     if (fetchErrors.length > 30) lines.push(`- …and ${fetchErrors.length - 30} more`);
   }
@@ -86,6 +101,6 @@ export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions:
     lines.push(`| ${escapeMd(appName.get(ch.app) ?? ch.app)} | ${escapeMd(questionName.get(ch.question) ?? ch.question)} | ${change} | ${evidence} |`);
   }
   lines.push('');
-  lines.push('Review each row against its source before merging. A wrong cell is worse than a stale one. Cells demoted to unknown keep their previous quote and URL in the notes; restore them with a current quote, or leave them unknown.');
+  lines.push('Review each row against its source before merging. A wrong cell is worse than a stale one. Cells demoted to unknown keep their previous quote and URL in the notes; restore them with a current quote, or leave them unknown. A demotion means the quote was missing on two runs at least a week apart.');
   return lines.join('\n') + '\n';
 }

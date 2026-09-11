@@ -39,14 +39,18 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
       { id: 'b', name: 'App B', vendor: 'v', homepage: 'https://b.x/', repo: null, sources: ['https://b.x/'] },
     ],
     [{ id: 'x', group: 'g', name: 'Cap X', question: 'q', rubric: 'r' }],
-    ['a/y: fetch failed: HTTP 503'],
+    ['App A: 1 cell on 1 page (fetch failed: HTTP 503)'],
+    [{ app: 'a', question: 'x', evidence_url: 'https://e.x/p_(1)', since: '2026-09-03' }],
   );
   assert.ok(md.includes('1 value change'));
   assert.ok(md.includes('| App A | Cap X | no → **yes** |'));
   assert.ok(md.includes('[source](https://e.x/a%29b)'));
   assert.ok(md.includes('<code>supports a &#124; b and &#91;links&#93;(x)</code>'));
   assert.ok(md.includes('App B'));
-  assert.ok(md.includes('Pages that could not be fetched this run (cells left untouched, 1):'));
+  assert.ok(md.includes('Pages that could not be fetched this run (cells left untouched):'));
+  assert.ok(md.includes('- App A: 1 cell on 1 page (fetch failed: HTTP 503)'));
+  assert.ok(md.includes('Quotes not found at their source this run (1).'));
+  assert.ok(md.includes('- App A / Cap X — missing since 2026-09-03 — [source](https://e.x/p_%281%29)'));
 });
 
 test('renderChangesMarkdown with no changes says so', () => {

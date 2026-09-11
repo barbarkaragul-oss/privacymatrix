@@ -4,20 +4,23 @@
  *   npm run check                 report; exit 1 if any quote is missing from a fetched page
  *   npm run check -- --soft       report; always exit 0
  *   npm run check -- --fix        rewrite data/matrix.json: quotes found -> verified today;
- *                                 quotes missing from a fetched page -> value "unknown" (the old
- *                                 quote, URL and value are kept in the notes for a human to fix);
- *                                 also writes data/changes.json and data/changes.md
- *   npm run check -- --app id   limit to one app
+ *                                 quotes missing from a fetched page -> the cell is kept but flagged
+ *                                 (quote_missing_since); still missing GRACE_DAYS later -> value
+ *                                 "unknown" (the old quote, URL and value are kept in the notes for
+ *                                 a human to fix); also writes data/changes.json and data/changes.md
+ *   npm run check -- --app id     limit to one app
+ *   npm run check -- --dump dir   also write the text of every fetched page into dir (debugging
+ *                                 what a runner in another network actually receives)
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
- * demotes a cell: only a successfully fetched page that no longer contains the quote does.
- * No API key needed. This is the free weekly re-verification, and the same check CI runs on
- * pull requests that edit the data.
+ * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
+ * only on the second run in a row. No API key needed. This is the free weekly re-verification,
+ * and the same check CI runs on pull requests that edit the data.
  */
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { diffMatrices, renderChangesMarkdown } from './diff.js';
-import { Fetcher } from './fetch.js';
+import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
+import { Fetcher, type FetchResult } from './fetch.js';
 import { findQuote, prepareText, quoteProblems, type MatchMethod, type PreparedText } from './quotes.js';
 import {
   DATA_DIR,
@@ -69,22 +72,65 @@ export interface CheckOptions {
   soft: boolean;
   fix: boolean;
   app: string | null;
+  dump: string | null;
 }
 
 function parseArgs(argv: string[]): CheckOptions {
-  const out: CheckOptions = { soft: false, fix: false, app: null };
+  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--soft') out.soft = true;
     else if (a === '--fix') out.fix = true;
     else if (a === '--app') out.app = argv[++i] ?? null;
+    else if (a === '--dump') out.dump = argv[++i] ?? null;
     else if (a === '--help' || a === '-h') {
-      console.log('usage: check [--soft] [--fix] [--app <id>]');
+      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>]');
       process.exit(0);
     }
   }
   return out;
 }
+
+/** Writes the text the checker saw for one URL, so a failure on another network can be inspected. */
+function dumpPage(dir: string, url: string, res: FetchResult): void {
+  mkdirSync(dir, { recursive: true });
+  const slug = url.replace(/^https?:\/\//, '').replace(/[^a-zA-Z0-9._-]+/g, '_').slice(0, 120);
+  const header = [
+    `# ${url}`,
+    `# final: ${res.finalUrl}`,
+    `# status: ${res.status}${res.error ? ` error: ${res.error}` : ''}`,
+    `# content-type: ${res.contentType}`,
+    `# chars: ${res.text.length} truncated: ${res.truncated}`,
+    '',
+    '',
+  ].join('\n');
+  writeFileSync(path.join(dir, `${slug}.txt`), header + res.text, 'utf8');
+}
+
+/** One line per app instead of one per cell, so a blocked host does not flood the run summary. */
+export function groupFetchErrors(errors: CellReport[], apps: App[]): string[] {
+  const name = new Map(apps.map((a) => [a.id, a.name]));
+  const byApp = new Map<string, CellReport[]>();
+  for (const e of errors) {
+    const list = byApp.get(e.app) ?? [];
+    list.push(e);
+    byApp.set(e.app, list);
+  }
+  return [...byApp.entries()].map(([app, list]) => {
+    const pages = new Set(list.map((e) => e.evidence_url)).size;
+    const reasons = [...new Set(list.map((e) => e.problems.join('; ')))].join(' / ');
+    return `${name.get(app) ?? app}: ${list.length} cell${list.length === 1 ? '' : 's'} on ${pages} page${pages === 1 ? '' : 's'} (${reasons})`;
+  });
+}
+
+/** Whole days from ISO date a to ISO date b; infinite when either date is unreadable, so a bad flag never blocks a demotion. */
+function daysBetween(a: string, b: string): number {
+  const ms = Date.parse(b) - Date.parse(a);
+  return Number.isFinite(ms) ? Math.floor(ms / 86_400_000) : Number.POSITIVE_INFINITY;
+}
+
+/** A quote must be missing from its page on two runs at least this many days apart before the cell is demoted. */
+export const GRACE_DAYS = 6;
 
 export function classifyCell(cell: Cell, page: PageResult | undefined): CellReport {
   const base = { app: cell.app, question: cell.question, value: cell.value, evidence_url: cell.evidence_url };
@@ -116,28 +162,54 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
   return { problems, missing };
 }
 
-/** Applies check results to the cells: ok -> verified today; fail -> unknown (old data kept in notes); error/skipped -> untouched. */
-export function applyFix(cells: Cell[], reports: CellReport[], missing: string[], today: string): { cells: Cell[]; demoted: number } {
+function withoutFlag(cell: Cell): Cell {
+  const copy = { ...cell };
+  delete copy.quote_missing_since;
+  return copy;
+}
+
+/**
+ * Applies check results to the cells.
+ *   ok                      -> verified today, any missing-quote flag cleared
+ *   fail, quote not found   -> first time: cell kept, flagged quote_missing_since = today (pending);
+ *                              still missing GRACE_DAYS or more later: unknown, old data kept in notes
+ *   fail, malformed quote   -> unknown at once (a data error, not a page change)
+ *   error / skipped         -> untouched
+ * The grace period exists because a page can differ between two networks (regional variants,
+ * interstitials served to cloud IP ranges); one bad fetch must not erase a verified cell.
+ */
+export function applyFix(cells: Cell[], reports: CellReport[], missing: string[], today: string): { cells: Cell[]; demoted: number; pending: PendingQuote[] } {
   const byKey = new Map(reports.map((r) => [cellKey(r.app, r.question), r]));
   let demoted = 0;
+  const pending: PendingQuote[] = [];
+  const demote = (cell: Cell, reason: string): Cell => {
+    demoted++;
+    const tail = cell.notes.trim() ? ` | ${cell.notes.trim()}` : '';
+    return {
+      ...withoutFlag(cell),
+      value: 'unknown',
+      quote: '',
+      evidence_url: '',
+      confidence: 'low',
+      verified: false,
+      verified_at: '',
+      notes: `UNVERIFIED on ${today} (${reason}; was ${cell.value}): "${cell.quote.trim()}" at ${cell.evidence_url}${tail}`,
+    };
+  };
   const out: Cell[] = cells.map((cell) => {
     const r = byKey.get(cellKey(cell.app, cell.question));
     if (!r) return cell;
     if (r.status === 'fail') {
-      demoted++;
-      const tail = cell.notes.trim() ? ` | ${cell.notes.trim()}` : '';
-      return {
-        ...cell,
-        value: 'unknown',
-        quote: '',
-        evidence_url: '',
-        confidence: 'low',
-        verified: false,
-        verified_at: '',
-        notes: `UNVERIFIED on ${today} (${r.problems.join('; ')}; was ${cell.value}): "${cell.quote.trim()}" at ${cell.evidence_url}${tail}`,
-      };
+      const onlyMissing = r.problems.length === 1 && r.problems[0] === 'quote not found on page';
+      if (!onlyMissing) return demote(cell, r.problems.join('; '));
+      const since = cell.quote_missing_since ?? today;
+      if (!cell.quote_missing_since || daysBetween(since, today) < GRACE_DAYS) {
+        pending.push({ app: cell.app, question: cell.question, evidence_url: cell.evidence_url, since });
+        return { ...cell, quote_missing_since: since };
+      }
+      return demote(cell, `quote not found on page since ${since}`);
     }
-    if (r.status === 'ok' && cell.value !== 'unknown') return { ...cell, verified: true, verified_at: today };
+    if (r.status === 'ok' && cell.value !== 'unknown') return { ...withoutFlag(cell), verified: true, verified_at: today };
     if (cell.value === 'unknown' && cell.verified) return { ...cell, verified: false, verified_at: '' };
     return cell;
   });
@@ -145,7 +217,7 @@ export function applyFix(cells: Cell[], reports: CellReport[], missing: string[]
     const [app, question] = key.split('|') as [string, string];
     out.push({ app, question, value: 'unknown', quote: '', evidence_url: '', notes: '', confidence: 'low', verified: false, verified_at: '' });
   }
-  return { cells: out, demoted };
+  return { cells: out, demoted, pending };
 }
 
 export async function runCheck(opts: CheckOptions): Promise<number> {
@@ -164,6 +236,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   await Promise.all(
     urls.map(async (url) => {
       const res = await fetcher.get(url);
+      if (opts.dump) dumpPage(opts.dump, url, res);
       const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
       if (problem) {
         pages.set(url, { error: problem });
@@ -187,7 +260,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   for (const r of reports) if (r.status === 'ok') byMethod[r.method] = (byMethod[r.method] ?? 0) + 1;
   console.log(`Result: ${okCount} ok, ${failures.length} failed, ${errors.length} fetch errors (cells untouched), ${skipped} skipped, ${structural.length} structural problems, ${missing.length} missing. Match methods: ${JSON.stringify(byMethod)}`);
 
-  saveJson(path.join(DATA_DIR, 'check-report.json'), {
+  const report = {
     run_at: new Date().toISOString(),
     ok: okCount,
     failed: failures.length,
@@ -195,12 +268,17 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     skipped,
     structural,
     missing,
+    demoted: 0,
+    pending: [] as PendingQuote[],
     cells: reports,
-  });
+  };
 
   if (opts.fix) {
     const today = todayIso();
-    const { cells, demoted } = applyFix(matrix.cells, reports, missing, today);
+    const { cells, demoted, pending } = applyFix(matrix.cells, reports, missing, today);
+    report.demoted = demoted;
+    report.pending = pending;
+    for (const p of pending) console.log(`  PENDING ${p.app}/${p.question} quote missing since ${p.since}; kept, demoted if still missing after ${GRACE_DAYS} days`);
     const sorted = sortCells(cells, apps, qs.questions);
     const runAt = new Date().toISOString();
     const checked = opts.app ? sorted.filter((c) => c.app === opts.app) : sorted;
@@ -218,9 +296,10 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     };
     saveJson(path.join(DATA_DIR, 'matrix.json'), { version: 1, generated_at: runAt, cells: sorted });
     saveJson(path.join(DATA_DIR, 'changes.json'), changes);
-    writeFileSync(path.join(DATA_DIR, 'changes.md'), renderChangesMarkdown(changes, apps, qs.questions, errors.map((e) => `${e.app}/${e.question}: ${e.problems.join('; ')}`)), 'utf8');
-    console.log(`Wrote data/matrix.json (${demoted} cells demoted to unknown, ${missing.length} missing cells added), data/changes.json, data/changes.md`);
+    writeFileSync(path.join(DATA_DIR, 'changes.md'), renderChangesMarkdown(changes, apps, qs.questions, groupFetchErrors(errors, apps), pending), 'utf8');
+    console.log(`Wrote data/matrix.json (${demoted} cells demoted to unknown, ${pending.length} quotes pending, ${missing.length} missing cells added), data/changes.json, data/changes.md`);
   }
+  saveJson(path.join(DATA_DIR, 'check-report.json'), report);
 
   const bad = failures.length + structural.length + (opts.fix ? 0 : missing.length);
   return bad > 0 && !opts.soft ? 1 : 0;

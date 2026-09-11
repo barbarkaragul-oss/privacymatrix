@@ -1,0 +1,43 @@
+name: Debug fetch
+
+# Manual only. Runs the quote check for one app (or all) from a GitHub runner and uploads the text
+# of every fetched page as an artifact, so a maintainer can see what the runner actually received
+# when a quote fails here but passes on a laptop (regional policy variants, bot interstitials,
+# hosts that block cloud IP ranges). Changes nothing in the repository.
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App id to fetch (blank = all apps)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      APP_INPUT: ${{ github.event.inputs.app || '' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Fetch and dump every evidence page
+        run: |
+          if [ -n "$APP_INPUT" ]; then
+            npm run check -- --soft --app "$APP_INPUT" --dump .debug-dump
+          else
+            npm run check -- --soft --dump .debug-dump
+          fi
+          cp data/check-report.json .debug-dump/check-report.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fetched-pages${{ env.APP_INPUT && format('-{0}', env.APP_INPUT) || '' }}
+          path: .debug-dump
+          retention-days: 7

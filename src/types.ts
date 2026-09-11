@@ -65,6 +65,8 @@ export const CellSchema = z.object({
   confidence: ConfidenceSchema,
   verified: z.boolean(),
   verified_at: z.string(),
+  /** Set by the weekly check when the quote was not found at its URL; the cell is demoted only if it is still missing a week later. */
+  quote_missing_since: z.string().optional(),
 });
 export type Cell = z.infer<typeof CellSchema>;
 

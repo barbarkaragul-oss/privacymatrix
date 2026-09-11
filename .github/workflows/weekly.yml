@@ -1,7 +1,8 @@
 name: Weekly verification
 
-# Free mode (default): re-fetch every source page and re-check every quote. Quotes that vanished
-# demote their cell to "unknown"; a pull request and an issue are opened for a human.
+# Free mode (default): re-fetch every source page and re-check every quote. A quote that is not
+# found is reported in an issue and its cell is kept; if it is still missing a week later the cell
+# is demoted to "unknown" and a pull request is opened for a human.
 # Claude mode: only when the ANTHROPIC_API_KEY secret is set (or mode=claude is chosen), every
 # cell is re-derived from the documentation with the Claude API, then verified the same way.
 #
@@ -96,11 +97,14 @@ jobs:
             const fs = require('fs');
             const c = require('./data/changes.json');
             let summary = c.changes.length + ' value changes';
+            let pending = 0;
             if (fs.existsSync('./data/check-report.json')) {
               const r = require('./data/check-report.json');
-              summary += ', ' + r.ok + ' quotes present, ' + r.errors + ' pages unreachable';
+              pending = (r.pending || []).length;
+              summary += ', ' + r.ok + ' quotes present, ' + pending + ' quotes newly missing, ' + r.errors + ' cells on unreachable pages';
             }
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'summary=' + summary + '\n');
+            const title = 'Policy text changed: ' + c.changes.length + ' cell(s) demoted, ' + pending + ' quote(s) newly missing';
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'pending=' + pending + '\n' + 'summary=' + summary + '\n' + 'issue_title=' + title + '\n');
             console.log(summary);
           "
 
@@ -141,7 +145,7 @@ jobs:
 
       - name: Find the open recheck issue, if any (free mode)
         id: issue
-        if: steps.changes.outputs.count != '0' && steps.mode.outputs.mode == 'free'
+        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0') && steps.mode.outputs.mode == 'free'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -150,10 +154,10 @@ jobs:
           echo "Existing issue: ${NUMBER:-none}"
 
       - name: Open or update the issue for cells that need a human (free mode)
-        if: steps.changes.outputs.count != '0' && steps.mode.outputs.mode == 'free'
+        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0') && steps.mode.outputs.mode == 'free'
         uses: peter-evans/create-issue-from-file@v6
         with:
           issue-number: ${{ steps.issue.outputs.number }}
-          title: 'Policy text changed: ${{ steps.changes.outputs.count }} cell(s) need a fresh quote'
+          title: ${{ steps.changes.outputs.issue_title }}
           content-filepath: data/changes.md
           labels: needs-recheck, good first issue

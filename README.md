@@ -23,7 +23,7 @@ Privacy policies are long, change quietly, and are almost never compared side by
 
 - **Every cell is a quote.** Each cell stores the sentence from the vendor's privacy policy, terms or help center that justifies it, the URL of that page, and the date the sentence was last found there. On the [interactive site](https://barbarkaragul-oss.github.io/privacymatrix/) click any cell to read it; in the tables below hover a cell for the quote and click to open the source.
 - **Every question is phrased so that "yes" is better for your privacy.** "Chats excluded from training by default: yes" means the policy says your conversations are not used for training unless you opt in. The count of yes answers in the column header is a rough privacy score; the cells are the real answer.
-- **Quotes are re-checked every week, for free.** A GitHub Action re-fetches every source page and searches for every quote. A quote that has disappeared demotes its cell to *unknown* and opens an issue, so a policy that was rewritten cannot leave a stale "yes" standing. Matching tolerates formatting differences (whitespace, capitalisation, punctuation, smart quotes), not wording differences.
+- **Quotes are re-checked every week, for free.** A GitHub Action re-fetches every source page and searches for every quote. A quote that is not found opens an issue at once; if it is still missing a week later its cell is demoted to *unknown*, so a policy that was rewritten cannot leave a stale "yes" standing. Matching tolerates formatting differences (whitespace, capitalisation, punctuation, smart quotes), not wording differences.
 - **Silence is never read as an answer.** If the documents do not address a question the cell is *unknown*, not *no*. Vendors are not accused of practices their documents do not describe.
 
 > **This is not legal advice.** The matrix summarises what vendors publish, as of the verification date shown above, for the consumer plan with default settings. Policies change, regional versions differ, and a quote can be read in more than one way. Read the source before relying on a cell, and [report anything that looks wrong](https://github.com/barbarkaragul-oss/privacymatrix/issues/new?template=wrong-cell.yml).
@@ -97,7 +97,9 @@ Two loops, one free and one that costs API credits.
    1. fetch every evidence URL in data/matrix.json (policy pages as text)
    2. search each page for the cell's quote, tolerating formatting but not wording
    3. quote found      → verified_at = today
-      quote missing    → value = "unknown"; the old quote, URL and value are kept in the notes
+      quote missing    → first time: cell kept and flagged, listed in an issue for a human
+                         still missing a week later: value = "unknown"; the old quote, URL and
+                         value are kept in the notes
       page unreachable → cell untouched, reported
    4. no value changed → the refreshed dates are committed
       values changed   → a pull request and an issue list the affected cells for a human
@@ -125,7 +127,7 @@ Design choices worth knowing:
 - **Legal text is read literally.** "May", "some", "in certain cases" and lists of exceptions turn a yes into a partial. A wrong "yes" (claiming a protection that does not exist) is the worst outcome; a wrong "no" (attributing a practice the vendor does not have) is the second worst.
 - **Mechanical verification is the safety net.** `npm run check` needs no API key and works on hand-written data too, which is how contributions are validated in CI.
 - **Humans merge.** Automation only opens pull requests. Maintainers review each changed row against its source before it lands.
-- **Fetchability is a real constraint.** Some vendors publish their policy only through JavaScript or behind bot protection. Cells for such apps stay *unknown* until a plain-text version (a help-center article, a PDF, a regional copy) is found; the notes say where the policy lives.
+- **Fetchability is a real constraint.** Some vendors publish their policy only through JavaScript or behind bot protection. Cells for such apps stay *unknown* until a plain-text version (a help-center article, a regional copy) is found; the notes say where the policy lives. A few hosts (OpenAI, Perplexity, xAI at the time of writing) refuse requests from cloud IP ranges, so the weekly Action cannot re-check those cells at all; each run lists them as unreachable, and maintainers re-verify them by running `npm run check` from an ordinary connection. Other hosts serve a different page to cloud IPs than to a browser, which is why a quote has to be missing on two runs a week apart before its cell is demoted.
 
 ## Run it locally
 
