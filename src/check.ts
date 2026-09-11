@@ -11,6 +11,8 @@
  *   npm run check -- --app id     limit to one app
  *   npm run check -- --dump dir   also write the text of every fetched page into dir (debugging
  *                                 what a runner in another network actually receives)
+ *   npm run check -- --url u      with --dump: also fetch and dump this URL (repeatable), to test
+ *                                 candidate source pages from that network before citing them
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
  * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
@@ -73,21 +75,25 @@ export interface CheckOptions {
   fix: boolean;
   app: string | null;
   dump: string | null;
+  /** Extra URLs to fetch and dump alongside the evidence pages (candidates for new sources); they never affect cells. */
+  extraUrls: string[];
 }
 
 function parseArgs(argv: string[]): CheckOptions {
-  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null };
+  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--soft') out.soft = true;
     else if (a === '--fix') out.fix = true;
     else if (a === '--app') out.app = argv[++i] ?? null;
     else if (a === '--dump') out.dump = argv[++i] ?? null;
+    else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
     else if (a === '--help' || a === '-h') {
-      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>]');
+      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]...');
       process.exit(0);
     }
   }
+  out.extraUrls = out.extraUrls.filter(Boolean);
   return out;
 }
 
@@ -246,6 +252,16 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       }
     }),
   );
+
+  if (opts.dump && opts.extraUrls.length) {
+    await Promise.all(
+      opts.extraUrls.map(async (url) => {
+        const res = await fetcher.get(url);
+        dumpPage(opts.dump as string, url, res);
+        console.log(`  DUMPED ${url} (status ${res.status}, ${res.text.length} chars${res.error ? `, ${res.error}` : ''})`);
+      }),
+    );
+  }
 
   const reports = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url)));
   const failures = reports.filter((r) => r.status === 'fail');

@@ -11,6 +11,10 @@ on:
         description: 'App id to fetch (blank = all apps)'
         required: false
         default: ''
+      urls:
+        description: 'Extra URLs to fetch and dump, separated by spaces (candidate source pages)'
+        required: false
+        default: ''
 
 permissions:
   contents: read
@@ -21,6 +25,7 @@ jobs:
     timeout-minutes: 30
     env:
       APP_INPUT: ${{ github.event.inputs.app || '' }}
+      URLS_INPUT: ${{ github.event.inputs.urls || '' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -30,11 +35,10 @@ jobs:
       - run: npm ci
       - name: Fetch and dump every evidence page
         run: |
-          if [ -n "$APP_INPUT" ]; then
-            npm run check -- --soft --app "$APP_INPUT" --dump debug-dump
-          else
-            npm run check -- --soft --dump debug-dump
-          fi
+          ARGS=(--soft --dump debug-dump)
+          if [ -n "$APP_INPUT" ]; then ARGS+=(--app "$APP_INPUT"); fi
+          for u in $URLS_INPUT; do ARGS+=(--url "$u"); done
+          npm run check -- "${ARGS[@]}"
           cp data/check-report.json debug-dump/check-report.json
       - uses: actions/upload-artifact@v7
         with:
