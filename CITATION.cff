@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this matrix, please cite the repository and the verification date shown in the README."
+title: "PrivacyMatrix: a cited comparison of how AI assistant apps handle user data"
+type: dataset
+authors:
+  - name: "PrivacyMatrix contributors"
+repository-code: "https://github.com/barbarkaragul-oss/privacymatrix"
+url: "https://barbarkaragul-oss.github.io/privacymatrix/"
+license: MIT
+date-released: "2026-09-11"
