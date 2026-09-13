@@ -42,6 +42,9 @@
   .actions { display: flex; gap: 8px; align-items: center; }
   button, .btn { font: inherit; font-size: 13px; color: var(--text); background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; text-decoration: none; }
   button:hover, .btn:hover { border-color: var(--border-2); }
+  /* The one call to action: a plain link, no third-party button, no tracking iframe. */
+  .btn.star { border-color: var(--accent); color: var(--accent); }
+  .btn.star:hover { background: var(--accent); color: var(--bg-1); border-color: var(--accent); }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0; }
   .controls input[type="search"] { font: inherit; font-size: 14px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); min-width: 240px; }
   .chip { font-size: 13px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-1); color: var(--text-2); cursor: pointer; }
@@ -97,6 +100,7 @@
       <div class="stats" id="stats"></div>
     </div>
     <div class="actions">
+      <a class="btn star" id="star-link" href="#" rel="noopener"><span aria-hidden="true">★</span> Star on GitHub</a>
       <a class="btn" id="repo-link" href="#" rel="noopener">GitHub</a>
       <a class="btn" href="matrix.json">JSON</a>
       <button id="theme" type="button" aria-label="Toggle color theme">Theme</button>
@@ -151,6 +155,8 @@ window.PRIVACYMATRIX = {"generated_at":"2026-09-11T08:29:07.389Z","apps":[{"id":
   const metaRepo = (document.querySelector('meta[name="repo"]') || {}).content || '';
   const metaUsable = /^https:\/\/github\.com\/[^/]+\/[^/]+/.test(metaRepo) && !/\/OWNER\//.test(metaRepo);
   repoLink.href = metaUsable ? metaRepo : 'https://github.com/' + (location.hostname.split('.')[0] || '') + '/' + (location.pathname.split('/')[1] || 'privacymatrix');
+  const starLink = document.getElementById('star-link');
+  if (starLink) starLink.href = repoLink.href;
 
   function esc(s) { return String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); }
   function isHttp(u) { return typeof u === 'string' && /^https?:\/\/\S+$/.test(u); }
