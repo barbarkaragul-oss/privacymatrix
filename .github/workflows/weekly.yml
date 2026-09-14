@@ -10,7 +10,11 @@ name: Weekly verification
 # "Read and write" with "Allow GitHub Actions to create and approve pull requests" enabled.
 on:
   schedule:
-    - cron: '0 6 * * 1'   # Mondays 06:00 UTC
+    # GitHub queues scheduled workflows and drops them to the back of the line at busy times;
+    # the top of the hour is the worst, and '0 6 * * 1' is one of the most common crons there is.
+    # On 2026-09-14 all four of these repos missed their slot by more than three hours, so the
+    # times were moved to odd minutes, spread apart so they do not queue behind each other either.
+    - cron: '7 8 * * 1'   # Mondays 08:07 UTC
   workflow_dispatch:
     inputs:
       mode:
