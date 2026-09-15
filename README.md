@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://barbarkaragul-oss.github.io/privacymatrix/"><img src="docs/screenshot.png" alt="The interactive matrix: 28 AI assistant apps by 14 privacy questions, every cell colour-coded yes, partial, no or unknown, and clickable to its source quote" width="900"></a>
+  <a href="https://barbarkaragul-oss.github.io/privacymatrix/"><img src="docs/demo.gif" alt="The interactive matrix, 28 AI assistant apps by 14 privacy questions: typing train filters it to the training questions; clicking the ChatGPT / training opt-out cell opens the verdict, OpenAI's own sentence, the source URL and the date it was last found there; then ChatGPT / temporary chat" width="900"></a>
 </p>
 
 <!-- stats:start -->
