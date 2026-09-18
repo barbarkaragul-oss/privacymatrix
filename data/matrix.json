@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-11T08:29:07.389Z",
+  "generated_at": "2026-09-18T12:00:38.702Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -165,7 +165,7 @@
       "notes": "For Claude Free, Pro and Max the 'Help improve our AI models' setting under Settings > Privacy is an opt-out: the Privacy Policy and Consumer Terms say Inputs and Outputs may be used to train 'unless you opt out', and the Privacy Center settings article says that if you 'turn off the model training setting' new chats stop being used, so training is on unless the user acts. The consumer Privacy Center article phrases it as chats 'you choose to allow us to use' and no document states the default in so many words, so confidence stays medium; conversations flagged by safety classifiers and thumbs up/down feedback may be used even when opted out. Team, Enterprise and API are excluded by default.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -176,7 +176,7 @@
       "notes": "Self-service toggle at Settings > Privacy > 'Help improve our AI models' on web and mobile; the Privacy Center retention article states that after turning it off Anthropic 'will not use your previous or new chats or coding sessions for future model training', and chat history is unaffected. Caveats: data already in training runs in progress or in trained models is not removed, and safety-flagged or explicitly reported (feedback) conversations may still be used.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -187,7 +187,7 @@
       "notes": "Uploaded files are 'Inputs' and follow the same rule as chats: used for model improvement unless the single Privacy setting is turned off, so exclusion depends on a setting that is on by default; the Privacy Center says training data includes 'the entire related conversation, along with any content' but excludes raw content pulled from connectors and MCP servers unless copied into the chat.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -198,7 +198,7 @@
       "notes": "Applies to Claude for Work (Team, Enterprise), the Anthropic API and Claude Gov; the Commercial Terms add 'Anthropic may not train models on Customer Content from Services.' Exceptions are explicit feedback (thumbs up/down, which owners can disable) or an opt-in such as the Development Partner Program.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -209,7 +209,7 @@
       "notes": "Incognito chats (ghost icon, available on Free, Pro, Max, Team and Enterprise) are not saved to history or memory and the article states 'Incognito chats are not used for training' even if model improvement is enabled; default retention is 30 days. On Team/Enterprise they are included in owner data exports and the Compliance API and may be retained longer under custom retention; incognito is not available inside Projects.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -220,7 +220,7 @@
       "notes": "Memory is on by default for Free, Pro and Max; Settings > Memory lists everything remembered under Topics where each entry can be read, edited or deleted, and the toggle offers 'Pause memory' (stop using and creating memories) or 'Reset memory' (delete all). A separate 'Search and reference chats' toggle (paid plans) can also be turned off; sensitive topics are excluded from memory unless opted in.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -231,7 +231,7 @@
       "notes": "Conversations can be deleted individually (chat title menu > Delete) or in bulk from Recents; account deletion is at Settings > Account > Delete Account. Pro/Max subscribers must cancel and wait for the subscription period to end first, some accounts are told in-product to contact support, and accounts created via third parties (e.g. Poe, Slack) must delete through that provider.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -242,7 +242,7 @@
       "notes": "Settings > Privacy > Export data on web or Claude Desktop emails a download link valid 24 hours (not available from the iOS/Android apps); memory entries are included. On Team/Enterprise only the organization's Primary Owner can export.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -253,7 +253,7 @@
       "notes": "The 30-day back-end deletion commitment is stated for deleted conversations; no period is stated for account deletion beyond 'as long as reasonably necessary'. Exceptions include legal requirements, dispute resolution and Usage Policy enforcement (flagged inputs/outputs kept up to 2 years, classifier scores up to 7 years), and chats already used for training remain in in-progress runs and trained models, with training-enabled data kept de-identified for up to 5 years.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -264,7 +264,7 @@
       "notes": "Claude shows no ads. The Privacy Center states that chat data allowed for training is used solely to improve Claude and not to sell or market anything to users or build profiles, and the Privacy Policy's legal-bases table lists only identity, contact, communication, technical and study data (not Inputs and Outputs) for service updates, tailored recommendations and direct marketing. Cookies and advertising identifiers are used to market Anthropic's own services with an opt-out honouring Global Privacy Control, but that is technical data rather than conversation content; confidence stays medium because the explicit statement sits in the model-training article rather than a general advertising clause.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -275,7 +275,7 @@
       "notes": "No sale of personal data, but the policy acknowledges 'sharing' (cookie/identifier data with advertising partners) for targeted advertising of Anthropic's own products, with an opt-out via the cookie controls and Global Privacy Control; disclosure to affiliates and service providers is for stated business purposes, not third-party marketing.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -286,7 +286,7 @@
       "notes": "The two stated exceptions are conversations the user submits as feedback and review needed to enforce the Usage Policy, where only designated Trust & Safety staff have need-to-know access under strict controls. Aggregate usage analysis (Clio) is described as giving employees no access to raw conversations, while safety-focused Clio runs can be linked to accounts and are restricted to a small number of authorized staff.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -297,7 +297,7 @@
       "notes": "Coarse location is inferred from IP address for security/anti-abuse (cannot be disabled) and optionally for features like web search (toggle in the privacy dashboard); precise device location is collected only 'consistent with your device or browser permissions' on consent basis, managed at the device level for the mobile app and browser extension per the Privacy Center location article.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "claude",
@@ -308,7 +308,7 @@
       "notes": "The Privacy Policy designates privacy@anthropic.com for exercising access, portability, deletion, correction, objection and restriction rights and for appeals of denied requests, with a Data Protection Officer at dpo@anthropic.com, and offers it to all users while noting that the specific rights depend on local law, which does not demote under the revised rubric. In-product Privacy Settings also provide export, the model-training opt-out and chat/account deletion without a request; no web form or portal is documented.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -319,7 +319,7 @@
       "notes": "The Keep Activity setting is on by default for users 18 or over (help article 13278892: 'If you're 18 or over, Keep Activity is on by default.'), and while it is on chats and shared files are used to improve services including training generative AI models. Only audio and Gemini Live video/screenshare recordings are excluded from improvement by default; work/school accounts are covered by separate Workspace terms.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -330,7 +330,7 @@
       "notes": "Self-service: turn off Keep Activity in Gemini Apps Activity. Qualified because it applies only to future chats, is voided if you submit feedback, disables chat history and most Connected Apps (e.g. Google Workspace) as a side effect, and does not stop processing to create anonymized data or safety/abuse review; already-reviewed chats are kept up to 3 years.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -341,7 +341,7 @@
       "notes": "Uploaded files, photos, videos and screens are treated like chats: saved to Gemini Apps Activity and used to improve services (including model training) while Keep Activity is on, which is the default. Exclusion depends on turning Keep Activity off (same opt-out as chats); audio and Gemini Live video/screenshares are excluded by default under a separate off-by-default setting.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -352,7 +352,7 @@
       "notes": "Google Workspace (business, education, public sector) and Paid Gemini API services are excluded from training by default; however, Unpaid Gemini API and Google AI Studio use submitted content 'to provide, improve, and develop' Google products and may be human-reviewed (Gemini API Additional Terms), except in the EEA, Switzerland and UK where paid-service terms apply to all API use.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -363,7 +363,7 @@
       "notes": "Temporary chat is available in the Gemini web and mobile apps for personal accounts (not Gemini in Chrome, Gemini in Google Messages, or work/school accounts); such chats do not appear in recent chats or Gemini Apps Activity, are not used for personalization or training, and are retained with the account for 72 hours to respond and for safety/abuse protection (which can include human review).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -374,7 +374,7 @@
       "notes": "The Memory feature (personalization from past chats, 18+ personal accounts, requires Keep Activity on) can be turned off via the Personal Intelligence setting, but there is no documented list of stored memory items to inspect or delete individually; to remove something Gemini remembered you must delete all chats containing that information from Gemini Apps Activity (there 'might be a short delay'). Separate 'Instructions/Saved info' can be managed and deleted individually.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -385,7 +385,7 @@
       "notes": "Individual chats can be deleted in Gemini Apps Activity (per activity item, per day, custom range or all) and from Recent chats, and the Google Privacy Policy in the sources states 'You can edit or delete your account at any time through your Google Account settings', so both conversation and account deletion are self-service for personal accounts. Caveats: chats already reviewed by human reviewers are disconnected from the account and kept up to 3 years regardless of deletion, and work/school accounts are controlled by the Workspace administrator.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -396,7 +396,7 @@
       "notes": "Self-service export via Google Takeout ('Download your data'); the Gemini Apps Privacy Notice also states 'You can also export your information.' Gemini Apps Activity is exported as part of the account's My Activity data.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -407,7 +407,7 @@
       "notes": "Removal from view is immediate, but complete deletion from storage 'generally takes around 2 months' and encrypted backups can hold data up to 6 months; the Gemini Privacy Hub adds that human-reviewed chats are not deleted with your activity and are kept up to 3 years, and some data is kept for business/legal purposes. Default auto-delete of Gemini Apps Activity is 18 months (3/36 months or never selectable).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -418,7 +418,7 @@
       "notes": "Explicit statement in the Gemini Apps Privacy Hub FAQ; note the forward-looking caveat ('If this changes'). Other Google settings (Web & App Activity etc.) continue to govern ad personalization elsewhere in Google services.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -429,7 +429,7 @@
       "notes": "No-sale statement is explicit, and the Google Privacy Policy says Google does not share information that personally identifies you with advertisers unless you ask; however the same policy allows 'specific partners to collect information from your browser or device for advertising and measurement purposes using their own cookies' and shares non-personally identifiable information with partners, so third-party advertising data flows exist without a documented opt-out in these documents.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -440,7 +440,7 @@
       "notes": "Human review is disclosed but covers quality/model-improvement purposes as well as safety and Terms enforcement; reviewed chats are disconnected from the account and retained up to 3 years. Turning Keep Activity off or using temporary chats stops review for improvement, but chats may still be reviewed to protect Google, users and the public.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -451,7 +451,7 @@
       "notes": "By default Gemini uses only the general area from IP address or Home/Work addresses; precise device location requires the device/browser permission and is not stored in Gemini Apps Activity (stored location is coarsened to a >3 km² area). Caveat: Gemini may still receive precise location from another Google service such as Google Maps or Android Auto to fulfil a request even if the Gemini/Google app precise-location setting is off.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "gemini",
@@ -462,7 +462,7 @@
       "notes": "In-product controls for access/portability (Takeout) and deletion (My Activity, Gemini Apps Activity, account deletion) are available to all signed-in users regardless of region; objection/correction requests are additionally documented for GDPR/UK users via a Help Center request form and the in-app 'Report legal issue' option.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -473,7 +473,7 @@
       "notes": "Scored on the updated Copilot app (released August 18, 2026 for web, desktop and mobile, personal Microsoft account), whose activity-history article says prompts, responses and file contents are not used to train foundation models. That statement is scoped to foundation models, and the September 2026 Privacy Statement still says Copilot uses prompts 'to provide and improve services' and conversation data 'to provide and improve Microsoft Copilot' without saying whether that includes other models, which is the revised rubric's licence-to-improve-services partial branch (confidence low). The still-published Privacy FAQ, now labelled as applying only to the older app, describes default-on training of conversation activity and uploads with a self-service opt-out; unauthenticated users, under-18s and users in Brazil, China, Israel, Nigeria, South Korea and Vietnam were never trained on.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -484,7 +484,7 @@
       "notes": "For the updated app the documents describe no training toggle because prompts, responses and files are stated not to be used to train foundation models, but that statement does not cover the Privacy Statement's 'provide and improve services' use, so it does not establish that no opt-out is needed. The older app, still documented in the Privacy FAQ that Microsoft now labels as applying only to that version, has a self-service toggle under profile > Account > Privacy ('Training on conversation activity' / 'Training on voice conversations') covering future conversations, which the revised rubric would count as yes on its own. Partial because the current-version documents neither confirm a complete training exclusion nor document a control, and the documented toggle belongs to a version the vendor says the FAQ no longer describes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -495,7 +495,7 @@
       "notes": "File contents are explicitly named alongside prompts and responses as not used to train foundation models in the updated app, but the statement carries the same qualifications as the chat cell (foundation models only; the Privacy Statement's licence to use prompts and related data 'to provide and improve services'), so uploads cannot be graded more protectively than chats. The older app's Privacy FAQ says an uploaded file 'will be treated just like any other conversation, subject to your choices about whether to permit model training', i.e. trained on by default with the same opt-out, which is the revised rubric's partial branch; Copilot Vision captures are stated not to be used for training or stored after the session.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -506,7 +506,7 @@
       "notes": "Commercial Microsoft 365 Copilot and Copilot Chat with a work/school (Entra ID) account are covered by Enterprise Data Protection; the enterprise-data-protection page repeats that prompts, responses and Graph data 'aren't used to train foundation models' and web queries are sent with identifiers removed. Statement is scoped to foundation LLMs; optional customer feedback may be used to improve the product.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -528,7 +528,7 @@
       "notes": "The same article documents Settings > Personalization > Manage next to 'Saved memories' to view the memory list, a Delete icon per memory, a 'Delete all memories' button, and a 'Saved memories' toggle to turn memory off (turning it off does not automatically delete existing memories). Personalization is on by default where available and unavailable in Brazil, China, Israel, Nigeria, South Korea and Vietnam.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -539,7 +539,7 @@
       "notes": "Individual chats are deleted in-product (Chats list > More > Delete per the current privacy-controls article) and all history via the Microsoft privacy dashboard; the Microsoft account itself can be closed self-service at account.microsoft.com ('Mark account for closure' with a 30- or 60-day reopen window).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -550,7 +550,7 @@
       "notes": "Self-service 'Export all activity history' (CSV) for Copilot apps and for Copilot in Microsoft 365 apps under Privacy > Copilot on the Microsoft privacy dashboard (account.microsoft.com/privacy); the Privacy Statement also states you can view, access, export and delete Copilot activity history there.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -561,7 +561,7 @@
       "notes": "A fixed period is stated only for account closure (30- or 60-day reopen window chosen by the user, after which Microsoft deletes 'your data and your content' per the close-account help page); no purge period is stated for individually deleted Copilot chats. The older FAQ says conversation activity is stored 18 months by default and uploaded files no longer than 18 months; the Privacy Statement's general retention section gives no fixed timelines.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -572,7 +572,7 @@
       "notes": "Copilot shows ads to users without a Microsoft 365 subscription; generic ads are selected from the most recent content of the current conversation, and personalized ads 'might use your chat history, saved memories' unless the 'Allow ads personalization' toggle (or the dashboard-wide personalized-ads setting) is turned off. The opt-out covers personalization only, not contextual ads based on the current conversation; no personalized ads for users under 18.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -583,7 +583,7 @@
       "notes": "The Privacy Statement contains no general 'we do not sell personal data' statement (only for student data); it discloses sharing data with third parties for personalized ads, with an opt-out via the 'Share my data with third parties for personalized ads' setting / third-party ad settings page and honouring the Global Privacy Control signal in certain jurisdictions. Vendors acting on Microsoft's behalf may not use data for other purposes.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -594,7 +594,7 @@
       "notes": "Human review is disclosed for product improvement and safety, plus Code of Conduct investigations, with no opt-out ('an opt-out of human review is not available'); 'Trained AI experts may review Copilot conversations to build, evaluate, and improve' the models. This FAQ is labelled as applying to the older app; the new-version articles only mention review of user-submitted feedback, and the Privacy Statement notes manual review of some results to train and improve automated systems.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -605,7 +605,7 @@
       "notes": "The Microsoft Privacy Statement says Copilot uses the user's prompts, location, language and related settings, that location settings can be adjusted in the product, and defines location data as either precise (GPS, cell tower, Wi-Fi) or imprecise (IP address, profile city). No Copilot-specific document says whether the assistant collects precise location, so the cell is partial on the umbrella policy's setting-gated precise-location language, the same treatment applied to Kimi; confidence low.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "copilot",
@@ -616,7 +616,7 @@
       "notes": "Rights listed (access, erasure, correction, portability, objection, consent withdrawal) apply regardless of location; channels are the Microsoft privacy dashboard (account.microsoft.com/privacy, where Copilot activity can be viewed, exported and deleted), in-product controls, and the 'privacy support and requests' page (microsoft.com/concern/privacy) for anything not covered by the tools, with a 30-day response commitment; US residents also get a toll-free number.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "perplexity",
@@ -935,7 +935,7 @@
       "notes": "Interactions with Meta AI are used to develop and improve AI at Meta by default; the only exclusion is an objection request. The GenAI page lists 'your interactions with features that are part of AI at Meta' as a training source; private messages with friends and family are excluded unless shared with the AI.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -946,7 +946,7 @@
       "notes": "There is no in-product toggle. The Privacy Policy says information shared with AI at Meta features is used to improve AI at Meta unless the user has objected, and the objection is a request form whose availability depends on the region: the EU and UK version of the GenAI page documents an objection form (submitted while logged in, covering the account and its Accounts Centre accounts, and not covering a training run that has already started), while the US version documents a request form only for personal information Meta obtained from third parties. A form-based, region-dependent objection is partial under the rubric.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -957,7 +957,7 @@
       "notes": "Uploaded documents, images and recordings are 'Prompts', which the Terms say form part of the 'interactions' the Privacy Policy uses to improve AI at Meta; they are not excluded by default and are covered only by the same objection request as conversations.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -968,7 +968,7 @@
       "notes": "The GenAI privacy page lists information from products and services built by external developers on Meta's API models as a training source and states no exclusion, which the rubric scores as no. The sentence ends differently by region (\"contributor tier models provided through APIs\" in the US version, \"free models provided through APIs\" elsewhere), so the quote stops where the variants agree. The wording frames these as third parties that provide content, so it may describe developers who choose to contribute data; Meta's separate Llama API and Business AI terms are JavaScript-rendered and could not be checked, hence medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -990,7 +990,7 @@
       "notes": "The AI Terms state that AIs 'will sometimes retain and use' shared information; the only fetchable control is the /reset-ai command that clears information shared in a chat. Meta help articles describing per-memory viewing/deletion in the Meta AI app (meta.com/help/artificial-intelligence) are JS-rendered and could not be verified.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1001,7 +1001,7 @@
       "notes": "AI chat content can be deleted in-product (/reset-ai; delete tools) and the Privacy Policy offers a self-service 'Delete your information or account' tool. Caveat from the AI Terms: deleting messages, threads or the account 'may not delete our copy of your personal information'; the Privacy Center describes the correct deletion path.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1012,7 +1012,7 @@
       "notes": "The Privacy Policy lists self-service Download your information and Port your information tools for all users, alongside Access your information and Delete your information or account. The fetchable documents do not explicitly confirm that Meta AI conversations are included in the download.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1023,7 +1023,7 @@
       "notes": "Fixed period is up to 90 days plus up to another 90 days for backups (longer than 30 days); retention exceptions include legal obligations, preventing harm and investigating terms violations. The AI Terms add that deleting messages or the account may not delete Meta's copy of AI-related personal information.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1034,7 +1034,7 @@
       "notes": "The Privacy Policy lists 'Interactions with our features that are part of AI at Meta' among the information used to decide which ads to show; the EU AI Terms variant omits the ads wording, so regional practice may differ.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1045,7 +1045,7 @@
       "notes": "Meta states it never sells information, but it shares information with advertisers, Audience Network publishers and 'select partners' such as search engines for AI responses, and runs an ad ecosystem with opt-outs via Ad preferences; the statement is not a no-sharing-for-marketing commitment.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1056,7 +1056,7 @@
       "notes": "Human review is disclosed but for broad purposes: the Terms list providing/improving services, research, and compliance monitoring (also via third-party vendors); the newsroom post says people review interactions to improve model performance. Chats using Private Processing are stated to be unreadable by Meta.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1067,7 +1067,7 @@
       "notes": "GPS-level location is collected only when the device Location Services permission is granted, but it is then used for general personalisation including ads and Meta AI answers rather than one specific feature; IP-based general location is used regardless, and IP may be used to estimate specific location for safety.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "meta-ai",
@@ -1078,7 +1078,7 @@
       "notes": "In-product tools (Access, Download, Port and Delete your information) are documented for all users, plus an online contact form and a postal address (Meta Platforms, Inc., Privacy Operations, Menlo Park). The AI-training objection form is separate and region-dependent. The quoted sentence is from the US-English variant of the policy; other regions serve the same sentence with British spelling (\"Help Centres\").",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1089,7 +1089,7 @@
       "notes": "Terms 4.3: Inputs and Outputs are used (after stated de-identification) to improve the service unless the user turns off the 'Improve the model for everyone' setting; the Privacy Policy likewise lists 'to train and improve our technology, such as our machine learning models' as a default purpose for User Input.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1100,7 +1100,7 @@
       "notes": "Self-service setting named 'Improve the model for everyone'; the Privacy Policy also lists 'the right to opt-out of using your Personal Data for training our models'. Documents do not say whether data already collected before opting out is removed from training sets.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1111,7 +1111,7 @@
       "notes": "Uploaded files and photos are defined as 'Prompts' or 'Inputs', and Terms 4.3 says Inputs and Outputs may be used, after stated de-identification, to develop or improve the Services unless the user turns off 'Improve the model for everyone'. Uploads are therefore trained on by default and covered by the same self-service opt-out as conversations, which is the rubric's partial branch. The documents do not say whether data collected before opting out is removed, and no plan or regional differences are described.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1155,7 +1155,7 @@
       "notes": "Deleting chat history via settings is documented as self-service. Account deletion is referenced ('If you choose to delete your account, you will not be able to reactivate'; Terms 2.5 'delete your account') but neither document states whether it is done in-product or by request to privacy@deepseek.com.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1166,7 +1166,7 @@
       "notes": "Self-service copy of chat history in settings; a portable copy of other account Personal Data is available on request by emailing privacy@deepseek.com (rights 'depending on where you live').",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1188,7 +1188,7 @@
       "notes": "The service shows no targeted advertising and the policy states no targeted advertising or profiling is performed, so conversation content is not used for ad personalisation; DeepSeek may still send its own 'commercial messages' to users.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1199,7 +1199,7 @@
       "notes": "Sharing is limited to service providers acting on instructions, the corporate group (including for 'foundation model training and optimization'), corporate transactions, legal requests and user-consented sharing; search keywords are shared with third-party search APIs to answer queries. No sharing for third-party marketing is described.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1210,7 +1210,7 @@
       "notes": "Manual annotation of training data that may be based on (de-identified) user input is disclosed for model improvement, a broader purpose than safety/legal; Terms 3.3 also reserves the right to review user behaviour by 'technical means'. The Privacy Policy itself does not state whether staff read conversations.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1221,7 +1221,7 @@
       "notes": "Only approximate location derived from the IP address is collected automatically, for security and to answer location-related questions, and precise geolocation is listed among sensitive data the service is not designed to process. The policy nevertheless reserves collecting precise geolocation 'with your explicit consent', which is a consent gate rather than a statement that it is never collected; the rubric's YES branch requires no precise collection to be mentioned anywhere, so this is scored partial, the same treatment as Grok's consent-before-collection sentence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "deepseek",
@@ -1232,7 +1232,7 @@
       "notes": "Dedicated address privacy@deepseek.com (wrapped in a mailto link, hence the quote ends before it) for access, correction, deletion, portability and opt-out requests from any user, with an appeal route; EU/UK users may also use the Prighter representative (rep_deepseek@prighter.com). Rights themselves apply 'depending on where you live'.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1243,7 +1243,7 @@
       "notes": "For the consumer Vibe (Free/Pro) plans input and output are used for model training by default unless the user disables the 'Allow your interactions to be used to train our models' toggle; the consumer Terms say 'We do not use Your Data to train our artificial intelligence models except (a) when you have not opted out of training or (b) when you provide Feedback to us.' Only Vibe Enterprise is opted out by default (admin-managed).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1254,7 +1254,7 @@
       "notes": "Self-service and documented for all consumer plans: web Admin panel > Vibe > Privacy > disable 'Allow your interactions to be used to train our models'; mobile Settings > Data & Account Controls > deselect 'Enable data sharing' (help article 455207). The help center says that once the opt-out is confirmed Mistral 'no longer uses your input or output data' for training, but no document says whether conversations collected before the opt-out are withdrawn from training, and thumbs-up/down Feedback (with its input and output) remains usable for training regardless of the toggle; the Vibe and API toggles are separate. Vibe Enterprise is opted out by default at admin level.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1265,7 +1265,7 @@
       "notes": "Documents attached or uploaded in Vibe are treated as input data, so they are used for training by default and are covered by the same training opt-out toggle as conversations; rated partial because exclusion requires the user to turn the default-on training setting off.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1276,7 +1276,7 @@
       "notes": "Defaults differ by product: Vibe Enterprise and Team admins are opted out by default, but Mistral AI Studio 'Free mode' API usage may be used for training unless opted out, Feedback is always usable, Order Forms may vary, and Labs/Preview models are always used for training (opt-outs and ZDR do not apply). Zero Data Retention is request-only and limited to pay-as-you-go stateless API endpoints.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1298,7 +1298,7 @@
       "notes": "Memories (being renamed Knowledge Base) is optional and can be turned off at any time in settings; items can be viewed, edited, deleted individually or cleared all at once. The help center warns that deactivating does not delete stored memories (clear them first) and that, unless the user has opted out of training, memories are treated like any other prompt.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1309,7 +1309,7 @@
       "notes": "Individual conversations are deleted from the conversation menu (three dots > Delete) and the account from the Admin panel 'Danger Zone' > Delete account; both are self-service per help articles 347613 and 347619, and the consumer Terms confirm account deletion 'by using the feature available on your account'.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1320,7 +1320,7 @@
       "notes": "An Export button in Vibe downloads all Vibe data (help article 347623); the EEA consumer Terms state the export features 'include at least your Vibe conversations (prompts and outputs)'. Export is only possible before account termination.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1331,7 +1331,7 @@
       "notes": "No fixed purge window is stated for deleted chats: the help center only says conversations are removed 'typically after a short grace period' and may be retained to enforce the Usage Policy or as required by law. Fixed periods are stated only for account-related data after deletion (account data 1 year, civil identity 5 years, invoices 10 years, technical data 1 rolling year) under legal-obligation holds.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1342,7 +1342,7 @@
       "notes": "Full sentence (split by formatting tags in the source): 'Mistral does not use the content of your conversations with Vibe for marketing or advertising purposes.' Partner marketing cookies, if the user consents to them, use browser/device identifiers rather than conversation content; the US notice adds that Mistral has not engaged in 'targeted advertising'.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1353,7 +1353,7 @@
       "notes": "Full sentence: 'Mistral does not sell or share your personal data for marketing or advertising purposes.' The Privacy Policy lists only team members, financial institutions, regulators, legal professionals and audited service providers under DPAs as recipients, and the US notice states no sale/sharing in the preceding 12 months. Caveat: consent-based partner marketing cookies may be set for Mistral's own ads on other sites.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1364,7 +1364,7 @@
       "notes": "The help article lists the only situations in which people other than the user may view conversations: content the user reports (a limited number of authorised staff), conversations the user shares via link, and thumbs-up or thumbs-down feedback, where the related input and output are de-identified and used to improve models. All three are triggered by the user, which the rubric counts as yes even though the feedback case serves model improvement; the Terms also reserve automated monitoring that supports human review where required by law.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1375,7 +1375,7 @@
       "notes": "Location is derived only from the IP address (Technical Data) and the user can opt out of that processing in account preferences; no precise geolocation category appears in the data inventory or in the US state-law category list.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "le-chat",
@@ -1386,7 +1386,7 @@
       "notes": "In-product controls plus a 'Privacy Requests' contact form and a postal address for the DPO/Privacy Team are offered to all users; US residents additionally get an email/online form and an appeal route. Requests concerning model training are subject to stated technical limitations.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1397,7 +1397,7 @@
       "notes": "User content including chat communications is used to train and improve models by default; the 'Improve the Model for Everyone' setting is on until the user de-selects it, and the Regional Privacy Disclosures state 'we train the AI systems and improve AI models that support our Services' before de-identification steps.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1408,7 +1408,7 @@
       "notes": "Self-service toggle: Settings > Account > Manage Account & Data > Model Improvement > de-select 'Improve the Model for Everyone' (app: Settings > Data & Privacy). The FAQ frames the steps for EEA/UK users while the Regional Privacy Disclosures say covered users 'have the right to opt out at any time'; the opt-out applies only to new content, and data may still be used for search, recommendations and safety classifiers.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1419,7 +1419,7 @@
       "notes": "Submitted content including posted images/videos and voice recordings is collected and used for training by default; the training opt-out states 'new content will not be used to train our generative AI models', which covers content broadly, but it requires the user to act and is documented with the regional caveats noted for training_opt_out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1463,7 +1463,7 @@
       "notes": "Account deletion is self-service (Settings > Account > Manage Account & Data > Delete Account; app: Remove Account) and permanent. No vendor document found describes deleting individual conversations, and the policy reserves the right to keep public Characters active after account deletion.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1474,7 +1474,7 @@
       "notes": "Self-service export: Web Profile Settings > Account > Manage Account & Data > Export data; mobile app Settings > Export my data. The article title states the export covers chats.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1496,7 +1496,7 @@
       "notes": "The EEA/UK legal-basis chart lists 'Your content you submit' (defined in the Privacy Policy to include chat communications) among the data processed 'To carry out advertising activities', a purpose that expressly includes 'sending tailored advertising' (legal basis: consent where legally required), and the global Privacy Policy lists 'provision of tailored advertising' as a purpose for the information it collects. Because the chart groups several data categories and three sub-purposes in one row, it does not say in so many words that chat content drives ad selection; the US State Privacy Notice shows chat content is not 'sold' to advertising providers. No document states that conversation content is excluded from advertising, so the cell stays no with medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1507,7 +1507,7 @@
       "notes": "The U.S. State Privacy Notice discloses that identifiers, demographic data, IP-based geolocation, device/activity data and inferences were 'sold' (state-law sense) to advertising providers in the preceding 12 months, with an opt-out via 'Your Privacy Choices'; chat content is not listed as sold.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1529,7 +1529,7 @@
       "notes": "The Privacy Policy lists 'general geolocation information' and 'geolocation data' (Technical Information, also received from ad platforms); the U.S. State Privacy Notice defines the geolocation category as approximate IP-based location. No precise/GPS location collection or device permission is documented.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "character-ai",
@@ -1540,7 +1540,7 @@
       "notes": "A support request form, the privacy@character.ai address and a postal address are given for all users, alongside in-product export and account deletion; the EEA/UK notice adds EU/UK representatives (VeraSafe) and identity verification may be required.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1551,7 +1551,7 @@
       "notes": "Official (fully-shaded shield) bots powered by OpenAI, Anthropic, Google and Meta are stated not to train on chats, but half-shield third-party developer bots and apps may view, store and train on them; Quora itself makes no statement about training its own models on chats, and the ToS grants a perpetual licence to use content to generally improve Poe.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1562,7 +1562,7 @@
       "notes": "No account-level opt-out setting exists; training is avoided only by choosing full-shield bots (indicated by the privacy shield icon on the bot info card), and granting a bot new permissions can switch it to half-shield for that interaction.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1573,7 +1573,7 @@
       "notes": "Uploaded photos and documents are treated as part of the interaction and follow the same privacy-shield rules as chats (no training by official-bot providers, possible training by half-shield developers); there is no separate upload opt-out. Files uploaded to a temporary chat are kept up to 15 days for safety review.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1584,7 +1584,7 @@
       "notes": "The only non-consumer offering with documented terms is the creator/bot API, where Poe commits not to train an LLM on bot-provided content; no team, business or enterprise plan is documented (shared subscriptions are consumer plans). API Terms are dated October 3, 2023.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1595,7 +1595,7 @@
       "notes": "Temporary chats are not saved to history, cannot be shared or searched, are not used by Memory, and are available only with official bots (which are stated not to train on chats); content may be kept longer in limited cases for legal and safety obligations, and the model provider's own retention (e.g. 30 days) still applies.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1606,7 +1606,7 @@
       "notes": "Memory is off by default and can be switched on/off, viewed and permanently deleted in Settings → Memory, but the documents describe deleting the memory summary as a whole rather than item by item; the Privacy Center notes deleted chat data may persist in memory summaries until memory is deleted.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1617,7 +1617,7 @@
       "notes": "Per-message deletion and a Settings 'Delete all chats' option are self-service, and 'Delete account' in Settings deactivates the account immediately with a 14-day reactivation window (ToS: 'You may cease your use of Poe at any time by deleting your account in your settings'); deleting a Poe account also deletes a linked Quora account.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1639,7 +1639,7 @@
       "notes": "A purge period is stated only for one mode: temporary chat messages are deleted within 24 hours and their uploaded files within 15 days (FAQ), while ordinary chat deletion is described only as 'deleted from Poe's systems' with no timing, and account deletion begins after a 14-day reactivation window with no completion time. The Privacy Center also admits that deleted chat data may persist in Memory summaries until the user deletes Memory, a non-legal exception, and model providers keep chats on their own schedules (e.g. 30 days for OpenAI and Anthropic). Period stated for some data only plus a broad exception gives partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1672,7 +1672,7 @@
       "notes": "The documents disclose that third-party developers of half-shield bots may view and store chats for broad purposes, while official bots' providers can use chats only to produce the response; whether Quora staff or contractors read conversations is not addressed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1683,7 +1683,7 @@
       "notes": "Only IP-derived rough location is described and precise geolocation is absent from the list of data collected in the Poe Privacy Policy; the incorporated Quora Privacy Policy could not be fetched, so its collection list is unverified.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "poe",
@@ -1694,7 +1694,7 @@
       "notes": "A dedicated DPO address (privacy@quora.com) is given for questions and in-product chat/account deletion is available to all users, but the procedure for exercising access, deletion and portability rights is delegated to the Quora Privacy Policy, which the crawler cannot fetch.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1705,7 +1705,7 @@
       "notes": "Consumer inputs are used to train Inflection's models by default; the user must opt out in Account settings. The ToS grants a perpetual, irrevocable licence to use Inputs and Outputs to train and improve models, and for Europe the stated legal basis is legitimate interests.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1716,7 +1716,7 @@
       "notes": "A documented self-service setting exists: the Privacy Policy points to the Account settings page and the help center confirms 'you can opt out anytime', which the revised rubric counts as yes even if it only stops training on new conversations. The documents do not say whether conversations collected before the opt-out are withdrawn, and two statements sit uneasily beside it: outputs are retained indefinitely for the purposes in ToS Section 4 (a licence that includes training and improving models) and that content licence is perpetual and survives termination. No regional or plan limitation is stated.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1760,7 +1760,7 @@
       "notes": "Settings > Account > Manage Memories lets the user view, add, edit and delete individual memories, and Pi can be told in chat to forget a specific memory; no documented control turns the memory feature off entirely.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1771,7 +1771,7 @@
       "notes": "Account deletion is self-service (profile > Account > 'Delete my account', or typing '!delete' in chat) and the policy says individual messages can be deleted in-product, but the help center's deletion article says account deletion removes everything and 'there's no way to delete just part of your data', so the documents conflict on partial deletion.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1782,7 +1782,7 @@
       "notes": "Settings > Account > Download Chat history (web, Android, iOS) produces a pi-user-history.json file after processing; exporting individual chats is not supported. The Privacy Policy also lists access in a portable format as a right depending on residence.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1793,7 +1793,7 @@
       "notes": "Inputs are purged within 15 days of deletion, with exceptions for fraud and abuse, security, legal requirements and financial record-keeping, but the policy states outputs are retained indefinitely for the purposes in ToS Section 4 (including model training and improvement).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1804,7 +1804,7 @@
       "notes": "Pi shows no ads. The Privacy Policy states that Inflection does not process personal information for targeted advertising as defined by US state privacy laws, a statement offered to all users, and the Notice on Model Training says personal information in training data is not used for marketing. Service providers for marketing and advertising measurement are listed for Inflection's own promotion using non-conversation data, which does not count against this question.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1815,7 +1815,7 @@
       "notes": "Stated for all users (not limited to a residency), using U.S. state-law definitions of sale and sharing; the disclosure list contains only processors, legal, advisors, corporate transactions and consent-based sharing, and the Notice on Model Training also says training-data personal information is not sold or used for marketing.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1826,7 +1826,7 @@
       "notes": "Human review is disclosed in the content-moderation context, with the specific case described being the Pi support team reviewing content users flag; the general 'monitor activity' statement is not expressly limited to those cases, and the Privacy Policy lists content-moderation vendors.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1837,7 +1837,7 @@
       "notes": "Precise geolocation is collected only after a consent prompt when first launching a mobile app that collects it, and collection can be stopped at any time in device preferences; the policy does not name the specific feature that uses it.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "pi",
@@ -1848,7 +1848,7 @@
       "notes": "A designated privacy address (privacy@inflection.ai) is documented for exercising rights and for appeals and is offered to all users; EEA and UK users additionally get the DataRep webform and inflectionai@datarep.com, and in-product controls cover deletion ('Delete my account' or typing '!delete') and chat-history export. The rights themselves are stated to depend on residence, which under the revised rubric does not demote when the channel is offered to everyone.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1859,7 +1859,7 @@
       "notes": "Terms 4.1 define Content as Prompts plus Outputs and 4.5 grants use of it to 'train and improve the Services' by default with no consumer opt-out; the only 'No Model Training' control documented (JS-only help center) is an admin toggle on Max/Enterprise plans that is off by default.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1870,7 +1870,7 @@
       "notes": "Terms 4.5 grants use of Content (Prompts plus Outputs) to train and improve the Services by default and neither the Terms nor the Privacy Policy describe any setting, request route or objection tied to training for individual users, which the revised rubric scores as NO rather than UNKNOWN because the training default itself is documented. The Privacy Policy's EU/UK right to object to legitimate-interest processing is generic and not tied to training, and the only training control in the help center (a 'No Model Training' admin toggle on Max and Enterprise plans, off by default, JS-only) is a business-plan setting that does not count for a consumer cell.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1881,7 +1881,7 @@
       "notes": "Uploaded documents are part of 'Prompts' and therefore 'Content', which Terms 4.5 allows You.com to use to 'train and improve the Services'; no opt-out for individual users is documented. The Privacy Policy separately says data pulled from connected drives (Google Drive, Dropbox, SharePoint) is not used to train third-party models.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1892,7 +1892,7 @@
       "notes": "For the API platform, 'queries are not used to train models' only under ZDR, an optional enterprise-agreement add-on (Web Search and Answer APIs). For enterprise chat the MSA (PDF, 3.4.3) limits You.com's own use of Customer Data to providing the Services, law and safety, but the No Model Training/ZDR toggles that stop third-party model providers are admin settings that are off by default on Max/Enterprise plans (help center, JS-only).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1925,7 +1925,7 @@
       "notes": "The Privacy Policy routes account deletion through an email request to Privacy@you.com and allows refusal for trust, safety or fraud issues; individual chat deletion is not mentioned in the policy. The JS-only help center documents in-product chat deletion and a 'Delete my account' control under Security & Privacy, which could not be cited.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1936,7 +1936,7 @@
       "notes": "Portability is offered only as a rights request by email or the privacy-requests form, framed as depending on applicable law; no self-service account export is documented. The help center (JS-only) describes per-response export to DOCX/RTF/Markdown, not a full data export.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1958,7 +1958,7 @@
       "notes": "Users without a paid subscription, which is the default consumer experience, see ads that may be selected using chat queries and de-identified chat data; the policy states that Enterprise Customers and Paid Subscribers are not subject to these advertisements. Email, documents, photos and personal files are not used for ad targeting. Because conversation content is used to select ads on the default tier, the cell is no; the paid-tier exemption is recorded here rather than in the value.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -1969,7 +1969,7 @@
       "notes": "The policy says You.com does not currently 'sell' personal information under CCPA-type laws and does not exchange information for financial incentives, yet also discloses sharing with third-party advertising companies for interest-based advertising that 'may constitute a data sale'; opt-outs are via NAI/DAA and US state rights requests. Paid Subscribers and Enterprise Customers are excluded from advertiser data collection.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "you-com",
@@ -2002,7 +2002,7 @@
       "notes": "A dedicated Privacy Requests page with a request form (plus Privacy@you.com and a Data Privacy Officer postal address in the policy) is offered to all users regardless of region, with identity verification required for anything beyond a marketing opt-out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2013,7 +2013,7 @@
       "notes": "'User Content' (prompts, audio, images, videos, files and generated content) is processed for training and optimizing Kimi's AI models by default; the Terms (section 3) grant a licence to 'use Content to train, evaluate, and improve the Services' subject only to an email opt-out. Legal basis is legitimate interest or consent 'depending on your jurisdiction', so EU/UK users may see a consent prompt.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2024,7 +2024,7 @@
       "notes": "The Terms let a user opt out of training by emailing support@moonshot.ai ('by contacting us at'), honoured 'in accordance with applicable law'; there is no in-product setting and the opt-out only covers future data.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2035,7 +2035,7 @@
       "notes": "Uploaded files are expressly part of User Content used for model training by default; the only exclusion is the email-based, prospective training opt-out in the Terms, which covers 'Content' (Input including 'other content' plus Output) rather than naming files. API-uploaded files are not used for training (help center).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2046,7 +2046,7 @@
       "notes": "Help center states API input and output are not used to train or improve Kimi's models, and Kimi Business lists 'No model training on your content by default' and 'Enterprise data is not used for model training'. The formal Kimi Business Service Agreement and Open Platform privacy policy were not fetched; the consumer policy says its provisions also apply to the Open Platform unless that product's policy says otherwise.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2068,7 +2068,7 @@
       "notes": "Memory Space (Settings → Personalization → Memory Space on web and mobile) lets users view all entries, edit or delete individual entries, clear all, and turn memory off; up to 50 entries of 500 characters. The help center, not the Privacy Policy, is the source.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2079,7 +2079,7 @@
       "notes": "Single conversations are deleted in-product; account deletion is in-product via Settings → Account Security → Delete Account (help center) and the Terms confirm 'the account deletion process available in your settings'. The help article describes account deletion as a submitted request that is 'approved' before data enters the deletion workflow.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2090,7 +2090,7 @@
       "notes": "No self-service export is documented; access is by emailing membership@moonshot.ai and portability is listed among US state-specific rights 'where required by law'. The policy merely 'recommends exporting or saving' content before account deletion without naming an export feature.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2101,7 +2101,7 @@
       "notes": "The help center answers 'Will manually deleted conversations still be retained?' with 'No', retaining only what applicable law requires (network logs such as timestamps and account identifiers, per the chat-issues article), which reads as deletion taking effect when the chat is deleted with a legal exception. For account deletion no period is given: after the request is 'approved' the content 'enter[s] the deletion workflow', and the Privacy Policy only promises to delete or anonymize on account deletion subject to legal obligations and disputes (voiceprints alone have a 3-year limit), so the commitment covers chats but not the account, which is PARTIAL under the revised rubric.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2123,7 +2123,7 @@
       "notes": "The US disclosures state that disclosure to Ad Networks and Advertising Partners 'qualifies as the sale of personal information or the sharing' for targeted advertising under certain laws, with opt-outs via a 'Do Not Sell or Share' footer link, Global Privacy Control, DAA/NAI tools and US state rights requests; no sale/share for users known to be under 16.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2145,7 +2145,7 @@
       "notes": "The collection section describes only general geographic location derived from the IP address, but the choices section states that device permissions can be used to prevent Kimi's products from accessing 'precise geolocation data', and the advertising section lists 'location-identifying technologies' among data-collection methods; the US disclosures list a 'Geolocation data' category. Because precise collection is mentioned and is gated only by a declinable device permission, the revised rubric's YES branch (no precise or GPS collection mentioned anywhere) is not met and PARTIAL applies; the documents partly contradict each other, so confidence is medium.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kimi",
@@ -2156,7 +2156,7 @@
       "notes": "A documented email channel for data subject rights requests (Cloudflare-obfuscated; decodes to membership@moonshot.ai, a general membership mailbox rather than a privacy-specific alias) plus in-product feedback and in-product account deletion are available to all users; identity verification may be requested. Additional rights are region-specific (US states).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2167,7 +2167,7 @@
       "notes": "The Privacy Policy's purpose table lists this purpose against the data type \"De-identified User Content\" on a legitimate-interests basis, and the Terms (section on User Content, clause (e)) have the user consent to Qwen using and storing User Content that is not personal data to develop and improve its machine-learning and AI technologies. No opt-in, default-off state or plan/region exception is stated.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2178,7 +2178,7 @@
       "notes": "The Terms have every user consent to training use of User Content and the Privacy Policy lists training of AI models on de-identified User Content as a legitimate-interest purpose, while neither document describes a setting, request route or training-specific objection to stop it; under the revised rubric a documented training default with no described way to stop it is NO, not UNKNOWN. The only related mechanism is a jurisdiction-dependent right to 'restrict or object to how we process your Personal Data' via the DPO email, which is not tied to training and would not obviously reach de-identified content, so it does not qualify for the PARTIAL branch.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2189,7 +2189,7 @@
       "notes": "The Terms define Prompts as submitted \"text, documents, images, videos, audio, or other materials\" and User Content as Prompts plus Outputs, so uploaded files and images fall under the same training clause as chat text; no upload-specific exclusion or opt-out is documented anywhere in the policy or terms.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2200,7 +2200,7 @@
       "notes": "Statement is an FAQ answer in the Alibaba Cloud Model Studio documentation, the API/business platform for Qwen models; it is documentation rather than contract language, and Qwen Chat itself documents no team or enterprise tier.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2233,7 +2233,7 @@
       "notes": "Erasure is listed as a right the user \"may have\" depending on jurisdiction, exercisable partly in the account and otherwise by emailing the DPO (DPO_qwenlm-intl@service.alibaba.com); the retention section presupposes account deletion, but per-conversation deletion is not documented.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2244,7 +2244,7 @@
       "notes": "Access and data portability are both listed among the rights a user 'may have' depending on jurisdiction (items (a) and (d) of section IX), exercisable partly through the account and otherwise by request to the DPO email (DPO_qwenlm-intl@service.alibaba.com); no self-service export tool for conversations is documented, so data is available only on request, which is PARTIAL. The mobile-app policy variant is identical on this point.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "qwen-chat",
@@ -2310,7 +2310,7 @@
       "notes": "A dedicated DPO email (DPO_qwenlm-intl@service.alibaba.com, mailto qwenlm-intl@service.alibaba.com) and postal address are given for all users, alongside in-account controls for some rights; the rights themselves are described as depending on the user's jurisdiction.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2321,7 +2321,7 @@
       "notes": "Applies to free and paid tiers by default; the one exception is a conversation the user explicitly shares with DuckDuckGo via feedback, which DuckDuckGo stores and reviews to improve its products. Provider agreements (Anthropic, OpenAI, Mistral, Azure, Tinfoil) prohibit training on Duck.ai data.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2332,7 +2332,7 @@
       "notes": "No opt-out is needed because conversations are never used for training by DuckDuckGo or, under contract, by any model provider; the only way a chat reaches DuckDuckGo for product improvement is the user's explicit feedback share.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2343,7 +2343,7 @@
       "notes": "Image and PDF uploads are covered by the same no-training provider agreements and are not retained; they are anonymously scanned for CSAM by a third-party moderation provider (and in some cases the model provider) before processing. For Tinfoil-hosted models a Trusted Execution Environment technically prevents reading or training on uploads.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2365,7 +2365,7 @@
       "notes": "There is no per-chat incognito mode; the only history-off option is a global Duck.ai setting that stops saving recent chats locally ('You can disable chat history at any time in Duck.ai settings'), which on its own would be PARTIAL. YES applies through the revised rubric's second branch: DuckDuckGo states it never stores prompts or conversation content on its servers (Sync & Backup and shared links are end-to-end encrypted so DuckDuckGo cannot read them), chats are never used for training, and provider agreements require deletion at most within 30 days; the one disclosed caveat is that Anthropic may retain chats where required by law or to combat malicious use, and OpenAI/Anthropic prompt caches hold chats in memory for up to 1 hour.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2387,7 +2387,7 @@
       "notes": "Individual, multi-select and delete-all chat deletion are self-service; Duck.ai has no user account to delete (the paid subscription uses a random ID and an optional email), and cancelling a subscription removes remaining personal information within 30 days.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2398,7 +2398,7 @@
       "notes": "No in-product export of chats is documented; chats live on the user's device or in end-to-end-encrypted Sync & Backup that DuckDuckGo cannot read, so access requests to privacy@duckduckgo.com cover only the limited personal information DuckDuckGo holds (for example a subscription email).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2409,7 +2409,7 @@
       "notes": "DuckDuckGo itself stores no readable chats, so local deletion is immediate; shared-chat links are deleted after 30 days and subscription personal data within 30 days of cancellation. Gap: no explicit propagation period is stated for deleting an encrypted Sync & Backup chat from servers (they auto-delete after 18 months without access).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2420,7 +2420,7 @@
       "notes": "Duck.ai shows no ads; DuckDuckGo's revenue comes from search ads that are contextual to the results page (\"not based on you as a person\"), and since chats are never saved or tied to identifiers they cannot feed ad personalisation. The policy does not contain a sentence naming ads and chats together.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2431,7 +2431,7 @@
       "notes": "General Privacy Policy statement applies worldwide; model providers additionally agree never to share Duck.ai data with third parties for their own commercial purposes (subprocessors excepted).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2442,7 +2442,7 @@
       "notes": "Human review is limited to conversations the user explicitly shares via feedback; DuckDuckGo otherwise never stores prompts. Caveats: uploads are scanned for CSAM by a moderation provider, and Anthropic may retain chats where required by law or to combat malicious use.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2453,7 +2453,7 @@
       "notes": "Only a GEO::IP-derived region (and, if the user enables the off-by-default \"Use Approximate Location\" setting, a guessed city) is used; the IP address and guessed location are discarded and never saved.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "duck-ai",
@@ -2464,7 +2464,7 @@
       "notes": "Requests go to privacy@duckduckgo.com (Privacy Manager), a toll-free US number or a mailing address; EU and UK GDPR representatives are also listed. For content about a person appearing in outputs, users are directed to the model provider.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2475,7 +2475,7 @@
       "notes": "Applies to free and Premium Leo with no setting needed. The only route by which conversation text reaches Brave is the voluntary thumbs-up/down feedback, which sends the full conversation to Brave for 'improving Leo's responses' and is deleted after 1 year. The policy does not address retention or training by the third-party model providers Leo calls (e.g. Anthropic, Meta, Mixtral) or by endpoints you configure via Bring Your Own Model.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2486,7 +2486,7 @@
       "notes": "No opt-out is needed because conversations are never used for training; Brave does not retain prompts, responses or context server-side. Feedback that shares a conversation with Brave is opt-in per response (thumbs icons).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2497,7 +2497,7 @@
       "notes": "Uploads are covered by the blanket no-retention/no-training statement for everything sent to Leo, and the data-processing table lists 'Summarizing/suggesting questions for websites, documents, or other uploaded content' with 'Query, website/document contents' retained only 'Ephemeral - discarded soon after chat is completed'. Applies to free and Premium Leo alike; documented upload types are PDFs, documents and page content. Uploads are not named in a separate training sentence, and the policy is silent on retention by third-party model providers (e.g. Anthropic) that Leo may call, hence medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2519,7 +2519,7 @@
       "notes": "Temporary chats are a documented Leo feature; server-side, the privacy policy states prompts/responses/context are not retained (cached large prompts deleted within minutes) and are never used for training, so nothing persists beyond the closed session. Chat history is also unavailable in Private Windows and Private Windows with Tor.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2541,7 +2541,7 @@
       "notes": "Chat history exists only locally on the device and the privacy policy documents a self-service way to clear saved chats or disable storage at brave://settings/leo-ai; the product page adds that history can be accessed and deleted from the Leo conversation list, though the step-by-step help-center article returns HTTP 403. Free Leo needs no account, so the rubric's no-account branch applies; Leo Premium requires a subscription account that the Terms of Use say can be terminated 'by following the instructions on the Service' at account.brave.com. Per-conversation deletion is not spelled out sentence by sentence in the fetchable documents, hence medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2552,7 +2552,7 @@
       "notes": "No self-service export of Leo conversations is documented; chats exist only on the user's device and Brave holds no conversation data server-side. Portability of whatever personal data Brave does hold (e.g. Premium account data) is available on request to privacy@brave.com.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2563,7 +2563,7 @@
       "notes": "Leo queries and context are discarded server-side as soon as the chat completes, and cached large prompts are deleted within minutes, so there is nothing to purge on deletion; local history is under the user's control. The one longer retention is voluntary feedback submissions (full conversation text), deleted after 1 year.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2574,7 +2574,7 @@
       "notes": "Brave states it never stores Leo prompts, responses or context on its servers, which the revised rubric treats as an explicit statement that conversation content cannot be used for advertising; the same branch already decides temporary_chat, deletion_timeline and human_review_limited for this app. Brave Ads are matched on the device from browsing signals and the policy says Brave 'does not have access to your information, your browsing history, or any details that can be used to identify or profile you'. The Brave Ads section never mentions Leo chat content, so whether locally stored chat history is excluded from on-device ad matching is not stated; applies to free and Premium Leo.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2585,7 +2585,7 @@
       "notes": "Stated globally in the Browser Privacy Policy (not limited to California) and repeated in the CCPA notice ('Brave does not buy, sell, or otherwise trade in personal information'). Leo additionally does not collect linkable identifiers such as IP address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2596,7 +2596,7 @@
       "notes": "Because conversations are not retained, there is no stored content for staff to review; the only disclosed path to Brave staff is the user-initiated feedback (thumbs-up/down), which sends the full conversation text and optional details to Brave to improve Leo and is deleted after 1 year. The policy does not literally use the words 'human review'.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2607,7 +2607,7 @@
       "notes": "Browser geolocation is only shared with a website after the user grants permission and is never sent to Brave; the Leo section adds that Brave does not collect identifiers that can be linked to you such as IP address. No location collection is listed for Leo in the data-processing table.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "brave-leo",
@@ -2618,7 +2618,7 @@
       "notes": "A dedicated privacy address (privacy@brave.com) is offered to all users regardless of region, with access, erasure, rectification, restriction, objection and portability rights listed; the CCPA notice repeats the same address for California residents. The address is a mailto link, so the rendered text has a space before the closing full stop and the quote therefore ends at the address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2629,7 +2629,7 @@
       "notes": "Applies to Guest, Free and Plus by default. The only exception is the optional in-app feedback button, which sends an anonymized copy of the prompt and response to Lumo's team 'to help us improve the model' (and, for the Apertus model, may be shared with Swiss AI, ETH Zurich and EPFL) only when the user explicitly submits it.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2640,7 +2640,7 @@
       "notes": "No opt-out is needed because chats are never used for training; saved history is zero-access encrypted so Proton cannot read it. Sharing a prompt/response with Proton happens only if the user presses the feedback button.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2651,7 +2651,7 @@
       "notes": "Lumo's no-training statements are blanket ('Information you enter is never used to train AI models', 'Lumo never keeps your data or uses it to train LLMs'), and the same getting-started article documents file uploads ('Upload sensitive legal files and have Lumo summarize them'); the Lumo Privacy Policy adds that inputs and outputs are zero-access encrypted after processing. Applies to Guest, Free and Plus by default; the only exception is the optional feedback button, which sends an anonymised prompt and response only when the user submits it. Uploads are not singled out in a separate training sentence, hence medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2662,7 +2662,7 @@
       "notes": "Lumo for Business (team plan with admin tools) is covered by the same no-logs, zero-access-encryption and no-training commitments by default; no API offering is documented. The HTML encodes the apostrophe as &#x27;.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2673,7 +2673,7 @@
       "notes": "'Ghost Mode' is a per-chat toggle; the chat is discarded when closed and, per the no-training and no-logs statements, is not used for training and no server record is kept (query data is erased after the response is generated). Guest sessions without an account are likewise erased at the end of each session.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2684,7 +2684,7 @@
       "notes": "Memory is off until the user selects 'Turn on memory' in Settings > Memory; saved memories are listed there and can be edited, deleted individually ('Delete memory'), cleared ('Clear auto-generated' / 'Clear all'), auto-updating can be switched off, and Memory can be turned off entirely, on web and mobile.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2695,7 +2695,7 @@
       "notes": "Deletion is self-service in the account interface; account deletion is documented at account.proton.me (Settings > Account and password > Delete account) and removes all Proton services' data. A dedicated walkthrough for deleting a single Lumo chat was not found in the fetched pages, though saved chats are user-held zero-access-encrypted data; guest users have no stored history.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2706,7 +2706,7 @@
       "notes": "Export is stated as a self-service function of the account interface; the fetched documents do not describe a Lumo-specific chat export format or whether it covers encrypted chat history, so the scope of the export is not detailed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2717,7 +2717,7 @@
       "notes": "Immediate erasure is stated only for processing data, Guest sessions and Ghost Mode chats; saved Free/Plus chat history is synced to Proton servers with zero-access encryption, and no period is stated for purging a deleted chat or a deleted account (the product page only says you can delete your account at any time). The rubric's never-stored branch does not apply because history is stored server-side even though Proton cannot read it; the support article states no metadata such as timestamps or IP addresses is kept.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2728,7 +2728,7 @@
       "notes": "Lumo shows no ads and conversation content is zero-access encrypted so Proton cannot read it; Proton's general policy also states it does no targeted advertising or profiling. Proton may email account holders about Proton products, which is adjustable in account settings.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2739,7 +2739,8 @@
       "notes": "Disclosure is limited to binding requests from competent authorities. Caveats: with the optional Web search feature a simplified version of the request (not the full query) is sent to selected search partner APIs; payment and support processors act on Proton's behalf.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-11",
+      "quote_missing_since": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2750,7 +2751,7 @@
       "notes": "Staff cannot read stored conversations; the only disclosed human access is an anonymized prompt/response the user explicitly submits via the feedback button. Prompts are decrypted transiently on Proton-controlled GPU servers to generate the response.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2761,7 +2762,7 @@
       "notes": "Stated in the Lumo Privacy Policy and repeated in Proton's general policy; the support article adds that Lumo stores no metadata such as IP addresses. IP addresses may be processed transiently for anti-abuse under the general policy.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "lumo",
@@ -2772,7 +2773,7 @@
       "notes": "In-product controls are available to all account holders regardless of region; suspended accounts exercise rights via the support team, and users may complain to the competent supervisory authority. Proton lists legal@proton.me as a legal contact.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2783,7 +2784,7 @@
       "notes": "Hugging Face itself states it does not store any user data for training and does not store request bodies or responses when routing (also at huggingface.co/docs/inference-providers/security). However every HuggingChat message is routed to third-party Inference Providers (Cerebras, Groq, Together AI, etc.) and the same document says 'External providers are responsible for their own security and data handling', so provider-side training use is not excluded by Hugging Face's statement; no opt-in/opt-out setting is documented.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2794,7 +2795,7 @@
       "notes": "No self-service training setting is documented. Hugging Face states it does not store user data for training, so no opt-out is needed for Hugging Face's own use, but conversations are forwarded to third-party inference providers whose training practices are governed by their own policies and for which Hugging Face documents no opt-out or provider-selection control for HuggingChat users.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2805,7 +2806,7 @@
       "notes": "Hugging Face's blanket statement covers all user data, uploads included, for its own training; but every HuggingChat request is routed to third-party Inference Providers and the same document says 'External providers are responsible for their own security and data handling', with no documented exclusion or opt-out for provider-side use. Image uploads exist on vision models but are not mentioned in any privacy text. Scored the same way as no_training_default for the same provider gap; no plan or regional differences are documented.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2816,7 +2817,7 @@
       "notes": "Covers the Inference Providers API (the same router HuggingChat uses). Hugging Face does not store API data for training, but the doc defers to 'the Data Security Policies of each provider' for how external providers handle the data, so exclusion is not guaranteed end-to-end. Enterprise Hub and dedicated Inference Endpoints are not addressed in the fetched documents.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2849,7 +2850,7 @@
       "notes": "Individual conversations are deletable from the HuggingChat UI; the Hugging Face privacy policy states 'You may decide to cancel your account and your content at any time by editing your profile', i.e. account deletion is self-service in HF account settings.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2860,7 +2861,7 @@
       "notes": "No self-service export of HuggingChat conversations is documented; access is offered as a data-protection request by email to privacy@huggingface.co and is framed as depending on applicable law ('may be entitled').",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2871,7 +2872,7 @@
       "notes": "The ToS commits only to 'commercially reasonable efforts' to delete account information and content within 90 days of account cancellation (longer than 30 days), and reserves retention for legal/regulatory compliance and backup processes; no period is stated for deleting an individual HuggingChat conversation. Quote is a fragment because the raw HTML splits the sentence with inline <strong> tags.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2893,7 +2894,7 @@
       "notes": "No-sale statement carries an 'except as provided for by this Policy' carve-out; the policy permits sharing with affiliates and processors and disclosure of Anonymous (aggregated) Information to advertisers and partners 'with or without compensation'. It also states HF does not authorise third-party collection of PII through advertising technologies without separate consent.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2904,7 +2905,7 @@
       "notes": "Applies to any private information/content on the Services (conversations are not named specifically). Access is limited to consent or 'legitimate interests such as' security and legal compliance, but 'such as' leaves the list open-ended; the HuggingChat text is silent on human review.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "huggingchat",
@@ -2926,7 +2927,7 @@
       "notes": "The Hugging Face privacy policy names privacy@huggingface.co for access and erasure requests from any user, and the HuggingChat privacy text repeats the same address for 'any of your legal privacy rights'. On the policy page the address is an HTML-entity-encoded mailto link (rendered normally), and in the chat-ui PRIVACY.md it is wrapped in angle brackets that tag-stripping removes, which is why the quote moved to the policy page. The policy also names the CNIL as lead EU authority; the channel is not restricted by region.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -2937,7 +2938,7 @@
       "notes": "By default (legitimate-interest basis, no opt-in) Replika uses anonymized 'small portions' of message and content data to train its proprietary safety algorithms and enhance chatbot performance; the policy says this anonymized data is used only internally and 'is not used to train third-party large language models', and the third-party LLM providers that generate replies are contractually barred from training on user data. The companion also 'learns from your interactions' as core functionality.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -2948,7 +2949,7 @@
       "notes": "Training on anonymised 'small portions' of messages for safety algorithms and chatbot performance rests on legitimate interest, and the only documented way to stop it is the Section 7.D right to object to legitimate-interest processing, exercised by request to my@replika.com or the postal address with identity verification; no in-app training toggle exists and deleting the account is not an opt-out. This is the rubric's 'legal right to object' partial branch; which rights apply is stated to depend on location. Optional in-chat feedback prompts can simply be dismissed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -2959,7 +2960,7 @@
       "notes": "Photos, videos and voice messages fall under the 'Messages and content' category, which is the same category whose anonymized 'small portions' are used by default to train safety algorithms and enhance chatbot performance; the only opt-out is the same request-based right to object that applies to conversations. Face/head-tracking data is stated to stay on-device and never be stored.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -2992,7 +2993,7 @@
       "notes": "The Memory tab (tap Replika's name > Memory) lets users view memories and 'Tap a memory to read it fully or remove it' or add memories manually, but no documented way exists to switch memory off, and the memory article says visible memories sit on top of 'a deeper system that draws on patterns from your overall conversation history' that is not exposed to the user.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3003,7 +3004,7 @@
       "notes": "Account deletion is self-service (Settings > Account > Delete Account on mobile; Settings > My Profile > Delete Replika on web; the Privacy Policy confirms 'You can delete your account in your account settings'), but conversations/message history cannot be deleted separately; only individual Memory entries can be removed.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3014,7 +3015,7 @@
       "notes": "Access to a copy of personal data is available only on request to Luka (email my@replika.com) with identity verification and 'Depending on your location'; no in-app export of conversations is documented.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3025,7 +3026,7 @@
       "notes": "Messages and content are retained up to 60 days after account termination (longer than 30 days), while account information, financial records and automatically collected data are kept 'for a minimum period of 10 years' for legal retention; the Terms separately claim data is 'removed permanently' as soon as the account is deleted, so the documents are not consistent.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3036,7 +3037,7 @@
       "notes": "Advertising partners receive only Website-visit data (clicks, pages, IP, advertising ID, browser) and 'will never have access to your conversations with your Replika AI Companion or any photos or other content you submit through the Apps'; the statement is repeated in Sections 2.B and 3.D.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3047,7 +3048,7 @@
       "notes": "Website-visitor data (not app or conversation data) is shared with third-party advertising partners for interest-based advertising 'to you and others', with an opt-out via the cookie settings at replika.com/legal/cookies; Do Not Track is not honoured. The help center article 'Do you sell my personal information?' states 'We do not sell your personal information or share it with third parties for profit', which conflicts with the policy's own characterisation.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3058,7 +3059,7 @@
       "notes": "Explicit no-human-reading statement in the official help center; the Privacy Policy itself does not describe human access but lists 'Messages and content' as processed for fraud prevention, legal claims and authority requests, and the help article 'Can I delete my conversations?' adds 'you're the only one who can access and manage your conversation history'.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3069,7 +3070,7 @@
       "notes": "Only general location (city/state/area) is listed; the help article on app permissions mentions camera and microphone permissions but no location permission, and the Cookie Policy repeats the 'general location information' wording.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "replika",
@@ -3080,7 +3081,7 @@
       "notes": "Channels for all users: email my@replika.com (privacy@replika.com is also named for sensitive-data deletion), postal address in San Francisco, in-app account deletion, and a help-center support form (help.replika.com/hc/en-us/requests/new, 'Privacy & Safety' category) for full erasure with a one-month response commitment; EU/UK users additionally get EDPO representative forms and a DPO address. Which rights apply is stated to depend on location.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3091,7 +3092,7 @@
       "notes": "Scored on the least protective component (convention 3), which is Siri: Apple stores transcripts of Siri and Dictation requests, keyed to a rotating device identifier rather than the Apple Account, and uses them by default for up to two years to develop and improve Siri and to fine-tune Siri, Search, Voice Control, Translate and speech-recognition models; audio is stored only with the separate opt-in Improve Siri and Dictation. Apple Intelligence itself is more protective: requests sent to Private Cloud Compute are not stored or accessible to Apple, and aggregated content trends are collected only if the user opts in to Device Analytics. Because a default consumer user of this product is exposed to Siri, the Siri default decides the cell.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3102,7 +3103,7 @@
       "notes": "Siri request transcripts are used by default to develop Siri and to fine-tune models, and no setting is documented that stops that use short of turning Siri and Dictation off entirely: the Improve Siri and Dictation toggle governs only whether audio is stored and reviewed, and Share Device Analytics governs aggregated Apple Intelligence improvement data. Scored on the least protective component (Siri); Apple Intelligence requests sent to Private Cloud Compute are not retained and need no opt-out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3113,7 +3114,8 @@
       "notes": "The documents never name uploads. For content handled by Apple Intelligence (emails, documents and photos processed by Writing Tools, summaries or visual intelligence) Apple states it is processed on device or sent to Private Cloud Compute where it is not stored or made accessible to Apple, which excludes that content from training by inference rather than by an explicit training statement. The Siri component, which the same product includes and which does store request transcripts and related request data for model improvement, says nothing about content attached to requests, and the opt-in ChatGPT extension (off by default) lets OpenAI train on attachments when a ChatGPT account is signed in. Exclusion is therefore stated only for one component of the product.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-11",
+      "quote_missing_since": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3146,7 +3148,7 @@
       "notes": "Siri's cross-request personalization (on-device history, app learning) can be deleted all at once via Settings > Siri > Siri & Dictation History > Delete Siri & Dictation History and switched off per app (Learn from this App) or by disabling Siri, but the documents do not describe viewing or deleting individual stored items.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3157,7 +3159,7 @@
       "notes": "Account deletion is self-service: the Apple Data and Privacy page (privacy.apple.com, described in support article 102283) lets users delete their Apple Account and the data associated with it permanently, in over 240 countries and regions. Conversation deletion is bulk only: the documents describe deleting the whole Siri & Dictation History stored on the device, not individual requests, and the Siri transcripts held on Apple servers are keyed to a rotating device identifier with no user deletion path described. Apple Intelligence requests are not retained by Private Cloud Compute, so nothing needs deleting there.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3168,7 +3170,7 @@
       "notes": "Self-service 'Request a copy of your data' exists at privacy.apple.com (availability varies by country), but Siri and Apple Intelligence request data is not linked to the Apple Account and so is not part of that export; the on-device Apple Intelligence Report (Settings > Privacy & Security) can be exported as a file listing requests sent to Private Cloud Compute or ChatGPT.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3179,7 +3181,8 @@
       "notes": "Apple Intelligence cloud requests are never retained (immediate), but for Siri the documents state only a retention ceiling (transcripts up to two years; reviewed samples longer) and give no purge period after the user deletes Siri & Dictation History or the Apple Account; the Privacy Policy only commits to 'the shortest possible period permissible under law'.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-11",
+      "quote_missing_since": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3190,7 +3193,7 @@
       "notes": "Apple runs an advertising platform in the App Store, News and Stocks, but Siri transcripts and request data are excluded from marketing profiles and Apple Intelligence request content is not stored by Apple at all; Personalized Ads can additionally be disabled in Settings > Privacy & Security > Apple Advertising.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3201,7 +3204,7 @@
       "notes": "The worldwide Privacy Policy also states 'Apple does not share personal data with third parties for their own marketing purposes'; sharing is limited to affiliates, service providers acting on Apple's instructions, partners, and disclosures at the user's direction or for legal reasons.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3212,7 +3215,7 @@
       "notes": "Human review is disclosed but its purpose is model/quality improvement rather than safety-only: a subset of Siri transcripts may be reviewed by default, and audio is reviewed by Apple employees only for users who opt in to Improve Siri and Dictation. Apple Intelligence requests processed by Private Cloud Compute are not accessible to Apple.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3223,7 +3226,7 @@
       "notes": "Location is sent only when the user grants Location Services for Siri (Settings > Privacy & Security > Location Services > Siri, can be set to Never); Apple stores only the approximate location with the request, and otherwise approximates location from the IP address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "apple-intelligence",
@@ -3234,7 +3237,7 @@
       "notes": "The Apple Data and Privacy page (privacy.apple.com) offers access/copy, correction, transfer, deactivation and deletion tools globally, and the Privacy Policy directs remaining requests to the privacy inquiry form at apple.com/legal/privacy/contact; California residents can also call 1-800-275-2273.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3245,7 +3248,7 @@
       "notes": "The Alexa Privacy Hub states that Alexa requests are used by default to train speech recognition and natural language understanding systems, and that voice recordings, transcripts and typed requests help Alexa learn preferences; saving is on by default. The pages predate Alexa+ branding but cover the same Alexa requests; no Alexa+-specific exclusion is documented.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3256,7 +3259,7 @@
       "notes": "A self-service control exists (Alexa app: More > Alexa Privacy > Manage Your Alexa Data), but it is scoped to voice recordings being used to develop new features or manually reviewed; typed Alexa+ chats and attachments are not addressed, and the training statement itself covers all Alexa requests, so the cell is partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3289,7 +3292,7 @@
       "notes": "There is no per-chat incognito mode; the closest control is the account-level Don’t save recordings option among four retention choices (save until deleted, 18 months, 3 months, don’t save). Even then transcripts and typed requests are kept until the chat has been inactive for 30 days so the history can be reviewed, and the page does not say whether requests under this setting are excluded from training, which makes an account-level setting partial under the rubric.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3311,7 +3314,7 @@
       "notes": "Individual recordings and transcripts can be deleted self-service online, in the Alexa app or on Echo Show devices (by day, device or profile), and a retention period can be set. Deleting the Amazon account itself is not described on the Alexa privacy pages and is a separate account-wide process, so only the conversation half is documented here.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3333,7 +3336,7 @@
       "notes": "A 30-day automatic deletion is stated for transcripts and typed requests of inactive chats, and manually deleted recordings and transcripts are said to be deleted from Amazon’s cloud, but no period is given for completing a manual deletion or an account deletion, and the Don’t save recordings setting can take up to 36 hours to apply. A period stated for one mechanism only is partial. The quote reproduces the page’s own spelling of transcripts.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3366,7 +3369,7 @@
       "notes": "Human review of requests is disclosed as part of training and quality improvement, not limited to safety or support cases, with a self-service opt-out for voice recordings; that is the rubric’s partial branch (review for broader purposes with a documented limit).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "alexa-plus",
@@ -3388,7 +3391,7 @@
       "notes": "An in-product Alexa Privacy dashboard (Alexa app > More > Alexa Privacy, or amazon.com/alexaprivacysettings) is documented for reviewing and deleting Alexa/Alexa+ interactions and attachments, but a general channel for access, portability or full-account deletion requests is only described in the unfetchable Privacy Notice/Request Your Data pages.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3399,7 +3402,7 @@
       "notes": "My AI conversations are retained and used by default to improve Snap's products, models and My AI responses (Privacy Policy 'Develop & Improve Features, Algorithms & Machine Learning Models'; help article: messages 'may be used to improve Snap's products'). Underlying models are OpenAI GPT and Google Gemini; Snap's docs do not say whether those providers train on the content.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3410,7 +3413,7 @@
       "notes": "My AI conversations are used by default to improve Snap's models and My AI responses, and no listed document describes a setting or channel that stops that use: the Delete My AI Data control only deletes stored data, which is not an opt-out, and the region-dependent right to object to processing is not tied to training in the Privacy Policy. Under the rubric, training on by default with no documented way to stop it is no. EEA and UK users can use a support-form objection route.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3421,7 +3424,7 @@
       "notes": "Snaps (images/video) sent to My AI are treated the same as text: 'we retain the content you send to and receive from My AI (like Snaps and Chats)' and the Privacy Policy defines AI 'Inputs' as text, images, video, audio and precise location, all usable for improvement. No upload-specific opt-out exists.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3443,7 +3446,7 @@
       "notes": "No temporary, incognito or history-off mode is documented for My AI; the docs affirmatively state that all My AI content is retained until the user deletes it and may be used for improvement and ads. The only 'off' switch is a parent disabling My AI for a teen via Family Center.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3454,7 +3457,7 @@
       "notes": "Snap states My AI has no cross-conversation memory, and stored history can be wiped via Settings > Privacy Controls > Delete My AI Data (iOS) / Account Actions (Android). Caveat: Snap separately uses My AI conversations to infer interests for personalization and ads at the account level (e.g. Lifestyle Categories), which is not a chatbot memory but is also not fully inspectable.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3465,7 +3468,7 @@
       "notes": "Account deletion is self-service in-app (Settings > Account Actions > Delete Account) or via accounts.snapchat.com; the entire My AI conversation can be deleted anytime with 'Delete My AI Data', while individual My AI messages can only be long-pressed and deleted within 24 hours of sending.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3476,7 +3479,7 @@
       "notes": "Self-service 'Download My Data' at accounts.snapchat.com (also reachable from Settings > My Data) produces a zip; the help article lists categories such as Saved Chat History, Location and Search History but does not explicitly name My AI conversations, so their inclusion is not confirmed in the documents.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3487,7 +3490,7 @@
       "notes": "My AI data deletion is committed within 30 days, but account deletion takes 30 days of deactivation plus 30 more days (60 total; 210 in India), the Privacy Policy says Snap 'cannot promise that deletion will take place by a specific time', and deleted-account data is kept for 'legal, security, and business needs', a broader exception than legal/safety holds.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3498,7 +3501,7 @@
       "notes": "My AI conversations are used both to personalize ads across Snapchat ('personalize your experience, including ads') and to serve contextual 'sponsored' ads inside My AI, for which queries with commercial intent are sent to Snap's advertising partners. Ad-preference opt-outs (activity-based, audience-based) do not exclude My AI content; EU/UK/Norway/Switzerland users can additionally opt out of personalized content and ads.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3509,7 +3512,7 @@
       "notes": "The rubric's NO branch applies because conversation content is disclosed to advertising partners: Snap's Ads Privacy page says ads inside My AI are provided by Snap's advertising partners rather than by Snap, and that those partners receive the user's queries when commercial intent is detected, together with age range, country/language, operating system type and IP address. The U.S. State Privacy Notice states that Snap does not sell data or share it for cross-context behavioural advertising and frames ad-serving disclosures as going to service providers acting on Snap's behalf, but that notice applies only to residents of certain U.S. states and the global Privacy Policy contains no no-sale statement.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3520,7 +3523,7 @@
       "notes": "Human review of content submitted to generative AI features (including My AI) is disclosed for the broad purpose of improving quality and safety of models, not limited to safety, abuse or user-initiated cases; the narrower 'only review when flagged' commitment applies to private Chats with friends, which Snap explicitly says work differently from My AI.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3531,7 +3534,7 @@
       "notes": "Precise (GPS) location is collected only if the user grants the device-level permission; once granted to Snapchat it is also available to My AI (even in Ghost Mode) for place recommendations and is listed as an AI 'Input'. The U.S. notice adds that geolocation may be used for personalized ads. Users can revoke the OS permission and clear cached location via 'Clear My AI Data'.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "snapchat-my-ai",
@@ -3542,7 +3545,7 @@
       "notes": "In-product controls (Download My Data, Delete My AI Data, Delete Account) are available to all users regardless of region, plus a support request form linked from the Privacy Policy and the privacy@snap.com address given in the U.S. State Privacy Notice; a Data Protection Officer contact is also referenced.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3553,7 +3556,7 @@
       "notes": "Applies to all plans by default with no setting required; Kagi proxies requests to third-party model APIs and its LLMs & Privacy table lists 'Trains on User Data via API: No' for every provider. The Privacy Policy phrases the provider choice as 'whenever possible', a softer wording than the Assistant docs.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3564,7 +3567,7 @@
       "notes": "No opt-out is needed because conversations are never used for training by Kagi or the providers; there is therefore no training toggle in the Assistant settings.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3575,7 +3578,7 @@
       "notes": "The Assistant page documents file uploads (documents, spreadsheets, images and audio up to 30 MB, retained in the thread context for follow-up messages) and, on the same page, states that the user's data is never used to train AI models by Kagi or by the LLM providers. Uploads are not named in that sentence, so coverage comes from the blanket 'your data' statement, which the rubric accepts for all plans by default. Kagi's LLMs & Privacy table lists 'Trains on User Data via API: No' for every provider, while the Privacy Policy's 'whenever possible' wording about provider choice is softer.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3586,7 +3589,7 @@
       "notes": "Kagi Team plans include the Assistant and inherit its unqualified no-training statement, but the Team plan docs carry no separate training clause, and for Kagi's API products (FastGPT, Summarizer, Enrichment) the only statement is the Privacy Policy's hedged 'whenever possible' wording covering all AI tools.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3597,7 +3600,7 @@
       "notes": "The default 'temporary' Thread Saving mode expires threads 24 hours after the last message (permanent removal per the Privacy Policy) with immediate delete available and no training use, but threads remain visible in history during those 24 hours and Kagi's own LLMs & Privacy table discloses provider-side API retention of up to 30 days, with Anthropic keeping flagged prompts for 2 years.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3619,7 +3622,7 @@
       "notes": "Individual threads are deleted via the thread menu or Ctrl/Cmd+Shift+Backspace; the account is deleted self-service in Account settings (Delete Account button, password confirmation), which also cancels any paid plan without refund.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3630,7 +3633,7 @@
       "notes": "Conversation export is self-service per thread (Markdown or JSON via the thread menu); a full account-data portability copy (JSON/CSV of account details, subscription and preferences) is obtained by emailing privacy@kagi.com rather than in-product.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3641,7 +3644,7 @@
       "notes": "Threads are permanently removed after one day by default or immediately on manual deletion; account data is 'permanently removed within 30 days' except legally required records (tax/billing) and fraud/dispute needs. Residual server-side data: sampled load-balancer/VM logs 7 days and Sentry error samples 90 days, stated as not linked to an account; third-party model providers retain API data up to 30 days per Kagi's table.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3652,7 +3655,7 @@
       "notes": "Kagi is a paid, ad-free subscription with no advertising product; the Privacy Rights Addendum adds 'We don't share your information for behavioral advertising', so conversation content cannot be used for ad targeting.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3663,7 +3666,7 @@
       "notes": "Stated for all users (the Addendum extends rights 'to all users, everywhere'); a California Shine-the-Light paragraph additionally states Kagi does not share personal information with third parties for their direct marketing. Third parties involved are processors only (payment processors, map providers, model API providers).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3685,7 +3688,7 @@
       "notes": "Precise location is an optional, user-enabled feature (Geolocation in Kagi Maps or 'Use Location for Searches'), stored client-side in the kagi_precise_location cookie and clearable from Privacy Settings; when enabled it is sent with searches and Assistant web searches. IP-based approximate location is not separately addressed.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "kagi-assistant",
@@ -3696,7 +3699,7 @@
       "notes": "Dedicated address privacy@kagi.com for access, portability, restriction and objection requests (acknowledged in 48-72 hours, fulfilled within 30 days, up to 45 for complex cases), plus in-product controls at kagi.com/settings for correction and account deletion; authorized agents accepted and no fees charged.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3707,7 +3710,7 @@
       "notes": "Terms of Service 10.2 applies to all users and all User Content (Inputs and Outputs) with no opt-in required; the Privacy Policy additionally states Venice does not have access to or store prompt/output content. In 'Anonymous' mode prompts are relayed to third-party frontier providers, which Venice contractually binds to the same no-training rule but whose own retention the product page says you should assume.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3718,7 +3721,7 @@
       "notes": "No opt-out is needed: conversations are never stored by Venice and Terms 10.2 prohibits training on User Content by Venice and its model providers. Only generated videos are temporarily held until download.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3729,7 +3732,7 @@
       "notes": "Terms 10.2 is a blanket bar on training with 'any User Content', and Terms 10.1 defines User Content to include submitted messages, photos, video, audio, images, folders, data and text, so uploads are covered by default without any user action; the Privacy Policy adds that Venice does not have access to or store submitted documents, images or audio ('Prompts'). Likeness (face) uploads are processed by BytePlus solely for the requested generation, are not used for Venice's own business purposes, and are purged from temporary storage within 1 hour. Applies to all plans; in 'Anonymous' mode third-party providers see the content but are contractually bound by the same no-training clause.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3740,7 +3743,7 @@
       "notes": "Venice documents no separate business or team tier; its business offering is the API, which the Terms define as part of the 'Service', so the Terms 10.2 no-training clause (binding Venice and its third-party LLM providers) applies to API customer data by default with no contract term or setting required. The API privacy docs add that Venice does not store or log prompt and response content for normal inference and keeps only operational metadata (model, token counts, timestamps, IP) for billing and abuse prevention.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3751,7 +3754,7 @@
       "notes": "No temporary or incognito mode is documented, but the Privacy Policy states Venice will not have access to or store prompt or output content and the privacy page says history stays on the device, which would satisfy the 'never stored on its servers' branch. Rated partial rather than yes because Venice itself discloses that in the default 'Anonymous' mode (frontier models such as GPT, Claude and Gemini, available on all plans) the third-party provider likely saves the prompt with no retention limit stated, which also contradicts the Privacy Policy's zero-data-retention statement about model providers; the stricter Private, TEE and E2EE modes (the latter two Pro-only) avoid this.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3762,7 +3765,7 @@
       "notes": "Memoria stores memories only in the browser (IndexedDB), never on Venice servers; Chat Memory is toggled at Settings → Memory → Chat Memory, individual memories can be viewed, edited and deleted at Settings → Memory → Interactions, and sharing memories with third-party 'anonymized' models is off by default. Disabling memory does not delete existing memories; they must be deleted explicitly.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3773,7 +3776,7 @@
       "notes": "The Terms describe account termination by contacting customer service (the quote stops before an obfuscated email address). The FAQ page says the account can be deleted from account settings, but that page is rendered by JavaScript and cannot be verified by the pipeline. Conversations exist only in the browser and the Privacy Policy logs \"if you deleted a conversation\" as a user action, so in-product conversation deletion is implied but not described. Documents disagree on account deletion, hence partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3784,7 +3787,7 @@
       "notes": "Access/portability is a request-based right listed under 'Your European Privacy Rights', exercised by emailing Venice. Chats already live only on the user's device; the Pro-only Encrypted Backup (web app, max 5 backups, 90-day expiry) restores history into Venice rather than providing a readable export, and no general self-service export of account data is documented.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3795,7 +3798,7 @@
       "notes": "Conversation content is never stored on Venice servers, so there is nothing to purge for chats; for account data no fixed deletion period is stated and the retention exceptions are broad (backups, analytics, 'legitimate reason'). Only likeness uploads have a stated window (deleted from temporary storage within 1 hour).",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3806,7 +3809,7 @@
       "notes": "There is no explicit advertising clause about conversations; the protection follows from Venice stating it has no access to prompt/output content, so it cannot be used for ad targeting. Venice does use other personal data (device identifiers, mobile advertising identifiers, usage information) 'For marketing and advertising purposes' and lets analytics and advertising partners set cookies.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3828,7 +3831,7 @@
       "notes": "The Privacy Policy says Venice will not have access to or store prompt/output content (and E2EE mode makes this cryptographically enforced), but Terms 10.11 reserves a broad monitoring right 'for operational and other purposes' without listing specific cases, so the documents are inconsistent. In 'Anonymous' mode third-party model providers see prompts under their own policies.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3839,7 +3842,7 @@
       "notes": "Only general (IP-derived) location is described; device data listed (device identifiers, carrier, push tokens) does not include GPS/precise location and no location permission is documented for any feature.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "venice",
@@ -3850,7 +3853,7 @@
       "notes": "The Privacy Policy names a dedicated privacy mailbox, DataPrivacy@venice.ai, in its Contact Information section for all users and for likeness-metadata access, correction, deletion and download requests, but the general access, portability, deletion and objection rights (and the sentence directing users to that mailbox to exercise them) are stated only 'if you are located in Europe'. No privacy portal, form or in-product rights request is documented and account termination goes through customer service, so the channel counts as documented for some jurisdictions only.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -3861,7 +3864,7 @@
       "notes": "Neither the Privacy Policy nor the Terms says that user content is used to train models: Terms 5.3 grants a perpetual, irrevocable licence to use Your Content (inputs and outputs) 'in an aggregated manner to improve the Services' and create Usage Data, and the Privacy Policy lists 'Inputs, prompts and user-generated content' under service-improvement/analytics and R&D purposes by default, without saying whether that includes model training. Under the revised rubric a licence to improve the services that is silent on models is partial with low confidence, not no. Terms 5.4 additionally warns that third-party AI providers 'may retain certain rights to use or disclose Your Content'; no opt-in or opt-out is documented.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -3927,7 +3930,7 @@
       "notes": "Deletion of 'certain content' is self-service, but the Privacy Policy says account closure requires contacting Manus while Terms 7 says you may close your account 'on the user profile page', so the documents contradict each other; the help center confirms account deletion exists and that some personal information is retained afterwards for legal, accounting and fraud purposes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -3938,7 +3941,7 @@
       "notes": "No self-service export of conversations or account data is documented for individual users; the only documented route is the 'Transfer' right to a machine-readable copy on request to privacy@manus.im, which sits under the Notice to European users. Terms 5.8 mentions tools that 'may' export Your Content to third-party services, and Team Owners can export members' session data, neither of which is a personal-data export for the individual.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -3971,7 +3974,7 @@
       "notes": "Personal information (identifiers) is shared with marketing vendors for targeted advertising of Manus, which the California notice treats as CCPA 'sharing'; users can opt out via the 'Ads About Manus' setting, the 'Your Privacy Choices' footer link, GPC, or industry opt-outs. There is no explicit statement that personal data is never sold.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -3993,7 +3996,7 @@
       "notes": "Automatic collection is limited to general location (city/state/area, IP-derived); no device location permission is described. Caveat: metadata of user-uploaded content may include 'location info', and the Terms ask users not to submit precise geolocation as sensitive information.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "manus",
@@ -4004,7 +4007,7 @@
       "notes": "A dedicated privacy/DPO address (privacy@manus.im) is given for all users, but the enumerated access, deletion and portability rights and this request channel sit under the 'Notice to European users'; for everyone else the policy offers only account-settings edits, in-app content deletion and 'contact us' for account closure, plus the 'Ads About Manus' opt-out. Team Plan members must first ask their Team Owner (30-day fallback to Manus).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4048,7 +4051,7 @@
       "notes": "Applies to Team and Enterprise plans by default; subprocessors (OpenAI, Anthropic, Google) are said to be bound by no-training agreements with Zero Data Retention where applicable. Caveat: the same article says a DPA is \"not currently available\" on Team (only Enterprise), so the Team guarantee rests on the help-center statement rather than a signed DPA; Genspark documents no public API offering.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4081,7 +4084,7 @@
       "notes": "Account deletion is self-service (Settings > \"Delete User\", confirm in dialog and email) and covers \"All conversation history\". Deleting an individual conversation is not documented anywhere fetched (History view and AI Drive file trash exist, but no per-chat delete).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4092,7 +4095,7 @@
       "notes": "No self-service export is documented; portable copies are available on request by email, framed as rights of residents of listed US states and of the EU/UK/Canada \"and certain other countries\". AI Drive lets users download individual files, but nothing covers conversations.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4103,7 +4106,7 @@
       "notes": "30-day commitment is stated for account closure only; no period is given for deleting individual conversations. Retention section also allows keeping data \"for other legitimate business purposes, including to meet our legal, regulatory, auditing, fraud prevention, or other compliance obligations\", and the Team/Enterprise article states backups are retained 90 days post-deletion.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4114,7 +4117,7 @@
       "notes": "The policy states that Genspark does not sell or share Personal Data, which includes prompts, or use it for targeted advertising. The sentence sits in the section on rights for residents of certain US states but is worded as a universal practice, and no ads are documented in the product; Genspark may use account data for its own marketing, which does not count against this question. Confidence medium because the placement leaves room to read the statement as region-scoped.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4125,7 +4128,7 @@
       "notes": "Listed exceptions are service providers (hosting, Google Analytics, AI model providers, Stripe), business transfers, consent and legal requests; the US-state section adds \"we do not sell Personal Data\". The catch-all \"or as otherwise described in this policy\" is the only qualification.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "genspark",
@@ -4158,7 +4161,7 @@
       "notes": "Rights requests go to an email address (Attn: Privacy Officer; the address is Cloudflare-obfuscated in the HTML so it cannot be quoted), framed for residents of 19 listed US states and for EU/UK/Canada residents; response within 10 business days, fulfilment within 45 days. No portal, form or in-product rights control is documented, and the channel is a generic contact address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4169,7 +4172,7 @@
       "notes": "Terms IV.3(a) reserves the right to process any User Content of individual users to improve existing Services and develop new ones, and has users 'explicitly authorize and consent' to storage and use of User Content that does not constitute personal data 'for the purpose of developing and improving our machine learning and artificial intelligence technologies'; the Privacy Policy separately lists 'when we train and improve our models' as a legitimate-interest purpose for personal data. No opt-in is required and no setting is described, so consumer conversations are used by default. Enterprise and API customers are excluded unless they agree (see business_no_training).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4180,7 +4183,7 @@
       "notes": "No self-service training toggle is documented. The only route is a request by email (user_feedback@z.ai) under the objection right, which the policy limits to \"places where such a right applies\" and which the vendor may override for \"compelling legitimate grounds\"; the terms only say \"Contact us with any concerns about our use of User Content\". Whether this stops training on non-personal content is not stated.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4191,7 +4194,7 @@
       "notes": "Uploaded documents and images fall within Prompts and User Content, and the same section IV consent to use User Content for developing and improving models applies to them with no upload-specific exclusion or self-service opt-out. The Privacy Policy gives a right to object to legitimate-interest processing that it ties to model improvement, available where such a right applies; a request-based opt-out tied to training makes the cell partial under the rubric, matching training_opt_out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4202,7 +4205,7 @@
       "notes": "Applies to the API Services (the only business offering documented); the Data Processing Addendum adds that the company does \"not store any of the content the Customer or its End Users provide or generate\". Caveat: the parallel sentence in Additional Terms 3(b) is printed inside square brackets, suggesting draft text.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4235,7 +4238,7 @@
       "notes": "Individual conversation deletion and full chat-history deletion \"via your settings\" are self-service. Account deletion is described in the terms as a request that the vendor will \"review and process\" and that takes effect \"Once approved\", so it is not clearly an in-product self-service control.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4246,7 +4249,7 @@
       "notes": "Access and portability are available only on request via the contact email, \"subject to certain exceptions\" and \"subject to applicable law\"; no self-service export of conversations is documented.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4257,7 +4260,7 @@
       "notes": "Immediate removal is stated for individually deleted conversations (back-end deletion is \"automatic\" but no period is given); no timeline is stated for account deletion, and the retention section allows keeping data for legitimate business interests \"such as improving and developing our Services\" and for legal claims, which is broader than legal/safety holds.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4301,7 +4304,7 @@
       "notes": "The only location data described is inferred from IP address within Device and Network Information; no precise/GPS geolocation collection is listed. The policy does not explicitly state that precise location is never collected, so this rests on the enumerated data categories.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     },
     {
       "app": "z-ai",
@@ -4312,7 +4315,7 @@
       "notes": "The Privacy Policy tells users to exercise any of their rights by contacting the address given in the policy, and its Contact section directs 'questions, comments and requests regarding this policy' to user_feedback@z.ai, a mailbox named for rights requests and offered to all users (it also handles complaints and copyright notices, which the revised rubric tolerates). The rights list is prefaced with a 'depending on where you live' hedge, which the rubric says does not demote when the channel itself is universal. In-product settings additionally cover deletion of individual conversations and chat history; there is no portal or form.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-18"
     }
   ]
 }
