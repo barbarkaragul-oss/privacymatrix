@@ -20,7 +20,7 @@
 </p>
 
 <!-- stats:start -->
-**28 apps × 14 questions · 314/392 cells verified against their source · last verification 2026-09-18** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
+**28 apps × 14 questions · 314/392 cells verified against their source · last verification 2026-09-21** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
 <!-- stats:end -->
 
 Privacy policies are long, change quietly, and are almost never compared side by side with the actual sentences that matter. When someone asks "does ChatGPT train on my conversations?" the answer usually comes from a months-old news article. This repository answers from the policies themselves, and shows its work:
@@ -88,7 +88,7 @@ Values follow a written rubric per question (see [`data/questions.json`](data/qu
 ## Recent changes
 
 <!-- changes:start -->
-_Last run 2026-09-18: every quote was still present at its source, no value changed._
+_Last run 2026-09-21: every quote was still present at its source, no value changed._
 <!-- changes:end -->
 
 ## How it works
