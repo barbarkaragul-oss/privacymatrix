@@ -33,7 +33,7 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
       model: 'claude-fable-5-1',
       changes: [{ app: 'a', question: 'x', from: 'no', to: 'yes', quote: 'supports a | b and [links](x)', evidence_url: 'https://e.x/a)b', notes: '' }],
       pending: [],
-      stats: { apps_checked: 1, apps_failed: ['b'], cells_total: 2, cells_verified: 2, cells_unknown: 0 },
+      stats: { apps_checked: 1, apps_failed: ['b'], cells_total: 2, cells_verified: 2, cells_unknown: 0, cells_verified_via_archive: 0 },
     },
     [
       { id: 'a', name: 'App A', vendor: 'v', homepage: 'https://a.x/', repo: null, sources: ['https://a.x/'] },
@@ -56,9 +56,20 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
 
 test('renderChangesMarkdown with no changes says so', () => {
   const md = renderChangesMarkdown(
-    { run_at: 'r', model: 'm', changes: [], pending: [], stats: { apps_checked: 0, apps_failed: [], cells_total: 0, cells_verified: 0, cells_unknown: 0 } },
+    { run_at: 'r', model: 'm', changes: [], pending: [], stats: { apps_checked: 0, apps_failed: [], cells_total: 0, cells_verified: 0, cells_unknown: 0, cells_verified_via_archive: 0 } },
     [],
     [],
   );
   assert.ok(md.includes('No question values changed'));
+});
+
+test('renderChangesMarkdown says how many quotes an archive capture confirmed, and only then', () => {
+  const file = { run_at: 'r', model: 'm', changes: [], pending: [], stats: { apps_checked: 1, apps_failed: [], cells_total: 1, cells_verified: 1, cells_unknown: 0, cells_verified_via_archive: 1 } };
+  const md = renderChangesMarkdown(file, [], [], [], [], { confirmed: 12, dated: 5, oldestDated: '2026-09-13' });
+  assert.ok(md.includes('12 quotes on pages that refused the checker were found in Internet Archive captures'));
+  assert.ok(md.includes('5 cells were re-dated to a capture newer than their last verification (oldest 2026-09-13), and the rest keep their dates'));
+  assert.ok(md.includes('never demotes a cell'));
+  // Found only in captures older than the cells: say plainly that nothing was re-dated.
+  assert.ok(renderChangesMarkdown(file, [], [], [], [], { confirmed: 2, dated: 0, oldestDated: null }).includes('so every date is unchanged'));
+  assert.ok(!renderChangesMarkdown(file, [], []).includes('Internet Archive'));
 });

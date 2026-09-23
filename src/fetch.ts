@@ -27,6 +27,15 @@ export interface FetchOptions {
   retries?: number;
   userAgent?: string;
   maxBytes?: number;
+  /**
+   * Treat HTTP 403 as transient and try again after forbiddenDelaysMs. Only for the residential
+   * runner: from a home connection some vendors' 403 comes and goes within minutes, while from a
+   * data centre it is permanent and retrying would only be rude.
+   */
+  retryForbidden?: boolean;
+  forbiddenDelaysMs?: number[];
+  /** First wait before retrying a transient error (then doubled). The residential run raises it to respect Crawl-delay. */
+  retryBaseMs?: number;
 }
 
 // Crawler-style identity: honest about being a bot, in the format most bot filters recognise.
@@ -185,33 +194,47 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+function isTransient(status: number): boolean {
+  return status === 0 || status === 408 || status === 429 || status >= 500;
+}
+
 export async function fetchText(url: string, options: FetchOptions = {}): Promise<FetchResult> {
   const opts: Required<FetchOptions> = {
     timeoutMs: options.timeoutMs ?? 30_000,
     retries: options.retries ?? 2,
     userAgent: options.userAgent ?? DEFAULT_UA,
     maxBytes: options.maxBytes ?? 4 * 1024 * 1024,
+    retryForbidden: options.retryForbidden ?? false,
+    forbiddenDelaysMs: options.forbiddenDelaysMs ?? [15_000, 30_000, 60_000],
+    retryBaseMs: options.retryBaseMs ?? 500,
   };
-  let last: FetchResult | null = null;
-  for (let attempt = 0; attempt <= opts.retries; attempt++) {
-    const result = await fetchOnce(url, opts);
-    last = result;
-    const transient = result.status === 0 || result.status === 408 || result.status === 429 || result.status >= 500;
-    if (result.ok || !transient) return result;
-    await sleep(500 * 2 ** attempt);
+  let last = await fetchOnce(url, opts);
+  for (let attempt = 0; attempt < opts.retries && isTransient(last.status); attempt++) {
+    await sleep(opts.retryBaseMs * 2 ** attempt);
+    last = await fetchOnce(url, opts);
   }
-  return last as FetchResult;
+  if (opts.retryForbidden) {
+    for (const wait of opts.forbiddenDelaysMs) {
+      if (last.status !== 403) break;
+      await sleep(wait);
+      last = await fetchOnce(url, opts);
+    }
+  }
+  return last;
 }
 
-/** Fetches each URL once per run, with bounded concurrency. */
+/** Fetches each URL once per run, with bounded concurrency and, optionally, a minimum gap between requests. */
 export class Fetcher {
   private readonly cache = new Map<string, Promise<FetchResult>>();
   private active = 0;
   private readonly queue: Array<() => void> = [];
+  private nextStart = 0;
 
   constructor(
     private readonly options: FetchOptions = {},
     private readonly concurrency = 4,
+    /** Minimum milliseconds between the starts of two requests (robots.txt Crawl-delay). */
+    private readonly minIntervalMs = 0,
   ) {}
 
   get(url: string): Promise<FetchResult> {
@@ -230,6 +253,12 @@ export class Fetcher {
     }
     this.active++;
     try {
+      if (this.minIntervalMs > 0) {
+        // Reserve the start time synchronously so concurrent slots cannot claim the same moment.
+        const start = Math.max(Date.now(), this.nextStart);
+        this.nextStart = start + this.minIntervalMs;
+        if (start > Date.now()) await sleep(start - Date.now());
+      }
       return await fn();
     } finally {
       this.active--;

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyCell, groupFetchErrors, structuralProblems, unusablePage, GRACE_DAYS, type CellReport } from '../src/check.js';
+import { applyFix, classifyCell, groupFetchErrors, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
 
@@ -128,4 +128,110 @@ test('structuralProblems finds duplicates, unknown ids, missing quotes and missi
   assert.ok(problems.some((p) => p.includes('unknown cells cannot be verified')));
   assert.deepEqual(missing, []);
   assert.deepEqual(structuralProblems([cell('a', 'x', 'yes')], apps, qs).missing, ['a|y']);
+});
+
+// --- Internet Archive fallback -------------------------------------------------------------------
+
+const archivedPage = (text: string, archiveTimestamp = '20260921065036'): ArchivedPage => ({ ...prepareText(text), via: 'archive', archiveTimestamp });
+
+test('classifyCell on an archive capture: found confirms, missing is an error, never a failure', () => {
+  const found = classifyCell(cell('a', 'x', 'yes'), archivedPage('Intro. A documented sentence about the feature. Outro.'));
+  assert.equal(found.status, 'ok');
+  assert.equal(found.via, 'archive');
+  assert.equal(found.archive_timestamp, '20260921065036');
+
+  // A capture may predate the sentence, so it cannot show the live page lacks it.
+  const missing = classifyCell(cell('a', 'x', 'yes'), archivedPage('A page that says something else entirely.'));
+  assert.equal(missing.status, 'error');
+  assert.match(missing.problems.join(' '), /20260921065036/);
+
+  // A malformed quote is a data error, but a capture never demotes: it is reported, not acted on.
+  const malformed = classifyCell(cell('a', 'x', 'yes', 'short'), archivedPage('short text of the page is here'));
+  assert.equal(malformed.status, 'error');
+  const { cells: [kept], demoted } = applyFix([cell('a', 'x', 'yes', 'short')], [malformed], [], '2026-09-28');
+  assert.equal(demoted, 0);
+  assert.equal(kept?.value, 'yes');
+  // ...and structuralProblems still flags it, whatever the network.
+  const qs: Question[] = [{ id: 'x', group: 'g', name: 'X', question: 'q', rubric: 'r' }];
+  const apps: App[] = [{ id: 'a', name: 'A', vendor: 'v', homepage: 'https://a.x/', repo: null, sources: ['https://a.x/'] }];
+  assert.ok(structuralProblems([cell('a', 'x', 'yes', 'short')], apps, qs).problems.some((p) => p.startsWith('a|x: quote shorter than')));
+});
+
+test('applyFix: a demoted or unverified cell keeps no archive or manual provenance', () => {
+  // The weekly run tests the data after --fix; a demoted cell that still said how it was
+  // verified would fail that test and stop the run before it could open the demotion PR.
+  for (const via of ['archive', 'manual'] as const) {
+    const withVia: Cell = { ...cell('a', 'x', 'yes'), verified_via: via, ...(via === 'archive' ? { archive_timestamp: '20260910120000' } : {}) };
+    const { cells: [flagged] } = applyFix([withVia], [missingReport('a', 'x', 'yes')], [], '2026-09-28');
+    const { cells: [demoted] } = applyFix([flagged as Cell], [missingReport('a', 'x', 'yes')], [], '2026-10-05');
+    assert.equal(demoted?.value, 'unknown');
+    assert.ok(!('verified_via' in (demoted ?? {})), `${via}: verified_via survived the demotion`);
+    assert.ok(!('archive_timestamp' in (demoted ?? {})), `${via}: archive_timestamp survived the demotion`);
+  }
+  const staleUnknown: Cell = { ...cell('a', 'x', 'unknown', '', ''), verified: true, verified_via: 'archive', archive_timestamp: '20260910120000' };
+  const skipped: CellReport = { app: 'a', question: 'x', value: 'unknown', status: 'skipped', method: 'none', evidence_url: '', problems: [] };
+  const { cells: [unverified] } = applyFix([staleUnknown], [skipped], [], '2026-09-28');
+  assert.equal(unverified?.verified, false);
+  assert.ok(!('verified_via' in (unverified ?? {})));
+});
+
+const archiveOk = (app: string, question: string, ts: string): CellReport => ({
+  app,
+  question,
+  value: 'yes',
+  status: 'ok',
+  method: 'exact',
+  evidence_url: 'https://docs.example/page',
+  problems: [],
+  via: 'archive',
+  archive_timestamp: ts,
+});
+
+test('applyFix: an archive confirmation dates the cell to the capture, only if that is newer', () => {
+  const older = { ...cell('a', 'x', 'yes'), verified_at: '2026-09-01' };
+  const { cells: [newer] } = applyFix([older], [archiveOk('a', 'x', '20260921065036')], [], '2026-09-23');
+  assert.equal(newer?.verified_at, '2026-09-21');
+  assert.equal(newer?.verified_via, 'archive');
+  assert.equal(newer?.archive_timestamp, '20260921065036');
+
+  // A capture older than a manual or live read must not roll the date back.
+  const manual: Cell = { ...cell('a', 'x', 'yes'), verified_at: '2026-09-23', verified_via: 'manual' };
+  const { cells: [kept] } = applyFix([manual], [archiveOk('a', 'x', '20260921065036')], [], '2026-09-24');
+  assert.deepEqual(kept, manual);
+});
+
+test('applyFix: an archive capture never starts, stops or advances the missing-quote clock', () => {
+  const flagged: Cell = { ...cell('a', 'x', 'yes'), verified_at: '2026-09-01', quote_missing_since: '2026-09-18' };
+  const { cells: [after], demoted, pending } = applyFix([flagged], [archiveOk('a', 'x', '20260921065036')], [], '2026-09-28');
+  assert.equal(after?.quote_missing_since, '2026-09-18');
+  assert.equal(after?.value, 'yes');
+  assert.equal(demoted, 0);
+  assert.equal(pending.length, 0);
+
+  // An archive miss is an error report, and errors leave the cell exactly as it was.
+  const missReport: CellReport = { ...archiveOk('a', 'x', '20260921065036'), status: 'error', problems: ['quote not found in Internet Archive capture 20260921065036'] };
+  const { cells: [untouched] } = applyFix([flagged], [missReport], [], '2026-10-30');
+  assert.deepEqual(untouched, flagged);
+});
+
+test('applyFix: a live read clears archive and manual provenance', () => {
+  const archived: Cell = { ...cell('a', 'x', 'yes'), verified_at: '2026-09-21', verified_via: 'archive', archive_timestamp: '20260921065036' };
+  const liveOk: CellReport = { app: 'a', question: 'x', value: 'yes', status: 'ok', method: 'exact', evidence_url: 'https://docs.example/page', problems: [] };
+  const { cells: [live] } = applyFix([archived], [liveOk], [], '2026-09-28');
+  assert.equal(live?.verified_at, '2026-09-28');
+  assert.equal(live?.verified_via, undefined);
+  assert.equal(live?.archive_timestamp, undefined);
+  assert.ok(!('verified_via' in (live ?? {})));
+});
+
+test('unusablePage treats the Wayback Machine not-archived page as unusable', () => {
+  assert.equal(unusablePage('Hrm. The Wayback Machine has not archived that URL. This page is not available on the web because page does not exist', false), BOT_CHALLENGE);
+});
+
+test('classifyCell will not confirm a quote from a capture on a punctuation-insensitive match alone', () => {
+  // The capture carries the qualifier the stored quote was cut before: the Lumo failure mode.
+  const r = classifyCell(cell('a', 'x', 'yes', 'We never share your data.'), archivedPage('Intro. We never share your data, except with your consent. Outro.'));
+  assert.equal(r.status, 'error');
+  assert.equal(r.method, 'compact');
+  assert.match(r.problems.join(' '), /punctuation is ignored/);
 });

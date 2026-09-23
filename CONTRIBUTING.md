@@ -78,6 +78,6 @@ Pull requests opened by the workflow do not trigger the CI workflow (GitHub does
 ## Scope
 
 - Consumer AI assistants only, on the consumer individual plan with default settings. Business, team and API plans appear in one question and in notes.
-- Vendor-published documents only as evidence: the privacy policy, terms of use, and official help-center or trust pages. No news articles, blog posts, third-party summaries or archived copies.
+- Vendor-published documents only as evidence: the privacy policy, terms of use, and official help-center or trust pages. No news articles, blog posts or third-party summaries. Never cite an archived copy; the checker may only use the Internet Archive's capture of the vendor's own page to confirm a quote on a page that refuses it, and records that it did.
 - The global or US policy version by default; regional differences in notes.
 - Nothing here is legal advice, and no cell claims that a vendor follows its policy; it claims only what the policy says.

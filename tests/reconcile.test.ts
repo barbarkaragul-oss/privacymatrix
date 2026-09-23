@@ -85,6 +85,20 @@ test('reconcile restores the previous verified cell when the new answer is unkno
   assert.match(sandbox.notes, /model proposed yes/);
 });
 
+test('reconcile: a restore is a live read, so it drops archive or manual provenance and the missing-quote flag', async () => {
+  const prev: Cell = {
+    ...prevCell('hooks', 'yes', 'lifecycle events such as PreToolUse', 'https://docs.example/hooks'),
+    verified_via: 'archive',
+    archive_timestamp: '20260921065036',
+    quote_missing_since: '2026-09-18',
+  };
+  const r = await reconcile('a', qs, [model('hooks', 'unknown', '', '')], new Map([[cellKey('a', 'hooks'), prev]]), lookup, '2026-10-05');
+  const hooks = r.cells.find((c) => c.question === 'hooks')!;
+  assert.equal(r.restored, 1);
+  assert.equal(hooks.verified_at, '2026-10-05');
+  for (const k of ['verified_via', 'archive_timestamp', 'quote_missing_since']) assert.ok(!(k in hooks), `${k} survived a live restore`);
+});
+
 test('reconcile rejects malformed quotes even when the words appear on the page', async () => {
   const r = await reconcile('a', qs, [
     model('plan_mode', 'yes', 'Plan mode', 'https://docs.example/plan'),

@@ -8,6 +8,7 @@
     "apps_failed": [],
     "cells_total": 392,
     "cells_verified": 314,
-    "cells_unknown": 78
+    "cells_unknown": 78,
+    "cells_verified_via_archive": 0
   }
 }

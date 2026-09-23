@@ -61,3 +61,11 @@ test('findQuote: a stitched quote with an ellipsis cannot pass through the compa
   const code = prepareText('For background tasks, `delegate(..., async: true)` returns a task id.');
   assert.equal(findQuote(code, 'For background tasks, `delegate(..., async: true)` returns a task id.').found, true);
 });
+
+test('normalizeText deletes zero-width formatting characters instead of letting them block a match', () => {
+  // As served in an archived OpenAI policy: a word joiner left behind by a link.
+  const page = 'using the tools described in the Data controls⁠ section, or you can submit';
+  const quote = 'using the tools described in the Data controls section, or you can submit';
+  assert.deepEqual(findQuote(page, quote), { found: true, method: 'normalized' });
+  assert.equal(normalizeText('soft­hyphen and zero‍width join'), 'softhyphen and zerowidth join');
+});

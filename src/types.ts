@@ -26,6 +26,9 @@ export type Value = z.infer<typeof ValueSchema>;
 export const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
 export type Confidence = z.infer<typeof ConfidenceSchema>;
 
+export const VerifiedViaSchema = z.enum(['archive', 'manual']);
+export type VerifiedVia = z.infer<typeof VerifiedViaSchema>;
+
 export const AppSchema = z.object({
   id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'lowercase id with dashes'),
   name: z.string().min(1),
@@ -33,6 +36,13 @@ export const AppSchema = z.object({
   homepage: httpUrl,
   repo: httpUrl.nullable(),
   sources: z.array(httpUrl).min(1),
+  /**
+   * Every page this app's cells cite answers HTTP 403 to data-centre IP ranges (GitHub's runners,
+   * our VPS), so the weekly cloud run can never read the app live. Such apps are read live with
+   * `check --residential --only-blocked` from a connection vendors do not block, and are labelled on
+   * the site. The Internet Archive fallback does not depend on this flag: it follows any 403, page by page.
+   */
+  blocked_from_cloud: z.boolean().optional(),
 });
 export type App = z.infer<typeof AppSchema>;
 
@@ -67,6 +77,14 @@ export const CellSchema = z.object({
   verified_at: z.string(),
   /** Set by the weekly check when the quote was not found at its URL; the cell is demoted only if it is still missing a week later. */
   quote_missing_since: z.string().optional(),
+  /**
+   * How verified_at was established when it was not a live fetch by the checker: 'archive' = the
+   * quote was found in an Internet Archive capture of evidence_url (archive_timestamp), 'manual' = a
+   * maintainer read the live page from a connection the vendor does not block. Absent = live.
+   */
+  verified_via: VerifiedViaSchema.optional(),
+  /** Wayback Machine timestamp (YYYYMMDDhhmmss) of the capture that confirmed the quote; only with verified_via 'archive'. */
+  archive_timestamp: z.string().optional(),
 });
 export type Cell = z.infer<typeof CellSchema>;
 
@@ -109,6 +127,8 @@ export const ChangesFileSchema = z.object({
     cells_total: z.number(),
     cells_verified: z.number(),
     cells_unknown: z.number(),
+    // Cells whose last verification came from an Internet Archive capture. Absent before 2026-09-23.
+    cells_verified_via_archive: z.number().default(0),
   }),
 });
 export type ChangesFile = z.infer<typeof ChangesFileSchema>;
