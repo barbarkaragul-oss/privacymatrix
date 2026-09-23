@@ -42,7 +42,6 @@ $chain = ($steps | ForEach-Object { "($_)" }) -join ' && '
 Add-Content -Path $log -Encoding UTF8 -Value ('=== {0} launcher' -f (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'))
 & cmd.exe /d /c "($chain) >> `"$log`" 2>&1"
 $code = $LASTEXITCODE
-if ($code -ne 0) {
-  Add-Content -Path $log -Encoding UTF8 -Value ('=== launcher: a step failed with exit code {0}' -f $code)
-}
+# Always written, so a log that ends without this line means the run was killed part way.
+Add-Content -Path $log -Encoding UTF8 -Value ('=== {0} launcher finished with exit code {1}' -f (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'), $code)
 exit $code

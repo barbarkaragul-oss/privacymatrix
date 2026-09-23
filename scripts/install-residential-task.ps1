@@ -15,7 +15,7 @@ What it sets up, all under -StateDir (default %LOCALAPPDATA%\PrivacyMatrix), out
   - residential.log, last-success and installed-lock, written by the runs.
 
 The task runs as you, only while you are logged on, so it needs no stored password and no
-administrator rights (a PowerShell window flashes briefly when it starts). It fires every day at
+administrator rights, and it runs in a headless console, so no window opens. It fires every day at
 -At, default 13:00 (after the weekly cloud run on Monday morning), and at the next chance after a
 missed time. Each run exits early unless the last success is six or more days old.
 
@@ -50,7 +50,10 @@ $template = Get-Content -Raw -Encoding UTF8 -Path (Join-Path $PSScriptRoot 'resi
 $launcher = Join-Path $StateDir 'residential-launch.ps1'
 $template.Replace('__STATE_DIR__', $StateDir).Replace('__REMOTE_URL__', $remote) | Set-Content -Encoding UTF8 -Path $launcher
 
-$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-NoProfile -NonInteractive -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$launcher`""
+# conhost --headless gives the launcher a console with no window. -WindowStyle Hidden is not enough:
+# where Windows Terminal is the default terminal (the Windows 11 default) it cannot be hidden, so a
+# blank terminal stays open for the whole run, and closing it kills the run.
+$action = New-ScheduledTaskAction -Execute 'conhost.exe' -Argument "--headless powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$launcher`""
 $trigger = New-ScheduledTaskTrigger -Daily -At $At
 $settings = New-ScheduledTaskSettingsSet `
   -StartWhenAvailable `
