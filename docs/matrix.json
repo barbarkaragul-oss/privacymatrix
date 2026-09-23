@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-21T15:05:01.071Z",
+  "generated_at": "2026-09-23T16:40:00.000Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -2624,23 +2624,23 @@
       "app": "lumo",
       "question": "no_training_default",
       "value": "yes",
-      "quote": "Lumo doesn’t use your chats to train the AI models. We run the models on servers we control and never send your data to any third parties.",
+      "quote": "Lumo doesn’t use your chats to train the AI models. We run the models on servers we control and never send your data to any third parties, except with your express permission in giving anonymized feedback for the Apertus 1.5 model.",
       "evidence_url": "https://proton.me/support/lumo-privacy",
-      "notes": "Applies to Guest, Free and Plus by default. The only exception is the optional in-app feedback button, which sends an anonymized copy of the prompt and response to Lumo's team 'to help us improve the model' (and, for the Apertus model, may be shared with Swiss AI, ETH Zurich and EPFL) only when the user explicitly submits it.",
+      "notes": "An ordinary chat is never used for training, on Guest, Free and Plus alike. The no-training sentence now carries one exception: submitting feedback on an Apertus 1.5 response shares that anonymized feedback with Proton and the university research teams behind Apertus. It is opt-in and per response (\"with your express permission\"; the FAQ says \"only with your explicit consent\"), so a user who does not press it is never trained on. The previously stored quote ended at \"never send your data to any third parties\" and kept matching only through the checker’s punctuation-insensitive compact pass after Proton appended the exception; re-cut here from the 2026-09-23 fetch.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-23"
     },
     {
       "app": "lumo",
       "question": "training_opt_out",
       "value": "yes",
-      "quote": "Lumo never keeps your data or uses it to train LLMs.",
+      "quote": "Lumo never keeps your data or uses it to train LLMs, except with your express permission in giving anonymized feedback for Apertus 1.5.",
       "evidence_url": "https://proton.me/support/lumo-privacy",
-      "notes": "No opt-out is needed because chats are never used for training; saved history is zero-access encrypted so Proton cannot read it. Sharing a prompt/response with Proton happens only if the user presses the feedback button.",
+      "notes": "No opt-out setting is needed because chats are not used for training unless the user opts in: the only training path the documents describe is the feedback button on an Apertus 1.5 response, which asks for express permission each time, so not pressing it is the off state. Saved history is zero-access encrypted, so Proton cannot read it. The previously stored quote ended at \"uses it to train LLMs\" and survived Proton’s appended exception only through the compact pass; re-cut here from the 2026-09-23 fetch.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-23"
     },
     {
       "app": "lumo",
@@ -2734,13 +2734,12 @@
       "app": "lumo",
       "question": "no_sale_sharing",
       "value": "yes",
-      "quote": "Many AI assistants share and sell your data with third parties or with other subsidiaries within their business. Lumo never shares your data.",
+      "quote": "Lumo does not sell or share your data as a rule, except when you explicitly choose to submit feedback on an Apertus 1.5 response. In this case, your feedback is anonymized before being shared with Proton and the university research teams behind Apertus to help improve the model.",
       "evidence_url": "https://proton.me/support/lumo-privacy",
-      "notes": "Disclosure is limited to binding requests from competent authorities. Caveats: with the optional Web search feature a simplified version of the request (not the full query) is sent to selected search partner APIs; payment and support processors act on Proton's behalf.",
+      "notes": "No advertising or marketing sharing is disclosed anywhere on the page: \"advertis\" and \"marketing\" do not occur in the policy text, and \"partner\" appears only in site chrome (navigation and footer). The single disclosed exception is user-initiated — submitting feedback on an Apertus 1.5 response shares that anonymized feedback with Proton and the university research teams behind Apertus to improve the model — and the FAQ restates it as never sharing with third parties without the user’s explicit consent. Models run on servers Proton controls, so chats are not stored on a third-party platform. The statement is global, not scoped to one jurisdiction or to the US state-law definitions of sale and sharing.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-18"
+      "verified_at": "2026-09-23"
     },
     {
       "app": "lumo",
@@ -3109,13 +3108,12 @@
       "app": "apple-intelligence",
       "question": "uploads_excluded",
       "value": "partial",
-      "quote": "The data sent to and returned by Private Cloud Compute is not stored or made accessible to Apple. The data is processed only to fulfill your request, after which point the results are returned securely to your device and are not retained by Private Cloud Compute.",
+      "quote": "Apple Intelligence is designed to identify the data necessary to provide to a generative model in order to best assist you, without requiring access to or storage of the personal data by Apple.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/intelligence-engine/",
-      "notes": "The documents never name uploads. For content handled by Apple Intelligence (emails, documents and photos processed by Writing Tools, summaries or visual intelligence) Apple states it is processed on device or sent to Private Cloud Compute where it is not stored or made accessible to Apple, which excludes that content from training by inference rather than by an explicit training statement. The Siri component, which the same product includes and which does store request transcripts and related request data for model improvement, says nothing about content attached to requests, and the opt-in ChatGPT extension (off by default) lets OpenAI train on attachments when a ChatGPT account is signed in. Exclusion is therefore stated only for one component of the product.",
+      "notes": "The documents never name uploads. For content Apple Intelligence handles, this page states that the data necessary for a generative model is identified without requiring access to or storage of the personal data by Apple, and that data processed in Private Cloud Compute is neither stored nor made accessible to Apple — which excludes that content from training by inference rather than by an explicit training statement. The Siri component of the same product does store request transcripts and related request data for model improvement (see no_training_default and human_review_limited, which quote the Ask Siri & Dictation page) and says nothing about content attached to a request, so exclusion is stated for only one component of the product.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-18"
+      "verified_at": "2026-09-23"
     },
     {
       "app": "apple-intelligence",
@@ -3176,13 +3174,12 @@
       "app": "apple-intelligence",
       "question": "deletion_timeline",
       "value": "partial",
-      "quote": "The data is processed only to fulfill your request, after which point the results are returned securely to your device and are not retained by Private Cloud Compute.",
+      "quote": "It is processed only to fulfill your request, after which point the results are returned securely to your device and are not retained by Private Cloud Compute.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/intelligence-engine/",
-      "notes": "Apple Intelligence cloud requests are never retained (immediate), but for Siri the documents state only a retention ceiling (transcripts up to two years; reviewed samples longer) and give no purge period after the user deletes Siri & Dictation History or the Apple Account; the Privacy Policy only commits to 'the shortest possible period permissible under law'.",
+      "notes": "Apple Intelligence cloud requests are never retained: Private Cloud Compute returns the result and keeps nothing. The same page also says Apple may collect limited information about each request (approximate size, which features were used, how long it took) and states no retention period for it. For Siri the documents give only a ceiling — transcripts up to two years, reviewed samples longer (see no_training_default and human_review_limited, which quote the Ask Siri & Dictation page) — and no purge period after the user deletes Siri & Dictation History or the Apple Account.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11",
-      "quote_missing_since": "2026-09-18"
+      "verified_at": "2026-09-23"
     },
     {
       "app": "apple-intelligence",

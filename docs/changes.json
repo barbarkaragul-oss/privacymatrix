@@ -1,6 +1,6 @@
 {
-  "run_at": "2026-09-21T15:05:01.071Z",
-  "model": "none (mechanical quote re-check)",
+  "run_at": "2026-09-23T16:40:00.000Z",
+  "model": "none (full mechanical quote re-check run by hand on 2026-09-23; five cells re-quoted from the current documentation, no value changed)",
   "changes": [],
   "stats": {
     "apps_checked": 28,
