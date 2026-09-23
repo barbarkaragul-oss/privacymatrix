@@ -387,6 +387,7 @@ export async function runVerify(opts: Options): Promise<number> {
     run_at: new Date().toISOString(),
     model: opts.model,
     changes,
+    pending: [],
     stats: {
       apps_checked: results.length - failed.length,
       apps_failed: failed,

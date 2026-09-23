@@ -88,7 +88,7 @@ Values follow a written rubric per question (see [`data/questions.json`](data/qu
 ## Recent changes
 
 <!-- changes:start -->
-_Last run 2026-09-23: every quote was still present at its source, no value changed._
+_Last run 2026-09-23: no value changed, every quote was found at its source._
 <!-- changes:end -->
 
 ## How it works

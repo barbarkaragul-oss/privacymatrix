@@ -88,10 +88,21 @@ export const ChangeSchema = z.object({
 });
 export type Change = z.infer<typeof ChangeSchema>;
 
+/** A quote that was not found at its URL in a run; the cell is kept until it has been missing for a week. */
+export const PendingQuoteSchema = z.object({
+  app: z.string(),
+  question: z.string(),
+  evidence_url: z.string(),
+  since: z.string(),
+});
+export type PendingQuote = z.infer<typeof PendingQuoteSchema>;
+
 export const ChangesFileSchema = z.object({
   run_at: z.string(),
   model: z.string(),
   changes: z.array(ChangeSchema),
+  // Absent in files written before 2026-09-23, which is why it defaults rather than being required.
+  pending: z.array(PendingQuoteSchema).default([]),
   stats: z.object({
     apps_checked: z.number(),
     apps_failed: z.array(z.string()),

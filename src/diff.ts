@@ -1,4 +1,4 @@
-import type { App, Question, Cell, Change, ChangesFile } from './types.js';
+import type { App, Question, Cell, Change, ChangesFile, PendingQuote } from './types.js';
 import { cellKey, isHttpUrl, mdUrl } from './types.js';
 
 export function diffMatrices(previous: Cell[], next: Cell[]): Change[] {
@@ -51,13 +51,7 @@ function shorten(s: string, max: number): string {
   return t.length > max ? t.slice(0, max - 1) + '…' : t;
 }
 
-/** A quote that was not found at its URL in this run; the cell is kept until it has been missing for a week. */
-export interface PendingQuote {
-  app: string;
-  question: string;
-  evidence_url: string;
-  since: string;
-}
+export type { PendingQuote } from './types.js';
 
 export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions: Question[], fetchErrors: string[] = [], pending: PendingQuote[] = []): string {
   const appName = new Map(apps.map((a) => [a.id, a.name]));
