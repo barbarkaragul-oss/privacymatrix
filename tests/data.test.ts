@@ -29,3 +29,18 @@ test('matrix cells reference known apps and questions, no duplicates', () => {
     }
   }
 });
+
+test('archive provenance is well formed wherever it appears', () => {
+  for (const cell of loadMatrix().cells) {
+    const key = cellKey(cell.app, cell.question);
+    if (cell.verified_via === 'archive') assert.match(cell.archive_timestamp ?? '', /^\d{14}$/, `${key} needs a 14-digit archive_timestamp`);
+    else assert.equal(cell.archive_timestamp, undefined, `${key} has an archive_timestamp but is not verified from an archive`);
+    if (cell.verified_via) assert.ok(cell.verified && cell.verified_at, `${key} has provenance but is not verified`);
+  }
+});
+
+test('an app marked blocked_from_cloud has quoted cells to check from the residential runner', () => {
+  const blocked = loadApps().filter((a) => a.blocked_from_cloud);
+  const quoted = new Set(loadMatrix().cells.filter((c) => c.quote.trim()).map((c) => c.app));
+  for (const a of blocked) assert.ok(quoted.has(a.id), `${a.id} is marked blocked_from_cloud but has no quoted cells`);
+});

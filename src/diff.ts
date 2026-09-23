@@ -53,7 +53,25 @@ function shorten(s: string, max: number): string {
 
 export type { PendingQuote } from './types.js';
 
-export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions: Question[], fetchErrors: string[] = [], pending: PendingQuote[] = []): string {
+/**
+ * What the Internet Archive fallback did in a run: quotes found in a capture, how many cells that
+ * re-dated (a capture only re-dates a cell when it is newer than the cell's last verification), and
+ * the oldest capture among those re-dated cells.
+ */
+export interface ArchiveSummary {
+  confirmed: number;
+  dated: number;
+  oldestDated: string | null;
+}
+
+export function renderChangesMarkdown(
+  file: ChangesFile,
+  apps: App[],
+  questions: Question[],
+  fetchErrors: string[] = [],
+  pending: PendingQuote[] = [],
+  archive: ArchiveSummary = { confirmed: 0, dated: 0, oldestDated: null },
+): string {
   const appName = new Map(apps.map((a) => [a.id, a.name]));
   const questionName = new Map(questions.map((c) => [c.id, c.name]));
   const lines: string[] = [];
@@ -61,6 +79,15 @@ export function renderChangesMarkdown(file: ChangesFile, apps: App[], questions:
   lines.push(`## Weekly re-verification: ${n} value change${n === 1 ? '' : 's'}`);
   lines.push('');
   lines.push(`Run: ${file.run_at} · Method: ${escapeMd(file.model)} · Apps checked: ${file.stats.apps_checked} · Cells verified: ${file.stats.cells_verified}/${file.stats.cells_total} · Unknown: ${file.stats.cells_unknown}`);
+  if (archive.confirmed > 0) {
+    const found = `${archive.confirmed} quote${archive.confirmed === 1 ? '' : 's'} on pages that refused the checker ${archive.confirmed === 1 ? 'was' : 'were'} found in Internet Archive captures`;
+    const dated =
+      archive.dated > 0
+        ? `${archive.dated} cell${archive.dated === 1 ? ' was' : 's were'} re-dated to a capture newer than ${archive.dated === 1 ? 'its' : 'their'} last verification${archive.oldestDated ? ` (oldest ${archive.oldestDated})` : ''}, and the rest keep their dates`
+        : 'no capture was newer than the cell it confirmed, so every date is unchanged';
+    lines.push('');
+    lines.push(`${found}; ${dated}. A capture can confirm a quote; it never demotes a cell.`);
+  }
   if (file.stats.apps_failed.length > 0) {
     lines.push('');
     lines.push(`Apps that could not be checked this run (previous values kept): ${file.stats.apps_failed.map((a) => escapeMd(appName.get(a) ?? a)).join(', ')}`);

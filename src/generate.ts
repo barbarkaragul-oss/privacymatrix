@@ -36,10 +36,18 @@ export function replaceBetween(source: string, start: string, end: string, body:
   return source.slice(0, i + start.length) + '\n' + body.trim() + '\n' + source.slice(j);
 }
 
+/** "[archive 2026-09-21] " / "[manual 2026-09-23] " for cells not verified by a live read, else "". */
+function provenancePrefix(cell: Cell): string {
+  return cell.verified && cell.verified_via ? `[${cell.verified_via} ${cell.verified_at}] ` : '';
+}
+
 export function renderMatrixMarkdown(apps: App[], qs: ReturnType<typeof loadQuestions>, cells: Cell[]): string {
   const byKey = new Map(cells.map((c) => [cellKey(c.app, c.question), c]));
   const out: string[] = [];
-  out.push('Legend: ✅ yes · 🟡 partial · ❌ no · ❔ unknown. Yes is always the more privacy-protective answer; the cells describe what the documents say, not what vendors do. Not legal advice. On desktop, hover a cell for the quote (for ❌ cells, the explanation); click it to open the source. On mobile, use the [interactive matrix](https://barbarkaragul-oss.github.io/privacymatrix/).');
+  const provenanceNote = cells.some((c) => c.verified && c.verified_via)
+    ? ' A tooltip that starts with [manual] was read by a maintainer from a residential connection, and one that starts with [archive] was confirmed from an Internet Archive capture, because the vendor blocks automated checks from cloud servers.'
+    : '';
+  out.push(`Legend: ✅ yes · 🟡 partial · ❌ no · ❔ unknown. Yes is always the more privacy-protective answer; the cells describe what the documents say, not what vendors do. Not legal advice. On desktop, hover a cell for the quote (for ❌ cells, the explanation); click it to open the source.${provenanceNote} On mobile, use the [interactive matrix](https://barbarkaragul-oss.github.io/privacymatrix/).`);
   out.push('');
   for (const group of qs.groups) {
     const groupQuestions = qs.questions.filter((c) => c.group === group.id);
@@ -54,7 +62,7 @@ export function renderMatrixMarkdown(apps: App[], qs: ReturnType<typeof loadQues
         if (!cell || cell.value === 'unknown' || !isHttpUrl(cell.evidence_url)) return ICON.unknown;
         // A "no" is a claim about absence: its quote shows the closest documented feature, which reads
         // as a contradiction on its own, so the tooltip carries the explanation instead.
-        const title = mdTitle(cell.value === 'no' ? cell.notes || cell.quote : cell.quote || cell.notes || LABEL[cell.value]);
+        const title = mdTitle(provenancePrefix(cell) + (cell.value === 'no' ? cell.notes || cell.quote : cell.quote || cell.notes || LABEL[cell.value]));
         return `[${ICON[cell.value]}](${mdUrl(cell.evidence_url)} "${title}")`;
       });
       out.push(`| **${cap.name}** | ${row.join(' | ')} |`);
@@ -66,22 +74,59 @@ export function renderMatrixMarkdown(apps: App[], qs: ReturnType<typeof loadQues
 
 function renderStats(apps: App[], qs: Question[], cells: Cell[]): string {
   const verified = cells.filter((c) => c.verified).length;
+  const viaArchive = cells.filter((c) => c.verified && c.verified_via === 'archive').length;
   const dates = cells.map((c) => c.verified_at).filter(Boolean).sort();
   const latest = dates.length ? dates[dates.length - 1] : 'never';
   const counts = { yes: 0, partial: 0, no: 0, unknown: 0 };
   for (const c of cells) counts[c.value]++;
-  return `**${apps.length} apps × ${qs.length} questions · ${verified}/${cells.length} cells verified against their source · last verification ${latest}** · ✅ ${counts.yes} · 🟡 ${counts.partial} · ❌ ${counts.no} · ❔ ${counts.unknown}`;
+  const archived = viaArchive ? ` (${viaArchive} via archived copies)` : '';
+  return `**${apps.length} apps × ${qs.length} questions · ${verified}/${cells.length} cells verified against their source${archived} · last verification ${latest}** · ✅ ${counts.yes} · 🟡 ${counts.partial} · ❌ ${counts.no} · ❔ ${counts.unknown}`;
+}
+
+/**
+ * README section listing the apps whose sources block the checker from cloud servers, and how each
+ * one's cells were last verified. Empty when no app is marked blocked_from_cloud.
+ */
+export function renderBlockedSources(apps: App[], cells: Cell[]): string {
+  const blocked = apps.filter((a) => a.blocked_from_cloud);
+  if (blocked.length === 0) return '';
+  const lines = [
+    '### Sources the checker cannot reach',
+    '',
+    "These vendors answer HTTP 403 to every request from a cloud IP range, including GitHub's runners and our own server, although their robots.txt permits the pages. Their pages can only be read live from a residential connection; from the cloud, a quote can only be confirmed against the most recent Internet Archive capture of the vendor's page, which never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.",
+    '',
+  ];
+  for (const a of blocked) {
+    const own = cells.filter((c) => c.app === a.id && c.verified);
+    const manual = own.filter((c) => c.verified_via === 'manual').length;
+    const archive = own.filter((c) => c.verified_via === 'archive').length;
+    const live = own.length - manual - archive;
+    const hosts = [...new Set(a.sources.map((s) => new URL(s).hostname))].join(', ');
+    const dates = own.map((c) => c.verified_at).filter(Boolean).sort();
+    const first = dates[0];
+    const last = dates[dates.length - 1];
+    const when = !first ? 'never verified' : first === last ? `verified ${last}` : `verified between ${first} and ${last}`;
+    const how = [live ? `${live} read live` : '', manual ? `${manual} read by hand` : '', archive ? `${archive} confirmed from archive captures` : '']
+      .filter(Boolean)
+      .join(', ');
+    lines.push(`- **${a.name}** (${hosts}): ${own.length} verified cells${how ? ` — ${how}` : ''}; ${when}.`);
+  }
+  return lines.join('\n');
 }
 
 export function renderRecentChanges(changes: ChangesFile | null, apps: App[], qs: Question[]): string {
   if (!changes) return '_The weekly re-verification has not run yet. Results appear here after the first run._';
   // The line must not claim more than the run knows: a run can change no value and still have found
   // quotes missing from their page, which are kept for a week before they demote the cell.
+  // Nor may it claim a quote was found at its source when the page could not be read live: those
+  // are either unreachable or confirmed only in an Internet Archive capture.
   const pending = changes.pending.length;
+  const viaArchive = changes.stats.cells_verified_via_archive;
   if (changes.changes.length === 0) {
+    const archived = viaArchive ? `, and ${viaArchive} cell${viaArchive === 1 ? ' rests' : 's rest'} on Internet Archive captures of pages that block the checker` : '';
     const missing =
       pending === 0
-        ? 'every quote was found at its source'
+        ? `no quote was missing from any page the checker could read${archived}`
         : `${pending} quote${pending === 1 ? '' : 's'} not found at their source and pending a human look (see [changes.md](data/changes.md))`;
     return `_Last run ${changes.run_at.slice(0, 10)}: no value changed, ${missing}._`;
   }
@@ -113,6 +158,7 @@ export function generateAll(): void {
   readme = replaceBetween(readme, '<!-- stats:start -->', '<!-- stats:end -->', renderStats(apps, qs.questions, matrix.cells));
   readme = replaceBetween(readme, '<!-- matrix:start -->', '<!-- matrix:end -->', renderMatrixMarkdown(apps, qs, matrix.cells));
   readme = replaceBetween(readme, '<!-- changes:start -->', '<!-- changes:end -->', renderRecentChanges(changes, apps, qs.questions));
+  readme = replaceBetween(readme, '<!-- blocked:start -->', '<!-- blocked:end -->', renderBlockedSources(apps, matrix.cells));
   writeFileSync(readmePath, readme, 'utf8');
 
   mkdirSync(DOCS_DIR, { recursive: true });

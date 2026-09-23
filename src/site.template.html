@@ -89,6 +89,7 @@
   footer { margin-top: 36px; color: var(--text-3); font-size: 13px; }
   kbd { font: 12px var(--mono); background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
   .count { font-size: 11px; font-weight: 500; color: var(--text-3); display: block; margin-top: 2px; }
+  .count.blocked { font-style: italic; cursor: help; }
 </style>
 </head>
 <body>
@@ -147,6 +148,12 @@
   if (!D) { document.getElementById('table-wrap').textContent = 'No data embedded. Run npm run build.'; return; }
   const LABEL = { yes: 'Yes', partial: 'Partial', no: 'No', unknown: 'Unknown' };
   const GLYPH = { yes: '✓', partial: '◐', no: '✕', unknown: '?' };
+  // How a cell was verified when it was not a live read by the checker (absent = live).
+  const VIA = {
+    manual: { mark: '✎', text: 'read by a maintainer from a residential connection' },
+    archive: { mark: '◷', text: 'confirmed from an Internet Archive capture' },
+  };
+  const BLOCKED_NOTE = "This vendor's pages answer HTTP 403 to every request from a cloud IP range, although its robots.txt permits them. They can only be read live from a residential connection; from the cloud, quotes are confirmed against Internet Archive captures. Open a cell to see how and when it was verified.";
   const byKey = new Map(D.cells.map((c) => [c.app + '|' + c.question, c]));
   const appById = new Map(D.apps.map((a) => [a.id, a]));
   const questionById = new Map(D.questions.map((c) => [c.id, c]));
@@ -176,7 +183,8 @@
   const dates = D.cells.map((c) => c.verified_at).filter(Boolean).sort();
   const counts = { yes: 0, partial: 0, no: 0, unknown: 0 };
   D.cells.forEach((c) => { counts[c.value] = (counts[c.value] || 0) + 1; });
-  stats.innerHTML = '<span><b>' + D.apps.length + '</b> apps</span><span><b>' + D.questions.length + '</b> questions</span><span><b>' + verified + '/' + D.cells.length + '</b> cells verified at source</span><span>last verification <b>' + esc(dates.length ? dates[dates.length - 1] : 'never') + '</b></span>';
+  const viaArchive = D.cells.filter((c) => c.verified && c.verified_via === 'archive').length;
+  stats.innerHTML = '<span><b>' + D.apps.length + '</b> apps</span><span><b>' + D.questions.length + '</b> questions</span><span><b>' + verified + '/' + D.cells.length + '</b> cells verified at source' + (viaArchive ? ' (' + viaArchive + ' via archived copies)' : '') + '</span><span>last verification <b>' + esc(dates.length ? dates[dates.length - 1] : 'never') + '</b></span>';
 
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -212,7 +220,8 @@
     const head = '<tr><th scope="col">Question</th>' + D.apps.map((a) => {
       const cs = D.cells.filter((c) => c.app === a.id);
       const y = cs.filter((c) => c.value === 'yes').length, p = cs.filter((c) => c.value === 'partial').length;
-      return '<th scope="col">' + esc(a.name) + '<span class="count">' + y + ' yes · ' + p + ' partial</span></th>';
+      const blocked = a.blocked_from_cloud ? '<span class="count blocked" title="' + esc(BLOCKED_NOTE) + '">sources block cloud checks</span>' : '';
+      return '<th scope="col">' + esc(a.name) + '<span class="count">' + y + ' yes · ' + p + ' partial</span>' + blocked + '</th>';
     }).join('') + '</tr>';
     let body = '';
     D.groups.forEach((g) => {
@@ -225,8 +234,10 @@
           const cell = byKey.get(a.id + '|' + cap.id) || { value: 'unknown', verified: false };
           const v = cell.value || 'unknown';
           const cls = 'v ' + v + (v !== 'unknown' && !cell.verified ? ' unverified' : '');
-          const label = esc(a.name) + ' — ' + esc(cap.name) + ': ' + LABEL[v] + (cell.verified ? ', verified ' + esc(cell.verified_at) : '');
-          body += '<td class="cell"><button type="button" class="' + cls + '" data-a="' + esc(a.id) + '" data-c="' + esc(cap.id) + '" aria-label="' + label + '">' + GLYPH[v] + '</button></td>';
+          const via = cell.verified && VIA[cell.verified_via];
+          const label = esc(a.name) + ' — ' + esc(cap.name) + ': ' + LABEL[v] + (cell.verified ? ', verified ' + esc(cell.verified_at) + (via ? ', ' + via.text : '') : '');
+          const badge = via ? '<span class="badge" aria-hidden="true" title="' + esc(via.text) + '">' + via.mark + '</span>' : '';
+          body += '<td class="cell"><button type="button" class="' + cls + '" data-a="' + esc(a.id) + '" data-c="' + esc(cap.id) + '" aria-label="' + label + '">' + GLYPH[v] + badge + '</button></td>';
         });
         body += '</tr>';
       });
@@ -255,7 +266,19 @@
     if (cell.quote) html += '<blockquote title="Verbatim from the source, markdown syntax removed for display">“' + esc(plain(cell.quote)) + '”</blockquote>';
     html += '<div class="meta">';
     if (isHttp(cell.evidence_url)) html += '<span>Source</span><a href="' + esc(cell.evidence_url) + '" target="_blank" rel="noopener">' + esc(cell.evidence_url) + '</a>';
-    html += '<span>Verified</span><span>' + (cell.verified ? 'quote found at source on ' + esc(cell.verified_at) : 'not verified — shown as unknown') + '</span>';
+    let verifiedText = 'not verified — shown as unknown';
+    if (cell.verified && cell.verified_via === 'archive') {
+      verifiedText = "quote confirmed in the Internet Archive's capture of the source from " + esc(cell.verified_at) + ". The vendor's site refused the checker's request from a cloud server, so the capture stands in for the live page; it can confirm a quote, never remove one.";
+    } else if (cell.verified && cell.verified_via === 'manual') {
+      verifiedText = 'quote found at source on ' + esc(cell.verified_at) + " by a maintainer, from a residential connection. The vendor's site blocks automated checks from cloud servers.";
+    } else if (cell.verified) {
+      verifiedText = 'quote found at source on ' + esc(cell.verified_at);
+    }
+    html += '<span>Verified</span><span>' + verifiedText + '</span>';
+    if (cell.verified_via === 'archive' && /^\d{14}$/.test(cell.archive_timestamp || '') && isHttp(cell.evidence_url)) {
+      const archived = 'https://web.archive.org/web/' + cell.archive_timestamp + '/' + cell.evidence_url;
+      html += '<span>Archived copy</span><a href="' + esc(archived) + '" target="_blank" rel="noopener">' + esc(archived) + '</a>';
+    }
     if (cell.confidence) html += '<span>Confidence</span><span>' + esc(cell.confidence) + '</span>';
     html += '<span>Rubric</span><span>' + esc(cap.rubric) + '</span>';
     html += '</div>';

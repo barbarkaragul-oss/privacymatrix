@@ -29,6 +29,10 @@ export const MAX_QUOTE_LENGTH = 400;
 export function normalizeText(input: string): string {
   return input
     .normalize('NFKC')
+    // Zero-width formatting characters (soft hyphen, zero-width non-joiner and joiner, word joiner)
+    // take no space on screen, so they are deleted rather than turned into spaces. Pages insert
+    // them around links ("Data controls⁠ section"), which otherwise blocks the normalized pass.
+    .replace(/[­‌‍⁠]/g, '')
     .replace(/[‘’‚‛′]/g, "'")
     .replace(/[“”„‟″]/g, '"')
     .replace(/[‐-―−]/g, '-')

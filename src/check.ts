@@ -13,14 +13,24 @@
  *                                 what a runner in another network actually receives)
  *   npm run check -- --url u      with --dump: also fetch and dump this URL (repeatable), to test
  *                                 candidate source pages from that network before citing them
+ *   npm run check -- --residential   running from a connection vendors do not block (the
+ *                                 self-hosted runner): read blocked_from_cloud apps live, retry a
+ *                                 403 a few times, one request at a time, no archive fallback
+ *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
  * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
  * only on the second run in a row. No API key needed. This is the free weekly re-verification,
  * and the same check CI runs on pull requests that edit the data.
+ *
+ * When a vendor blocks the checker (HTTP 401/403/429 or a bot challenge) and this is not a
+ * residential run, the most recent Internet Archive capture of the page is read instead. A capture
+ * can confirm a quote, and dates the cell to the capture when that is newer than its last
+ * verification; it can never demote a cell or touch the missing-quote clock (see src/archive.ts).
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { captureDate, fetchCapture, latestCapture } from './archive.js';
 import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
 import { Fetcher, type FetchResult } from './fetch.js';
 import { findQuote, prepareText, quoteProblems, type MatchMethod, type PreparedText } from './quotes.js';
@@ -49,13 +59,33 @@ export interface CellReport {
   method: MatchMethod;
   evidence_url: string;
   problems: string[];
+  /** Set when the quote was confirmed in an Internet Archive capture rather than on the live page. */
+  via?: 'archive';
+  archive_timestamp?: string;
 }
 
-export type PageResult = PreparedText | { error: string };
+/** A page read from an Internet Archive capture because the live page blocked the checker. */
+export type ArchivedPage = PreparedText & { via: 'archive'; archiveTimestamp: string };
+
+export type PageResult = PreparedText | ArchivedPage | { error: string };
+
+function isArchived(page: PageResult): page is ArchivedPage {
+  return 'via' in page && page.via === 'archive';
+}
 
 /** Minimum amount of text a fetched page must contain before a missing quote counts as evidence (a client-rendered shell has almost none; a short LICENSE file has more). */
 export const MIN_PAGE_CHARS = 40;
-const CHALLENGE_MARKERS = [/just a moment/i, /enable javascript/i, /access denied/i, /attention required/i, /verify you are human/i, /checking your browser/i];
+export const BOT_CHALLENGE = 'page looks like a bot challenge or consent wall';
+const CHALLENGE_MARKERS = [
+  /just a moment/i,
+  /enable javascript/i,
+  /access denied/i,
+  /attention required/i,
+  /verify you are human/i,
+  /checking your browser/i,
+  // the Wayback Machine's own "not archived" page, which it can serve with status 200
+  /wayback machine (has not archived|doesn.t have that page)/i,
+];
 
 /**
  * A 200 response is not always the page: bot challenges, consent walls and client-rendered
@@ -66,7 +96,7 @@ export function unusablePage(text: string, truncated: boolean): string | null {
   if (truncated) return 'page larger than the download limit';
   if (text.trim().length < MIN_PAGE_CHARS) return `page has only ${text.trim().length} characters of text`;
   const head = text.slice(0, 2000);
-  for (const re of CHALLENGE_MARKERS) if (re.test(head)) return 'page looks like a bot challenge or consent wall';
+  for (const re of CHALLENGE_MARKERS) if (re.test(head)) return BOT_CHALLENGE;
   return null;
 }
 
@@ -77,10 +107,14 @@ export interface CheckOptions {
   dump: string | null;
   /** Extra URLs to fetch and dump alongside the evidence pages (candidates for new sources); they never affect cells. */
   extraUrls: string[];
+  /** Running from a connection vendors do not block: read blocked_from_cloud apps live, gently, without the archive fallback. */
+  residential: boolean;
+  /** Only check apps marked blocked_from_cloud. */
+  onlyBlocked: boolean;
 }
 
 function parseArgs(argv: string[]): CheckOptions {
-  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [] };
+  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [], residential: false, onlyBlocked: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--soft') out.soft = true;
@@ -88,8 +122,10 @@ function parseArgs(argv: string[]): CheckOptions {
     else if (a === '--app') out.app = argv[++i] ?? null;
     else if (a === '--dump') out.dump = argv[++i] ?? null;
     else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
+    else if (a === '--residential') out.residential = true;
+    else if (a === '--only-blocked') out.onlyBlocked = true;
     else if (a === '--help' || a === '-h') {
-      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]...');
+      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked]');
       process.exit(0);
     }
   }
@@ -129,6 +165,18 @@ export function groupFetchErrors(errors: CellReport[], apps: App[]): string[] {
   });
 }
 
+/** Statuses that mean "the server refused this client", as opposed to an outage: worth trying the archive. */
+const BLOCK_STATUSES = new Set([401, 403, 429]);
+
+/** Runs fn over items with at most `limit` in flight. */
+async function eachLimited<T>(items: T[], limit: number, fn: (item: T) => Promise<void>): Promise<void> {
+  let next = 0;
+  const worker = async (): Promise<void> => {
+    while (next < items.length) await fn(items[next++] as T);
+  };
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+}
+
 /** Whole days from ISO date a to ISO date b; infinite when either date is unreadable, so a bad flag never blocks a demotion. */
 function daysBetween(a: string, b: string): number {
   const ms = Date.parse(b) - Date.parse(a);
@@ -145,6 +193,25 @@ export function classifyCell(cell: Cell, page: PageResult | undefined): CellRepo
   if (!page) return { ...base, status: 'error', method: 'none', problems: [...problems, 'page not fetched'] };
   if ('error' in page) return { ...base, status: 'error', method: 'none', problems: [...problems, `fetch failed: ${page.error}`] };
   const m = findQuote(page, cell.quote);
+  if (isArchived(page)) {
+    // A malformed quote is a data error, but a capture never demotes a cell, so here it is only
+    // reported. structuralProblems flags it on every run, whatever the network.
+    if (problems.length) {
+      return { ...base, status: 'error', method: m.method, problems: [...problems, `read only from Internet Archive capture ${page.archiveTimestamp}, which never demotes a cell`] };
+    }
+    // An archived copy can show a sentence was there; it cannot show the live page lacks it, since
+    // the capture may predate the sentence. So a miss here is an unreadable page, not a failure.
+    if (!m.found) {
+      return { ...base, status: 'error', method: 'none', problems: [`quote not found in Internet Archive capture ${page.archiveTimestamp}, which cannot show the live page lacks it`] };
+    }
+    // The compact pass ignores punctuation, so it also matches a quote that was cut where the vendor
+    // later added a qualifier. Acceptable against the live page, where a real rewrite breaks the
+    // match soon enough; not as the only confirmation a capture gives.
+    if (m.method === 'compact') {
+      return { ...base, status: 'error', method: m.method, problems: [`quote only matches Internet Archive capture ${page.archiveTimestamp} when punctuation is ignored, which is too weak to confirm it from a capture`] };
+    }
+    return { ...base, status: 'ok', method: m.method, problems, via: 'archive', archive_timestamp: page.archiveTimestamp };
+  }
   if (!m.found) problems.push('quote not found on page');
   return { ...base, status: problems.length ? 'fail' : 'ok', method: m.method, problems };
 }
@@ -161,6 +228,9 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
     if (!appIds.has(cell.app)) problems.push(`unknown app ${cell.app}`);
     if (!questionIds.has(cell.question)) problems.push(`unknown question ${cell.question}`);
     if (cell.value !== 'unknown' && (!cell.quote.trim() || !cell.evidence_url.trim())) problems.push(`${key}: value ${cell.value} requires quote and evidence_url`);
+    // Checked here as well as against the page, so a malformed quote on a page the checker cannot
+    // read live (unreachable, or read only from an archive capture) still fails a pull request.
+    if (cell.value !== 'unknown' && cell.quote.trim()) for (const p of quoteProblems(cell.quote)) problems.push(`${key}: ${p}`);
     if (cell.value === 'unknown' && cell.verified) problems.push(`${key}: unknown cells cannot be verified`);
   }
   const missing: string[] = [];
@@ -172,6 +242,33 @@ function withoutFlag(cell: Cell): Cell {
   const copy = { ...cell };
   delete copy.quote_missing_since;
   return copy;
+}
+
+/**
+ * Drops the missing-quote flag and any archive or manual provenance. Used whenever a cell's
+ * verification changes hands: a live read supersedes provenance (absent verified_via means live),
+ * and a cell that stops being verified must not keep saying how it was verified.
+ */
+function withoutProvenance(cell: Cell): Cell {
+  const copy = withoutFlag(cell);
+  delete copy.verified_via;
+  delete copy.archive_timestamp;
+  return copy;
+}
+
+function verifiedLive(cell: Cell, today: string): Cell {
+  return { ...withoutProvenance(cell), verified: true, verified_at: today };
+}
+
+/**
+ * A quote confirmed in an archive capture dates the cell to the capture, but only when that is
+ * newer than what the cell already has: an old capture must not roll back a live or manual read.
+ * It leaves quote_missing_since alone, because only a live read can start or stop that clock.
+ */
+function verifiedFromArchive(cell: Cell, timestamp: string | undefined): Cell {
+  const date = captureDate(timestamp ?? '');
+  if (!date || date <= cell.verified_at) return cell;
+  return { ...cell, verified: true, verified_at: date, verified_via: 'archive', archive_timestamp: timestamp };
 }
 
 /**
@@ -192,7 +289,7 @@ export function applyFix(cells: Cell[], reports: CellReport[], missing: string[]
     demoted++;
     const tail = cell.notes.trim() ? ` | ${cell.notes.trim()}` : '';
     return {
-      ...withoutFlag(cell),
+      ...withoutProvenance(cell),
       value: 'unknown',
       quote: '',
       evidence_url: '',
@@ -215,8 +312,8 @@ export function applyFix(cells: Cell[], reports: CellReport[], missing: string[]
       }
       return demote(cell, `quote not found on page since ${since}`);
     }
-    if (r.status === 'ok' && cell.value !== 'unknown') return { ...withoutFlag(cell), verified: true, verified_at: today };
-    if (cell.value === 'unknown' && cell.verified) return { ...cell, verified: false, verified_at: '' };
+    if (r.status === 'ok' && cell.value !== 'unknown') return r.via === 'archive' ? verifiedFromArchive(cell, r.archive_timestamp) : verifiedLive(cell, today);
+    if (cell.value === 'unknown' && cell.verified) return { ...withoutProvenance(cell), verified: false, verified_at: '' };
     return cell;
   });
   for (const key of missing) {
@@ -232,26 +329,63 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const matrix = loadMatrix();
   const { problems: structural, missing } = structuralProblems(matrix.cells, apps, qs.questions);
 
-  const targets = matrix.cells.filter((c) => !opts.app || c.app === opts.app);
-  const fetcher = new Fetcher({}, 4);
+  const blockedApps = new Set(apps.filter((a) => a.blocked_from_cloud).map((a) => a.id));
+  const inScope = (c: Cell): boolean => (!opts.app || c.app === opts.app) && (!opts.onlyBlocked || blockedApps.has(c.app));
+  const targets = matrix.cells.filter(inScope);
+  // From a residential connection: one request at a time, at least 1.2 s apart (help.openai.com's
+  // robots.txt asks for Crawl-delay: 1), and a 403 is retried, because there it comes and goes.
+  const fetcher = opts.residential ? new Fetcher({ retryForbidden: true, retryBaseMs: 1200 }, 1, 1200) : new Fetcher({}, 4);
   const cellsToCheck = targets.filter((c) => c.quote.trim() && c.evidence_url.trim());
   const urls = [...new Set(cellsToCheck.map((c) => c.evidence_url))];
-  console.log(`Checking ${cellsToCheck.length} quoted cells across ${urls.length} URLs (${targets.length - cellsToCheck.length} cells without a quote skipped)`);
+  console.log(
+    `Checking ${cellsToCheck.length} quoted cells across ${urls.length} URLs (${targets.length - cellsToCheck.length} cells without a quote skipped)${opts.residential ? ', from a residential connection' : ''}`,
+  );
 
   const pages = new Map<string, PageResult>();
+  const toArchive: Array<{ url: string; reason: string }> = [];
   await Promise.all(
     urls.map(async (url) => {
+      // Always try the live page first, even for apps marked blocked_from_cloud: blocking is per
+      // page (one Genspark page is blocked, its others are not), and a vendor that lifts the block
+      // is then read live again without anyone editing the data.
       const res = await fetcher.get(url);
       if (opts.dump) dumpPage(opts.dump, url, res);
       const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
-      if (problem) {
-        pages.set(url, { error: problem });
-        console.log(`  FETCH ERROR ${url} (${problem})`);
-      } else {
+      if (!problem) {
         pages.set(url, prepareText(res.text));
+        return;
       }
+      if (!opts.residential && (BLOCK_STATUSES.has(res.status) || problem === BOT_CHALLENGE)) {
+        toArchive.push({ url, reason: problem });
+        return;
+      }
+      pages.set(url, { error: problem });
+      console.log(`  FETCH ERROR ${url} (${problem})`);
     }),
   );
+
+  // Internet Archive fallback, two at a time to be gentle with archive.org. Sorted so the log is stable.
+  toArchive.sort((a, b) => a.url.localeCompare(b.url));
+  await eachLimited(toArchive, 2, async ({ url, reason }) => {
+    const capture = await latestCapture(url);
+    if (!capture || 'error' in capture) {
+      const error = capture ? `${reason}; Internet Archive lookup failed: ${capture.error}` : `${reason}; no Internet Archive capture`;
+      pages.set(url, { error });
+      console.log(`  FETCH ERROR ${url} (${error})`);
+      return;
+    }
+    const res = await fetchCapture(capture);
+    if (opts.dump) dumpPage(opts.dump, capture.rawUrl, res);
+    const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
+    if (problem) {
+      const error = `${reason}; Internet Archive capture ${capture.timestamp} unusable: ${problem}`;
+      pages.set(url, { error });
+      console.log(`  FETCH ERROR ${url} (${error})`);
+      return;
+    }
+    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: capture.timestamp });
+    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(capture.timestamp)})`);
+  });
 
   if (opts.dump && opts.extraUrls.length) {
     await Promise.all(
@@ -274,11 +408,14 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
 
   const byMethod: Record<string, number> = {};
   for (const r of reports) if (r.status === 'ok') byMethod[r.method] = (byMethod[r.method] ?? 0) + 1;
-  console.log(`Result: ${okCount} ok, ${failures.length} failed, ${errors.length} fetch errors (cells untouched), ${skipped} skipped, ${structural.length} structural problems, ${missing.length} missing. Match methods: ${JSON.stringify(byMethod)}`);
+  const okViaArchive = reports.filter((r) => r.status === 'ok' && r.via === 'archive');
+  const archiveNote = okViaArchive.length ? ` (${okViaArchive.length} of them confirmed from Internet Archive captures)` : '';
+  console.log(`Result: ${okCount} ok${archiveNote}, ${failures.length} failed, ${errors.length} fetch errors (cells untouched), ${skipped} skipped, ${structural.length} structural problems, ${missing.length} missing. Match methods: ${JSON.stringify(byMethod)}`);
 
   const report = {
     run_at: new Date().toISOString(),
     ok: okCount,
+    ok_via_archive: okViaArchive.length,
     failed: failures.length,
     errors: errors.length,
     skipped,
@@ -297,10 +434,11 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     for (const p of pending) console.log(`  PENDING ${p.app}/${p.question} quote missing since ${p.since}; kept, demoted if still missing after ${GRACE_DAYS} days`);
     const sorted = sortCells(cells, apps, qs.questions);
     const runAt = new Date().toISOString();
-    const checked = opts.app ? sorted.filter((c) => c.app === opts.app) : sorted;
+    const checked = sorted.filter(inScope);
+    const scope = [opts.residential ? 'residential runner' : '', opts.onlyBlocked ? 'blocked apps only' : '', opts.app ? `app ${opts.app} only` : ''].filter(Boolean);
     const changes: ChangesFile = {
       run_at: runAt,
-      model: opts.app ? `none (mechanical quote re-check, app ${opts.app} only)` : 'none (mechanical quote re-check)',
+      model: `none (mechanical quote re-check${scope.length ? `, ${scope.join(', ')}` : ''})`,
       changes: diffMatrices(matrix.cells, sorted),
       pending,
       stats: {
@@ -309,11 +447,23 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
         cells_total: checked.length,
         cells_verified: checked.filter((c) => c.verified).length,
         cells_unknown: checked.filter((c) => c.value === 'unknown').length,
+        cells_verified_via_archive: checked.filter((c) => c.verified_via === 'archive').length,
       },
     };
+    // Cells a capture actually re-dated this run (a capture older than the cell leaves it alone).
+    const before = new Map(matrix.cells.map((c) => [cellKey(c.app, c.question), c]));
+    const dated = sorted.filter((c) => {
+      const old = before.get(cellKey(c.app, c.question));
+      return c.verified_via === 'archive' && (old?.archive_timestamp !== c.archive_timestamp || old?.verified_at !== c.verified_at);
+    });
+    const oldestDated = dated.map((c) => c.verified_at).sort()[0] ?? null;
     saveJson(path.join(DATA_DIR, 'matrix.json'), { version: 1, generated_at: runAt, cells: sorted });
     saveJson(path.join(DATA_DIR, 'changes.json'), changes);
-    writeFileSync(path.join(DATA_DIR, 'changes.md'), renderChangesMarkdown(changes, apps, qs.questions, groupFetchErrors(errors, apps), pending), 'utf8');
+    writeFileSync(
+      path.join(DATA_DIR, 'changes.md'),
+      renderChangesMarkdown(changes, apps, qs.questions, groupFetchErrors(errors, apps), pending, { confirmed: okViaArchive.length, dated: dated.length, oldestDated }),
+      'utf8',
+    );
     console.log(`Wrote data/matrix.json (${demoted} cells demoted to unknown, ${pending.length} quotes pending, ${missing.length} missing cells added), data/changes.json, data/changes.md`);
   }
   saveJson(path.join(DATA_DIR, 'check-report.json'), report);

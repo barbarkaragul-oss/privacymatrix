@@ -15,7 +15,8 @@
         "https://help.openai.com/en/articles/7260999-how-do-i-export-my-chatgpt-history-and-data",
         "https://help.openai.com/en/articles/20001047-ads-in-chatgpt",
         "https://openai.com/transparency-and-content-moderation/"
-      ]
+      ],
+      "blocked_from_cloud": true
     },
     {
       "id": "claude",
@@ -83,7 +84,8 @@
         "https://www.perplexity.ai/help-center/en/articles/10354873-how-long-does-perplexity-retain-my-search-history-profile-data-and-personal-information",
         "https://www.perplexity.ai/help-center/en/articles/10354810-security-and-privacy-with-file-uploads",
         "https://www.perplexity.ai/hub/legal/enterprise-terms-of-service"
-      ]
+      ],
+      "blocked_from_cloud": true
     },
     {
       "id": "grok",
@@ -98,7 +100,8 @@
         "https://x.ai/legal/terms-of-service-enterprise",
         "https://x.ai/legal/europe-privacy-policy-addendum",
         "https://x.ai/legal/ccpa"
-      ]
+      ],
+      "blocked_from_cloud": true
     },
     {
       "id": "meta-ai",
