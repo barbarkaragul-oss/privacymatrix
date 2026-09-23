@@ -3,7 +3,7 @@
  * data/apps.json). GitHub's runners cannot read those pages, so this runs on a machine whose
  * connection the vendors do not block.
  *
- * A real run happens only in the task's own checkout, which scripts/residential-launch.ps1 resets
+ * A real run happens only in the task's own checkout, which scripts/residential-launch.cmd resets
  * to origin/main before starting this file. That keeps two promises: only code merged to main runs
  * on the machine, and the run can never touch a checkout someone is working in. Set it up with
  * scripts/install-residential-task.ps1.
