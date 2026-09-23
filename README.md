@@ -88,7 +88,7 @@ Values follow a written rubric per question (see [`data/questions.json`](data/qu
 ## Recent changes
 
 <!-- changes:start -->
-_Last run 2026-09-23: no value changed, no quote was missing from any page the checker could read._
+_Last run 2026-09-23: no value changed; no quote is missing from any page the checker could read._
 <!-- changes:end -->
 
 ## How it works
@@ -146,7 +146,7 @@ Design choices worth knowing:
 - **Legal text is read literally.** "May", "some", "in certain cases" and lists of exceptions turn a yes into a partial. A wrong "yes" (claiming a protection that does not exist) is the worst outcome; a wrong "no" (attributing a practice the vendor does not have) is the second worst.
 - **Mechanical verification is the safety net.** `npm run check` needs no API key and works on hand-written data too, which is how contributions are validated in CI.
 - **Humans merge.** Automation only opens pull requests. Maintainers review each changed row against its source before it lands.
-- **Fetchability is a real constraint.** Some vendors publish their policy only through JavaScript or behind bot protection. Cells for such apps stay *unknown* until a plain-text version (a help-center article, a regional copy) is found; the notes say where the policy lives. A few hosts (OpenAI, Perplexity, xAI at the time of writing) refuse requests from cloud IP ranges, so the weekly Action cannot read those pages live. It searches the most recent Internet Archive capture instead: a match can re-date a cell to the capture but never demote one, and a page is reported as unreachable only when no usable capture has the quote. Maintainers re-read those rows live with `npm run check -- --fix --residential --only-blocked` from an ordinary connection. Other hosts serve a different page to cloud IPs than to a browser, which is why a quote has to be missing on two runs a week apart before its cell is demoted.
+- **Fetchability is a real constraint.** Some vendors publish their policy only through JavaScript or behind bot protection. Cells for such apps stay *unknown* until a plain-text version (a help-center article, a regional copy) is found; the notes say where the policy lives. A few hosts (OpenAI, Perplexity, xAI at the time of writing) refuse requests from cloud IP ranges, so the weekly Action cannot read those pages live. It searches the most recent Internet Archive capture instead: a match can re-date a cell to the capture but never demote one, and a page is reported as unreachable only when no usable capture has the quote. Those rows are re-read live by [the residential re-check](#the-residential-re-check), from an ordinary connection. Other hosts serve a different page to cloud IPs than to a browser, which is why a quote has to be missing on two runs a week apart before its cell is demoted.
 
 ## Run it locally
 
@@ -169,6 +169,32 @@ npm run verify                   # all apps, then: npm run build
 ```
 
 `verify` accepts `--model <id>` (default `claude-fable-5-1`, also read from `PRIVACYMATRIX_MODEL`), `--effort low|medium|high|xhigh|max` (default `high`), `--concurrency N` (apps verified in parallel, 1 to 10, default 2), and `--dry-run` to only fetch the sources and report their size. Each run prints its token usage and an approximate cost at the end.
+
+### The residential re-check
+
+The apps whose sources refuse cloud IP ranges (listed under [How it works](#how-it-works)) are re-checked from a machine the vendors do not block. It reads only those apps live, one request at a time and at least 1.2 seconds apart, as `help.openai.com` asks. Then it rebuilds, runs the tests, and does what the weekly workflow does:
+
+- refreshed dates and first misses are committed to `main`;
+- a demotion goes to a pull request from `bot/residential-verification`, a branch the bot rebuilds on every run, so do not push to it;
+- quotes flagged missing are listed in an issue labelled `residential-recheck`, which is closed once every page has been read and nothing is flagged.
+
+It leaves `data/changes.json` to the weekly run, because it checks three apps and that file describes all of them.
+
+On Windows it runs from a scheduled task, set up once from a checkout:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install-residential-task.ps1
+```
+
+The task works in a clone of its own under `%LOCALAPPDATA%\PrivacyMatrix`, never in the checkout you work in. It resets that clone to `origin/main` before every run, so the only code it runs is code already merged to `main`: nothing from a pull request or a fork reaches the machine through it. The launcher it starts is a copy kept outside the repository, so a later pull cannot change it either.
+
+The task runs as you, only while you are logged on, every day at 13:00 or at the next chance after a missed time. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`.
+
+To see what a run would do without committing anything, from any clean checkout:
+
+```bash
+npm run residential -- --dry-run
+```
 
 ## Contributing
 

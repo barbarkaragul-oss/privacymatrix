@@ -114,21 +114,25 @@ export function renderBlockedSources(apps: App[], cells: Cell[]): string {
   return lines.join('\n');
 }
 
-export function renderRecentChanges(changes: ChangesFile | null, apps: App[], qs: Question[]): string {
+/** Open issues for quotes a run found missing, from the weekly cloud run or the residential re-check. */
+const RECHECK_ISSUES = 'https://github.com/barbarkaragul-oss/privacymatrix/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-recheck%2Cresidential-recheck';
+
+export function renderRecentChanges(changes: ChangesFile | null, apps: App[], qs: Question[], cells: Cell[]): string {
   if (!changes) return '_The weekly re-verification has not run yet. Results appear here after the first run._';
-  // The line must not claim more than the run knows: a run can change no value and still have found
-  // quotes missing from their page, which are kept for a week before they demote the cell.
-  // Nor may it claim a quote was found at its source when the page could not be read live: those
-  // are either unreachable or confirmed only in an Internet Archive capture.
-  const pending = changes.pending.length;
-  const viaArchive = changes.stats.cells_verified_via_archive;
+  // The line must not claim more than is known: a run can change no value and still have found
+  // quotes missing from their page, which are kept for a week before they demote the cell. Nor may
+  // it claim a quote was found at its source when the page could not be read live.
+  // Both counts come from the matrix, not from the last run's record: the weekly cloud run and the
+  // residential re-check each see only part of it, and the flags in the matrix are the current state.
+  const pending = cells.filter((c) => c.quote_missing_since).length;
+  const viaArchive = cells.filter((c) => c.verified && c.verified_via === 'archive').length;
   if (changes.changes.length === 0) {
     const archived = viaArchive ? `, and ${viaArchive} cell${viaArchive === 1 ? ' rests' : 's rest'} on Internet Archive captures of pages that block the checker` : '';
     const missing =
       pending === 0
-        ? `no quote was missing from any page the checker could read${archived}`
-        : `${pending} quote${pending === 1 ? '' : 's'} not found at their source and pending a human look (see [changes.md](data/changes.md))`;
-    return `_Last run ${changes.run_at.slice(0, 10)}: no value changed, ${missing}._`;
+        ? `no quote is missing from any page the checker could read${archived}`
+        : `${pending} quote${pending === 1 ? ' is' : 's are'} missing from ${pending === 1 ? 'its source' : 'their sources'} and ${pending === 1 ? 'waits' : 'wait'} for a human (see the [open issues](${RECHECK_ISSUES}))`;
+    return `_Last run ${changes.run_at.slice(0, 10)}: no value changed; ${missing}._`;
   }
   const appName = new Map(apps.map((a) => [a.id, a.name]));
   const questionName = new Map(qs.map((c) => [c.id, c.name]));
@@ -157,7 +161,7 @@ export function generateAll(): void {
   let readme = readFileSync(readmePath, 'utf8');
   readme = replaceBetween(readme, '<!-- stats:start -->', '<!-- stats:end -->', renderStats(apps, qs.questions, matrix.cells));
   readme = replaceBetween(readme, '<!-- matrix:start -->', '<!-- matrix:end -->', renderMatrixMarkdown(apps, qs, matrix.cells));
-  readme = replaceBetween(readme, '<!-- changes:start -->', '<!-- changes:end -->', renderRecentChanges(changes, apps, qs.questions));
+  readme = replaceBetween(readme, '<!-- changes:start -->', '<!-- changes:end -->', renderRecentChanges(changes, apps, qs.questions, matrix.cells));
   readme = replaceBetween(readme, '<!-- blocked:start -->', '<!-- blocked:end -->', renderBlockedSources(apps, matrix.cells));
   writeFileSync(readmePath, readme, 'utf8');
 
