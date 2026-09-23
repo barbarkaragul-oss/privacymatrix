@@ -186,7 +186,7 @@ On Windows it runs from a scheduled task, set up once from a checkout:
 powershell -ExecutionPolicy Bypass -File scripts\install-residential-task.ps1
 ```
 
-The task works in a clone of its own under `%LOCALAPPDATA%\PrivacyMatrix`, never in the checkout you work in. It resets that clone to `origin/main` before every run, so the only code it runs is code already merged to `main`: nothing from a pull request or a fork reaches the machine through it. The launcher it starts is a copy kept outside the repository, so a later pull cannot change it either.
+The task works in a clone of its own under `%LOCALAPPDATA%\PrivacyMatrix`, never in the checkout you work in. It resets that clone to `origin/main` before every run, so the only code it runs is code already merged to `main`: nothing from a pull request or a fork reaches the machine through it. The launcher it starts is a plain batch file of `git` and `node` commands, copied outside the repository, so a later pull cannot change it either; it runs in a console with no window, and no PowerShell runs during the task.
 
 The task runs as you, only while you are logged on, every day at 13:00 or at the next chance after a missed time. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`.
 
