@@ -302,6 +302,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       run_at: runAt,
       model: opts.app ? `none (mechanical quote re-check, app ${opts.app} only)` : 'none (mechanical quote re-check)',
       changes: diffMatrices(matrix.cells, sorted),
+      pending,
       stats: {
         apps_checked: new Set(checked.map((c) => c.app)).size,
         apps_failed: [],

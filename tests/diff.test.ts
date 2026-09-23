@@ -32,6 +32,7 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
       run_at: '2026-09-10T06:00:00Z',
       model: 'claude-fable-5-1',
       changes: [{ app: 'a', question: 'x', from: 'no', to: 'yes', quote: 'supports a | b and [links](x)', evidence_url: 'https://e.x/a)b', notes: '' }],
+      pending: [],
       stats: { apps_checked: 1, apps_failed: ['b'], cells_total: 2, cells_verified: 2, cells_unknown: 0 },
     },
     [
@@ -55,7 +56,7 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
 
 test('renderChangesMarkdown with no changes says so', () => {
   const md = renderChangesMarkdown(
-    { run_at: 'r', model: 'm', changes: [], stats: { apps_checked: 0, apps_failed: [], cells_total: 0, cells_verified: 0, cells_unknown: 0 } },
+    { run_at: 'r', model: 'm', changes: [], pending: [], stats: { apps_checked: 0, apps_failed: [], cells_total: 0, cells_verified: 0, cells_unknown: 0 } },
     [],
     [],
   );

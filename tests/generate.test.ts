@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { embedData, mdTitle, renderMatrixMarkdown, replaceBetween } from '../src/generate.js';
+import { embedData, mdTitle, renderMatrixMarkdown, renderRecentChanges, replaceBetween } from '../src/generate.js';
+import { ChangesFileSchema } from '../src/types.js';
 
 test('mdTitle reduces markdown to plain tooltip text and neutralises quote-breaking characters', () => {
   assert.equal(mdTitle('Configure slash commands in your [configuration file](/docs/guides/config-files). List the `command` **without** the `/`.'), "Configure slash commands in your configuration file. List the command without the /.");
@@ -40,4 +41,43 @@ test('renderMatrixMarkdown links only http URLs and escapes quotes in titles', (
   const md = renderMatrixMarkdown(apps, qs, cells);
   assert.ok(md.includes('[✅](https://a.x/p%281%29 "say \'hi\' (now)")'));
   assert.ok(md.includes('| **Y** | ❔ |'));
+});
+
+test('renderRecentChanges never claims every quote was found when quotes are pending', () => {
+  const base = {
+    run_at: '2026-09-21T15:05:01.071Z',
+    model: 'none (mechanical quote re-check)',
+    changes: [],
+    stats: { apps_checked: 28, apps_failed: [], cells_total: 392, cells_verified: 314, cells_unknown: 78 },
+  };
+  const clean = renderRecentChanges({ ...base, pending: [] }, [], []);
+  assert.equal(clean, '_Last run 2026-09-21: no value changed, every quote was found at its source._');
+
+  const pending = renderRecentChanges(
+    {
+      ...base,
+      pending: [
+        { app: 'lumo', question: 'no_sale_sharing', evidence_url: 'https://proton.me/support/lumo-privacy', since: '2026-09-18' },
+        { app: 'apple-intelligence', question: 'deletion_timeline', evidence_url: 'https://www.apple.com/legal/privacy/data/en/intelligence-engine/', since: '2026-09-18' },
+      ],
+    },
+    [],
+    [],
+  );
+  assert.ok(!pending.includes('every quote was found'));
+  assert.ok(pending.includes('2 quotes not found at their source'));
+  assert.ok(pending.includes('no value changed'));
+
+  const one = renderRecentChanges({ ...base, pending: [{ app: 'a', question: 'q', evidence_url: 'https://e.x/', since: '2026-09-18' }] }, [], []);
+  assert.ok(one.includes('1 quote not found at their source'));
+});
+
+test('a changes file written before pending existed still loads, with no pending quotes', () => {
+  const parsed = ChangesFileSchema.parse({
+    run_at: '2026-09-11T00:00:00Z',
+    model: 'none (mechanical quote re-check)',
+    changes: [],
+    stats: { apps_checked: 28, apps_failed: [], cells_total: 392, cells_verified: 314, cells_unknown: 78 },
+  });
+  assert.deepEqual(parsed.pending, []);
 });

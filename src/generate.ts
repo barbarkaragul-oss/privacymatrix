@@ -6,7 +6,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { DOCS_DIR, ROOT, cellKey, isHttpUrl, loadApps, loadQuestions, loadChanges, loadMatrix, mdUrl, type App, type Question, type Cell, type Value } from './types.js';
+import { DOCS_DIR, ROOT, cellKey, isHttpUrl, loadApps, loadQuestions, loadChanges, loadMatrix, mdUrl, type App, type Question, type Cell, type Value, type ChangesFile } from './types.js';
 
 const ICON: Record<Value, string> = { yes: '✅', partial: '🟡', no: '❌', unknown: '❔' };
 const LABEL: Record<Value, string> = { yes: 'yes', partial: 'partial', no: 'no', unknown: 'unknown' };
@@ -73,10 +73,18 @@ function renderStats(apps: App[], qs: Question[], cells: Cell[]): string {
   return `**${apps.length} apps × ${qs.length} questions · ${verified}/${cells.length} cells verified against their source · last verification ${latest}** · ✅ ${counts.yes} · 🟡 ${counts.partial} · ❌ ${counts.no} · ❔ ${counts.unknown}`;
 }
 
-function renderRecentChanges(apps: App[], qs: Question[]): string {
-  const changes = loadChanges();
+export function renderRecentChanges(changes: ChangesFile | null, apps: App[], qs: Question[]): string {
   if (!changes) return '_The weekly re-verification has not run yet. Results appear here after the first run._';
-  if (changes.changes.length === 0) return `_Last run ${changes.run_at.slice(0, 10)}: every quote was still present at its source, no value changed._`;
+  // The line must not claim more than the run knows: a run can change no value and still have found
+  // quotes missing from their page, which are kept for a week before they demote the cell.
+  const pending = changes.pending.length;
+  if (changes.changes.length === 0) {
+    const missing =
+      pending === 0
+        ? 'every quote was found at its source'
+        : `${pending} quote${pending === 1 ? '' : 's'} not found at their source and pending a human look (see [changes.md](data/changes.md))`;
+    return `_Last run ${changes.run_at.slice(0, 10)}: no value changed, ${missing}._`;
+  }
   const appName = new Map(apps.map((a) => [a.id, a.name]));
   const questionName = new Map(qs.map((c) => [c.id, c.name]));
   const lines = changes.changes.slice(0, 15).map((ch) => {
@@ -104,7 +112,7 @@ export function generateAll(): void {
   let readme = readFileSync(readmePath, 'utf8');
   readme = replaceBetween(readme, '<!-- stats:start -->', '<!-- stats:end -->', renderStats(apps, qs.questions, matrix.cells));
   readme = replaceBetween(readme, '<!-- matrix:start -->', '<!-- matrix:end -->', renderMatrixMarkdown(apps, qs, matrix.cells));
-  readme = replaceBetween(readme, '<!-- changes:start -->', '<!-- changes:end -->', renderRecentChanges(apps, qs.questions));
+  readme = replaceBetween(readme, '<!-- changes:start -->', '<!-- changes:end -->', renderRecentChanges(changes, apps, qs.questions));
   writeFileSync(readmePath, readme, 'utf8');
 
   mkdirSync(DOCS_DIR, { recursive: true });
