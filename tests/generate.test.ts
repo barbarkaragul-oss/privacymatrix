@@ -43,35 +43,29 @@ test('renderMatrixMarkdown links only http URLs and escapes quotes in titles', (
   assert.ok(md.includes('| **Y** | ❔ |'));
 });
 
-test('renderRecentChanges never claims every quote was found when quotes are pending', () => {
+test('renderRecentChanges counts missing quotes and archive cells from the matrix, not from the last run', () => {
   const base = {
     run_at: '2026-09-21T15:05:01.071Z',
     model: 'none (mechanical quote re-check)',
     changes: [],
+    pending: [],
     stats: { apps_checked: 28, apps_failed: [], cells_total: 392, cells_verified: 314, cells_unknown: 78, cells_verified_via_archive: 0 },
   };
-  const clean = renderRecentChanges({ ...base, pending: [] }, [], []);
-  assert.equal(clean, '_Last run 2026-09-21: no value changed, no quote was missing from any page the checker could read._');
-  const archived = renderRecentChanges({ ...base, pending: [], stats: { ...base.stats, cells_verified_via_archive: 5 } }, [], []);
-  assert.ok(archived.endsWith(', and 5 cells rest on Internet Archive captures of pages that block the checker._'));
+  const c = (question: string, extra: Partial<Cell> = {}): Cell => ({ app: 'a', question, value: 'yes', quote: 'a quote of some length', evidence_url: 'https://a.x/', notes: '', confidence: 'high', verified: true, verified_at: '2026-09-21', ...extra });
 
-  const pending = renderRecentChanges(
-    {
-      ...base,
-      pending: [
-        { app: 'lumo', question: 'no_sale_sharing', evidence_url: 'https://proton.me/support/lumo-privacy', since: '2026-09-18' },
-        { app: 'apple-intelligence', question: 'deletion_timeline', evidence_url: 'https://www.apple.com/legal/privacy/data/en/intelligence-engine/', since: '2026-09-18' },
-      ],
-    },
-    [],
-    [],
-  );
-  assert.ok(!pending.includes('no quote was missing'));
-  assert.ok(pending.includes('2 quotes not found at their source'));
-  assert.ok(pending.includes('no value changed'));
+  assert.equal(renderRecentChanges(base, [], [], [c('x')]), '_Last run 2026-09-21: no value changed; no quote is missing from any page the checker could read._');
 
-  const one = renderRecentChanges({ ...base, pending: [{ app: 'a', question: 'q', evidence_url: 'https://e.x/', since: '2026-09-18' }] }, [], []);
-  assert.ok(one.includes('1 quote not found at their source'));
+  const archived = renderRecentChanges(base, [], [], [c('x', { verified_via: 'archive', archive_timestamp: '20260921065036' }), c('y')]);
+  assert.ok(archived.endsWith(', and 1 cell rests on Internet Archive captures of pages that block the checker._'));
+
+  // Flagged by a run that did not write changes.json (the residential re-check): still reported.
+  const flagged = renderRecentChanges(base, [], [], [c('x', { quote_missing_since: '2026-09-28' }), c('y', { quote_missing_since: '2026-09-28' })]);
+  assert.ok(!flagged.includes('no quote is missing'));
+  assert.ok(flagged.includes('2 quotes are missing from their sources and wait for a human'));
+  assert.ok(flagged.includes('label%3Aneeds-recheck%2Cresidential-recheck'));
+
+  const one = renderRecentChanges(base, [], [], [c('x', { quote_missing_since: '2026-09-28' })]);
+  assert.ok(one.includes('1 quote is missing from its source and waits for a human'));
 });
 
 test('a changes file written before pending existed still loads, with no pending quotes', () => {

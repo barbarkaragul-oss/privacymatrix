@@ -15,6 +15,7 @@
   },
   "scripts": {
     "check": "tsx src/check.ts",
+    "residential": "node --experimental-strip-types scripts/residential.ts",
     "verify": "tsx src/verify.ts",
     "build": "tsx src/generate.ts",
     "test": "node --import tsx --test \"tests/*.test.ts\"",
