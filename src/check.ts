@@ -14,8 +14,10 @@
  *   npm run check -- --url u      with --dump: also fetch and dump this URL (repeatable), to test
  *                                 candidate source pages from that network before citing them
  *   npm run check -- --residential   running from a connection vendors do not block (the
- *                                 self-hosted runner): read blocked_from_cloud apps live, retry a
- *                                 403 a few times, one request at a time, no archive fallback
+ *                                 residential task): read blocked_from_cloud apps live, retry a
+ *                                 403 a few times, one request at a time, no archive fallback. A
+ *                                 host that refuses a page through every retry gets one attempt
+ *                                 per page after that, until it answers one.
  *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
@@ -363,6 +365,9 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       console.log(`  FETCH ERROR ${url} (${problem})`);
     }),
   );
+  if (fetcher.refusingHosts.length) {
+    console.log(`  REFUSED ${fetcher.refusingHosts.join(', ')}: refused a page through every retry and returned no successful page after it; any later page from them was asked once`);
+  }
 
   // Internet Archive fallback, two at a time to be gentle with archive.org. Sorted so the log is stable.
   toArchive.sort((a, b) => a.url.localeCompare(b.url));

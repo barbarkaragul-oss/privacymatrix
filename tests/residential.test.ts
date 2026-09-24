@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { decide, isDue, MAX_AGE_DAYS, repoSlug, summarize, withoutDemotions } from '../scripts/residential.js';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { decide, isDue, MAX_AGE_DAYS, repoSlug, runCommand, summarize, withoutDemotions } from '../scripts/residential.js';
 
 test('isDue: runs when there is no success yet, or the last one is MAX_AGE_DAYS or more old', () => {
   assert.equal(isDue(null, '2026-09-28', MAX_AGE_DAYS), true);
@@ -55,4 +58,43 @@ test('repoSlug reads https and ssh GitHub remotes', () => {
   assert.equal(repoSlug('https://github.com/barbarkaragul-oss/privacymatrix'), 'barbarkaragul-oss/privacymatrix');
   assert.equal(repoSlug('git@github.com:barbarkaragul-oss/privacymatrix.git'), 'barbarkaragul-oss/privacymatrix');
   assert.equal(repoSlug('https://gitlab.com/x/y.git'), null);
+});
+
+function alive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+test('runCommand stops the whole process tree on timeout, not only the shell', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'pm-tree-'));
+  const pidFile = path.join(dir, 'grandchild.pid');
+  const script = path.join(dir, 'tree.cjs');
+  // The shell starts node, which starts a grandchild: the shape of npm starting the check.
+  writeFileSync(
+    script,
+    `const { spawn } = require('node:child_process');
+const c = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 120000)'], { stdio: 'ignore' });
+require('node:fs').writeFileSync(${JSON.stringify(pidFile)}, String(c.pid));
+setTimeout(() => {}, 120000);
+`,
+  );
+  try {
+    const r = await runCommand(`"${process.execPath}" "${script}"`, 5000);
+    assert.equal(r.timedOut, true);
+    assert.ok(existsSync(pidFile), 'the script had not started its grandchild before the timeout; raise the timeout');
+    const pid = Number(readFileSync(pidFile, 'utf8'));
+    // Give the system a moment to reap the killed processes.
+    for (let i = 0; i < 50 && alive(pid); i++) await new Promise((res) => setTimeout(res, 100));
+    assert.equal(alive(pid), false, 'the grandchild outlived the timeout');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('runCommand reports the exit code of a command that finishes in time', async () => {
+  assert.deepEqual(await runCommand(`"${process.execPath}" -e "process.exit(3)"`, 30_000), { code: 3, timedOut: false });
 });
