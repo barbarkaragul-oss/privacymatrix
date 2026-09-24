@@ -30,7 +30,7 @@
  *
  * The GitHub token comes from git's credential helper and is never printed.
  */
-import { execFileSync, spawnSync } from 'node:child_process';
+import { type ChildProcess, execFileSync, spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -124,12 +124,77 @@ function git(...args: string[]): string {
   return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 180_000 }).trim();
 }
 
-/** Runs an npm command with its output passed through to the log; throws if it fails. */
-function npm(...args: string[]): void {
-  log(`$ npm ${args.join(' ')}`);
-  // shell: true resolves npm.cmd on Windows; every argument is a constant of this file.
-  const r = spawnSync('npm', args, { stdio: 'inherit', shell: true, timeout: 1_800_000 });
-  if (r.status !== 0) throw new Error(`npm ${args.join(' ')} exited with ${r.status}`);
+/** How long one npm command may run before it and every process it started are stopped. */
+export const NPM_TIMEOUT_MS = 1_800_000;
+
+function killTree(child: ChildProcess): void {
+  if (child.pid === undefined) return;
+  if (process.platform === 'win32') {
+    const r = spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+    // 128: the process had already exited.
+    if (r.error || (r.status !== 0 && r.status !== 128)) {
+      log(`taskkill could not stop process tree ${child.pid} (${r.error?.message ?? `exit ${r.status}`}); stopping the shell alone`);
+      child.kill();
+    }
+  } else {
+    try {
+      process.kill(-child.pid, 'SIGKILL');
+    } catch {
+      // the group has already gone
+    }
+  }
+}
+
+// Signals that would end this process while the command runs. Elsewhere than on Windows the command
+// runs in a session of its own, which the terminal's signals no longer reach.
+const STOP_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+
+/**
+ * Runs a shell command with its output passed through to the log. When it takes longer than
+ * timeoutMs, the whole process tree is stopped, not only the shell: stopping the shell alone left
+ * npm and the check running, and the check went on writing into a checkout that had been reset.
+ * On Windows taskkill /T stops the tree. Elsewhere the command gets a process group (and session)
+ * of its own and the group is killed; as that group no longer receives the terminal's Ctrl-C or
+ * hangup, on SIGINT, SIGTERM or SIGHUP the group is killed and the signal raised again on this
+ * process.
+ */
+export function runCommand(command: string, timeoutMs: number): Promise<{ code: number | null; timedOut: boolean }> {
+  const windows = process.platform === 'win32';
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, { stdio: 'inherit', shell: true, detached: !windows });
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      killTree(child);
+    }, timeoutMs);
+    const onSignal = (signal: NodeJS.Signals): void => {
+      killTree(child);
+      process.kill(process.pid, signal);
+    };
+    if (!windows) for (const s of STOP_SIGNALS) process.once(s, onSignal);
+    const done = (): void => {
+      clearTimeout(timer);
+      for (const s of STOP_SIGNALS) process.off(s, onSignal);
+    };
+    child.on('error', (err) => {
+      done();
+      reject(err);
+    });
+    child.on('exit', (code) => {
+      done();
+      resolve({ code, timedOut });
+    });
+  });
+}
+
+/** Runs an npm command with its output passed through to the log; throws if it fails or times out. */
+async function npm(...args: string[]): Promise<void> {
+  // One command line for the shell, which resolves npm.cmd on Windows; every argument is a constant of this file.
+  const command = `npm ${args.join(' ')}`;
+  log(`$ ${command}`);
+  const { code, timedOut } = await runCommand(command, NPM_TIMEOUT_MS);
+  if (timedOut) throw new Error(`${command} ran longer than ${NPM_TIMEOUT_MS / 60_000} minutes and was stopped`);
+  if (code !== 0) throw new Error(`${command} exited with ${code}`);
 }
 
 function readJson<T>(file: string): T {
@@ -214,13 +279,13 @@ async function syncIssue(token: string, slug: string, action: 'open' | 'close' |
 }
 
 /** npm ci when main's lockfile differs from the one last installed, or the last install did not finish. */
-function ensureDependencies(stateDir: string): void {
+async function ensureDependencies(stateDir: string): Promise<void> {
   const marker = path.join(stateDir, 'installed-lock');
   const lock = git('rev-parse', 'HEAD:package-lock.json');
   const installed = existsSync(marker) ? readFileSync(marker, 'utf8').trim() : '';
   if (installed === lock && existsSync('node_modules')) return;
   if (existsSync(marker)) writeFileSync(marker, '', 'utf8'); // a failed install must be retried next time
-  npm('ci', '--no-audit', '--no-fund');
+  await npm('ci', '--no-audit', '--no-fund');
   writeFileSync(marker, `${lock}\n`, 'utf8');
 }
 
@@ -262,7 +327,7 @@ export async function run(opts: Options): Promise<number> {
   }
   // In the task's own checkout (real run or a dry run started by the launcher) dependencies are this
   // script's job; in someone's checkout they are theirs.
-  if (stateDir) ensureDependencies(stateDir);
+  if (stateDir) await ensureDependencies(stateDir);
 
   const start = git('rev-parse', 'HEAD');
   // A dry run may be in someone's checkout: put back only what the check and build wrote.
@@ -273,7 +338,7 @@ export async function run(opts: Options): Promise<number> {
 
   let pushedMain = false;
   try {
-    npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked');
+    await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked');
     const report = readJson<{ ok: number; errors: number }>('data/check-report.json');
     if (report.ok === 0) throw new Error('every page failed to load; not publishing a run that verified nothing');
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
@@ -283,9 +348,9 @@ export async function run(opts: Options): Promise<number> {
 
     const blocked = new Set(readJson<{ apps: Array<{ id: string; blocked_from_cloud?: boolean }> }>('data/apps.json').apps.filter((a) => a.blocked_from_cloud).map((a) => a.id));
     const result = readJson<MatrixFile>('data/matrix.json');
-    npm('run', 'build');
-    npm('run', 'typecheck');
-    npm('test');
+    await npm('run', 'build');
+    await npm('run', 'typecheck');
+    await npm('test');
 
     const outcome: RunOutcome = {
       valueChanges: changes.changes.length,
@@ -310,8 +375,8 @@ export async function run(opts: Options): Promise<number> {
         // main gets every date and flag; the demoted cells stay as they were until a human merges the PR.
         const before = JSON.parse(git('show', 'HEAD:data/matrix.json')) as MatrixFile;
         writeJson('data/matrix.json', withoutDemotions(result, before, changes.changes));
-        npm('run', 'build');
-        npm('test');
+        await npm('run', 'build');
+        await npm('test');
       }
       if (git('status', '--porcelain', '--', ...DATA_PATHS)) {
         git('add', '--', ...DATA_PATHS);
@@ -329,7 +394,7 @@ export async function run(opts: Options): Promise<number> {
       }
       if (plan.commit === 'main+pr') {
         writeJson('data/matrix.json', result);
-        npm('run', 'build');
+        await npm('run', 'build');
         git('add', '--', ...DATA_PATHS);
         git('commit', '--quiet', '-m', `matrix: residential re-verification demotes ${outcome.valueChanges} cell(s)`);
         // The bot owns this branch: it is rebuilt from main on every run that demotes something.

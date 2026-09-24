@@ -82,3 +82,44 @@ test('Fetcher spaces request starts by minIntervalMs', async () => {
     for (let i = 1; i < calls.length; i++) assert.ok((calls[i] as number) - (calls[i - 1] as number) >= 120, `gap ${i} was ${(calls[i] as number) - (calls[i - 1] as number)} ms`);
   });
 });
+
+test('Fetcher gives a host one round of 403 retries, then one attempt per page until it answers one', async () => {
+  // blocked.example: page 1 through the whole round, page 2 once, page 3 answers, page 4 gets the round again.
+  await withFakeFetch([403, 403, 403, 403, 200, 403, 403, 403], async (calls) => {
+    const f = new Fetcher({ retryForbidden: true, forbiddenDelaysMs: [1, 1] }, 1);
+    assert.equal((await f.get('https://blocked.example/1')).status, 403);
+    assert.equal(calls.length, 3, 'one attempt plus one per configured delay');
+    assert.deepEqual(f.refusingHosts, ['blocked.example']);
+    assert.equal((await f.get('https://blocked.example/2')).status, 403);
+    assert.equal(calls.length, 4, 'a host that refused a page through every retry is asked once per page');
+    assert.equal((await f.get('https://blocked.example/3')).status, 200);
+    assert.deepEqual(f.refusingHosts, [], 'a page the host answers gives it the retries back');
+    assert.equal((await f.get('https://blocked.example/4')).status, 403);
+    assert.equal(calls.length, 8);
+  });
+  await withFakeFetch([403], async (calls) => {
+    const f = new Fetcher({ retryForbidden: true, forbiddenDelaysMs: [1] }, 1);
+    await f.get('https://a.example/1');
+    await f.get('https://b.example/1');
+    assert.equal(calls.length, 4, 'each host gets its own round');
+    assert.deepEqual(f.refusingHosts, ['a.example', 'b.example']);
+  });
+  await withFakeFetch([403], async (calls) => {
+    const f = new Fetcher({}, 1);
+    await f.get('https://c.example/1');
+    await f.get('https://c.example/2');
+    assert.equal(calls.length, 2, 'without retryForbidden nothing changes');
+    assert.deepEqual(f.refusingHosts, []);
+  });
+  // Only a successful page gives the retries back, and only a 403 counts as a refusal.
+  await withFakeFetch([403, 403, 404, 403, 429], async (calls) => {
+    const f = new Fetcher({ retryForbidden: true, forbiddenDelaysMs: [1], retryBaseMs: 1 }, 1);
+    await f.get('https://d.example/1');
+    assert.equal((await f.get('https://d.example/2')).status, 404);
+    assert.deepEqual(f.refusingHosts, ['d.example'], 'a 404 is not a successful page, so the host stays refusing');
+    await f.get('https://d.example/3');
+    assert.equal(calls.length, 4, 'two for the round, then one each');
+    assert.equal((await f.get('https://e.example/1')).status, 429);
+    assert.deepEqual(f.refusingHosts, ['d.example'], 'a 429 is not a refusal');
+  });
+});

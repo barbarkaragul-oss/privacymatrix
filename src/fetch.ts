@@ -30,7 +30,9 @@ export interface FetchOptions {
   /**
    * Treat HTTP 403 as transient and try again after forbiddenDelaysMs. Only for the residential
    * runner: from a home connection some vendors' 403 comes and goes within minutes, while from a
-   * data centre it is permanent and retrying would only be rude.
+   * data centre it is permanent and retrying would only be rude. After a host refuses a page through
+   * the whole round, a Fetcher asks its other pages once each until one of them answers (see
+   * Fetcher.refusingHosts).
    */
   retryForbidden?: boolean;
   forbiddenDelaysMs?: number[];
@@ -223,12 +225,21 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
   return last;
 }
 
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return '';
+  }
+}
+
 /** Fetches each URL once per run, with bounded concurrency and, optionally, a minimum gap between requests. */
 export class Fetcher {
   private readonly cache = new Map<string, Promise<FetchResult>>();
   private active = 0;
   private readonly queue: Array<() => void> = [];
   private nextStart = 0;
+  private readonly refusing = new Set<string>();
 
   constructor(
     private readonly options: FetchOptions = {},
@@ -241,10 +252,28 @@ export class Fetcher {
     const key = toFetchableUrl(url);
     let p = this.cache.get(key);
     if (!p) {
-      p = this.withSlot(() => fetchText(url, this.options));
+      p = this.withSlot(() => this.fetchOne(url));
       this.cache.set(key, p);
     }
     return p;
+  }
+
+  /** Hosts that refused a page through every 403 retry and have not answered a page since, sorted. */
+  get refusingHosts(): string[] {
+    return [...this.refusing].sort();
+  }
+
+  // A host that refuses a page through every 403 retry is refusing this connection, not having a bad
+  // minute: its other pages get one attempt each instead of the whole round, so a run from a blocked
+  // network ends in minutes instead of outlasting its time limit. A page the host answers gives it
+  // the retries back. The host is the one asked, before any redirect.
+  private async fetchOne(url: string): Promise<FetchResult> {
+    if (!this.options.retryForbidden) return fetchText(url, this.options);
+    const host = hostOf(toFetchableUrl(url));
+    const res = await fetchText(url, this.refusing.has(host) ? { ...this.options, retryForbidden: false } : this.options);
+    if (res.status === 403) this.refusing.add(host);
+    else if (res.ok) this.refusing.delete(host);
+    return res;
   }
 
   private async withSlot<T>(fn: () => Promise<T>): Promise<T> {
