@@ -2,8 +2,14 @@
 rem Launcher for the PrivacyMatrix residential re-check (see scripts\residential.ts).
 rem
 rem scripts\install-residential-task.ps1 copies this file OUT of the repository into the task's
-rem state folder and fills in the two values below. The copy is what the scheduled task runs, so
+rem state folder and fills in the remote URL below. The copy is what the scheduled task runs, so
 rem nothing a later pull brings in can change what runs before main is checked out.
+rem
+rem The folder the copy sits in is the state folder: the clone, the log and the run markers are
+rem kept next to it. Moving the copy moves the state folder; re-run the installer instead.
+rem
+rem No path is written into this file, and it must stay pure ASCII: cmd.exe reads a batch file in
+rem the console's code page, which is not the same on every machine or in every console.
 rem
 rem Each run: clone the repository into the state folder if needed, reset that clone to
 rem origin/main, remove anything else in it (except node_modules), then run residential.ts from it.
@@ -14,8 +20,11 @@ rem It is a plain batch file on purpose: no PowerShell runs while the task runs.
 rem
 rem Arguments are passed on to residential.ts:  --force  (run now)  or  --dry-run  (nothing committed)
 
-setlocal
-set "STATE=__STATE_DIR__"
+rem Delayed expansion stays off, so that a "!" in the folder name is kept as it is.
+setlocal EnableExtensions DisableDelayedExpansion
+rem The state folder is the folder of this file, without the trailing backslash.
+set "STATE=%~dp0"
+set "STATE=%STATE:~0,-1%"
 set "REMOTE=__REMOTE_URL__"
 set "CLONE=%STATE%\checkout"
 set "LOG=%STATE%\residential.log"
@@ -24,7 +33,6 @@ set "GIT_TERMINAL_PROMPT=0"
 set "GCM_INTERACTIVE=never"
 set "RESIDENTIAL_STATE_DIR=%STATE%"
 
-if not exist "%STATE%" mkdir "%STATE%"
 >>"%LOG%" echo === %DATE% %TIME% launcher
 call :run %* >>"%LOG%" 2>&1
 set "CODE=%ERRORLEVEL%"
