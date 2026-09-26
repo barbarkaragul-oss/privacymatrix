@@ -189,7 +189,14 @@ function daysBetween(a: string, b: string): number {
 /** A quote must be missing from its page on two runs at least this many days apart before the cell is demoted. */
 export const GRACE_DAYS = 6;
 
-export function classifyCell(cell: Cell, page: PageResult | undefined): CellReport {
+/**
+ * confirmOnly: the page was read live by a run whose readings of this app cannot be trusted to show
+ * that a quote is gone (the cloud run, for an app marked blocked_from_cloud: its vendor refuses cloud
+ * IP ranges or serves them a page without its text). A quote found still counts; a quote missing is
+ * an unreadable page, as with an archive capture, and only a run from a residential connection can
+ * flag it.
+ */
+export function classifyCell(cell: Cell, page: PageResult | undefined, opts: { confirmOnly?: boolean } = {}): CellReport {
   const base = { app: cell.app, question: cell.question, value: cell.value, evidence_url: cell.evidence_url };
   if (!cell.quote.trim() || !cell.evidence_url.trim()) return { ...base, status: 'skipped', method: 'none', problems: [] };
   const problems = quoteProblems(cell.quote);
@@ -214,6 +221,9 @@ export function classifyCell(cell: Cell, page: PageResult | undefined): CellRepo
       return { ...base, status: 'error', method: m.method, problems: [`quote only matches Internet Archive capture ${page.archiveTimestamp} when punctuation is ignored, which is too weak to confirm it from a capture`] };
     }
     return { ...base, status: 'ok', method: m.method, problems, via: 'archive', archive_timestamp: page.archiveTimestamp };
+  }
+  if (!m.found && opts.confirmOnly) {
+    return { ...base, status: 'error', method: 'none', problems: [...problems, 'quote not found on the page the cloud run received; this vendor refuses cloud IP ranges or serves them a page without its text, so only the residential re-check can show the quote is gone'] };
   }
   if (!m.found) problems.push('quote not found on page');
   return { ...base, status: problems.length ? 'fail' : 'ok', method: m.method, problems };
@@ -406,7 +416,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     );
   }
 
-  const reports = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url)));
+  const reports = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url), { confirmOnly: !opts.residential && blockedApps.has(cell.app) }));
   const failures = reports.filter((r) => r.status === 'fail');
   const errors = reports.filter((r) => r.status === 'error');
   const okCount = reports.filter((r) => r.status === 'ok').length;

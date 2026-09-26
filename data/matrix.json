@@ -2550,10 +2550,10 @@
       "app": "brave-leo",
       "question": "user_deletion",
       "value": "yes",
-      "quote": "You can disable conversation storage or clear saved chats by going to brave://settings/leo-ai",
+      "quote": "You can disable conversation history entirely or delete individual conversations by going to brave://settings/leo-ai",
       "evidence_url": "https://brave.com/privacy/browser/",
-      "notes": "Chat history exists only locally on the device and the privacy policy documents a self-service way to clear saved chats or disable storage at brave://settings/leo-ai; the product page adds that history can be accessed and deleted from the Leo conversation list, though the step-by-step help-center article returns HTTP 403. Free Leo needs no account, so the rubric's no-account branch applies; Leo Premium requires a subscription account that the Terms of Use say can be terminated 'by following the instructions on the Service' at account.brave.com. Per-conversation deletion is not spelled out sentence by sentence in the fetchable documents, hence medium confidence.",
-      "confidence": "medium",
+      "notes": "Chat history exists only on the device, and in Sync if the user turns Sync on. The Browser Privacy Policy says conversation history can be turned off entirely or individual conversations deleted at brave://settings/leo-ai; clearing browsing history also removes page content from past conversations, and Private Window and Tor conversations are never saved. Free Leo needs no account, so the rubric's no-account branch applies; Leo Premium requires a subscription account that the Terms of Use say can be terminated 'by following the instructions on the Service' at account.brave.com. The step-by-step help-center article returns HTTP 403. In September 2026 Brave reworded the policy sentence from 'disable conversation storage or clear saved chats'; the new wording states per-conversation deletion outright.",
+      "confidence": "high",
       "verified": true,
       "verified_at": "2026-09-21"
     },

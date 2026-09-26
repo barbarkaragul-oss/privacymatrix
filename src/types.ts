@@ -37,10 +37,12 @@ export const AppSchema = z.object({
   repo: httpUrl.nullable(),
   sources: z.array(httpUrl).min(1),
   /**
-   * Every page this app's cells cite answers HTTP 403 to data-centre IP ranges (GitHub's runners,
-   * our VPS), so the weekly cloud run can never read the app live. Such apps are read live with
-   * `check --residential --only-blocked` from a connection vendors do not block, and are labelled on
-   * the site. The Internet Archive fallback does not depend on this flag: it follows any 403, page by page.
+   * The vendor answers data-centre IP ranges (GitHub's runners, our VPS) with HTTP 403, or with a
+   * page that lacks its text (Amazon, at times), so the weekly cloud run cannot trust what it reads
+   * for this app: there a quote can be confirmed but never found missing. Such apps are read live
+   * with `check --residential --only-blocked` from a connection vendors do not block, and are
+   * labelled on the site. The Internet Archive fallback does not depend on this flag: it follows any
+   * 403, page by page.
    */
   blocked_from_cloud: z.boolean().optional(),
 });
