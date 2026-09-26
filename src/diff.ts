@@ -101,7 +101,7 @@ export function renderChangesMarkdown(
   }
   if (fetchErrors.length > 0) {
     lines.push('');
-    lines.push(`Pages that could not be fetched this run (cells left untouched):`);
+    lines.push(`Pages that could not be fetched or confirmed this run (cells left untouched):`);
     for (const e of fetchErrors.slice(0, 30)) lines.push(`- ${escapeMd(e)}`);
     if (fetchErrors.length > 30) lines.push(`- …and ${fetchErrors.length - 30} more`);
   }

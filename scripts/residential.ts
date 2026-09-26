@@ -25,8 +25,8 @@
  *                                               bot/residential-verification as a pull request
  *   - any quote flagged missing              -> an issue labelled residential-recheck, opened or updated
  *   - nothing flagged, every page read       -> that issue closed; a demotion PR no longer needed, closed
- * data/changes.json and changes.md stay as the weekly cloud run wrote them: this run checks three
- * apps, and its record would replace the record of all 28. Its own report goes into the issue and PR.
+ * data/changes.json and changes.md stay as the weekly cloud run wrote them: this run checks only the
+ * blocked apps, and its record would replace the record of all 28. Its own report goes into the issue and PR.
  *
  * The GitHub token comes from git's credential helper and is never printed.
  */
@@ -235,7 +235,7 @@ async function api(token: string, method: string, url: string, body?: unknown, a
 }
 
 const NOTE =
-  "These apps' pages refuse requests from cloud IP ranges, so this was checked by the residential re-check (scripts/residential.ts) and can only be re-quoted from a residential connection.";
+  "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts) and can only be re-quoted from a residential connection.";
 
 async function syncPullRequest(token: string, slug: string, action: 'open' | 'close', title: string, body: string): Promise<void> {
   const owner = slug.split('/')[0];

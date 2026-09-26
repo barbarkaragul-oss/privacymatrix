@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { archiveRawUrl, archiveViewUrl, captureDate, parseAvailability, parseCdx } from '../src/archive.js';
+import { archiveRawUrl, archiveViewUrl, captureDate, latestCapture, parseAvailability, parseCdx } from '../src/archive.js';
 
 const URL_ = 'https://openai.com/policies/privacy-policy/';
 
@@ -41,4 +41,45 @@ test('parseCdx returns the newest 200 capture from a CDX answer, and null when t
   assert.equal(parseCdx([header], URL_), null);
   assert.equal(parseCdx(null, URL_), null);
   assert.equal(parseCdx({ archived_snapshots: {} }, URL_), null);
+});
+
+async function withArchive<T>(answer: (url: string) => Response, fn: (asked: string[]) => Promise<T>): Promise<T> {
+  const real = globalThis.fetch;
+  const asked: string[] = [];
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const url = String(input);
+    asked.push(url.includes('/cdx/') ? 'cdx' : 'available');
+    return answer(url);
+  }) as typeof fetch;
+  try {
+    return await fn(asked);
+  } finally {
+    globalThis.fetch = real;
+  }
+}
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+const available200 = { archived_snapshots: { closest: { available: true, timestamp: '20260921065036', status: '200' } } };
+const available204 = { archived_snapshots: { closest: { available: true, timestamp: '20260924024611', status: '204' } } };
+
+test('latestCapture asks the CDX API first and falls back to the availability API only when it cannot', async () => {
+  await withArchive((u) => (u.includes('/cdx/') ? json([['timestamp', 'statuscode'], ['20260923015253', '200']]) : json(available204)), async (asked) => {
+    assert.deepEqual(await latestCapture(URL_), { timestamp: '20260923015253', rawUrl: archiveRawUrl('20260923015253', URL_) });
+    assert.deepEqual(asked, ['cdx'], 'a CDX answer is final');
+  });
+  await withArchive((u) => (u.includes('/cdx/') ? json([]) : json(available200)), async (asked) => {
+    assert.equal(await latestCapture(URL_), null, 'the CDX API saying "none" is an answer, not a failure');
+    assert.deepEqual(asked, ['cdx']);
+  });
+  await withArchive((u) => (u.includes('/cdx/') ? new Response('Temporarily Offline', { status: 503 }) : json(available200)), async (asked) => {
+    assert.equal((await latestCapture(URL_))?.hasOwnProperty('timestamp'), true);
+    assert.deepEqual(asked, ['cdx', 'available']);
+  });
+  await withArchive((u) => (u.includes('/cdx/') ? new Response('<html>Temporarily Offline</html>', { status: 200 }) : json(available204)), async () => {
+    const r = await latestCapture(URL_);
+    assert.match((r as { error: string }).error, /CDX API: .*closest capture is not a 200/, 'without the CDX answer, a non-200 closest capture is a failed lookup, not "no capture"');
+  });
+  await withArchive(() => new Response('down', { status: 502 }), async () => {
+    assert.match(((await latestCapture(URL_)) as { error: string }).error, /CDX API: archive.org answered HTTP 502; availability API: archive.org answered HTTP 502/);
+  });
 });

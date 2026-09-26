@@ -222,11 +222,27 @@ export function classifyCell(cell: Cell, page: PageResult | undefined, opts: { c
     }
     return { ...base, status: 'ok', method: m.method, problems, via: 'archive', archive_timestamp: page.archiveTimestamp };
   }
-  if (!m.found && opts.confirmOnly) {
+  // A malformed quote is a data error whatever network read the page, so it still fails.
+  if (!m.found && opts.confirmOnly && problems.length === 0) {
     return { ...base, status: 'error', method: 'none', problems: [...problems, 'quote not found on the page the cloud run received; this vendor refuses cloud IP ranges or serves them a page without its text, so only the residential re-check can show the quote is gone'] };
   }
   if (!m.found) problems.push('quote not found on page');
   return { ...base, status: problems.length ? 'fail' : 'ok', method: m.method, problems };
+}
+
+/**
+ * Classifies every cell. For a cell the cloud cannot be trusted on (distrusted(cell): the cloud run,
+ * an app marked blocked_from_cloud), a missing quote is only an unreadable page when no quote cited
+ * on the same page was found in this read: that is what a page without its text looks like (Amazon
+ * sent the runner only its frame, on which none of six quotes matched). When some quote on the page
+ * was found, the vendor served the real text, and a quote missing from it is a failure as usual.
+ */
+export function classifyAll(targets: Cell[], pages: Map<string, PageResult>, distrusted: (cell: Cell) => boolean): CellReport[] {
+  const plain = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url)));
+  const pagesWithAMatch = new Set(plain.filter((r) => r.method !== 'none').map((r) => r.evidence_url));
+  return targets.map((cell, i) =>
+    distrusted(cell) && !pagesWithAMatch.has(cell.evidence_url) ? classifyCell(cell, pages.get(cell.evidence_url), { confirmOnly: true }) : (plain[i] as CellReport),
+  );
 }
 
 export function structuralProblems(cells: Cell[], apps: App[], questions: Question[]): { problems: string[]; missing: string[] } {
@@ -416,7 +432,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     );
   }
 
-  const reports = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url), { confirmOnly: !opts.residential && blockedApps.has(cell.app) }));
+  const reports = classifyAll(targets, pages, (cell) => !opts.residential && blockedApps.has(cell.app));
   const failures = reports.filter((r) => r.status === 'fail');
   const errors = reports.filter((r) => r.status === 'error');
   const okCount = reports.filter((r) => r.status === 'ok').length;

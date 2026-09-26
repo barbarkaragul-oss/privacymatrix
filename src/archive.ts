@@ -94,16 +94,21 @@ function isError(x: unknown): x is { error: string } {
  *
  * Asked through the CDX API, filtered to 200 captures. The availability API answers with the single
  * capture closest to now whatever its status, so a later redirect or empty capture (a 204 for
- * openai.com's privacy policy on 24 September 2026) hid 200 captures from days before. It is still
- * asked when the CDX API cannot be, without a timestamp parameter: with one, it was observed to
- * return an empty result for pages that do have recent captures.
+ * openai.com's privacy policy on 24 September 2026) hid 200 captures from days before. The CDX
+ * query is limited to captures since the start of last year to keep the scan shorter (over a page's
+ * whole history it took 20 to 60 seconds), and it gets its own, longer time limit, because giving
+ * up on it brings back the availability API's blind spot. The availability API is still asked when the
+ * CDX API cannot be, without a timestamp parameter: with one, it was observed to return an empty
+ * result for pages that do have recent captures. When it too finds no 200 capture, the answer is an
+ * error, not "no capture", since the lookup that could have found one did not run.
  */
-export async function latestCapture(url: string, timeoutMs = 20_000): Promise<Capture | null | { error: string }> {
-  const cdx = await getJson(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}&output=json&fl=timestamp,statuscode&filter=statuscode:200&limit=-1`, timeoutMs);
+export async function latestCapture(url: string, timeoutMs = 20_000, cdxTimeoutMs = 60_000): Promise<Capture | null | { error: string }> {
+  const from = new Date().getUTCFullYear() - 1;
+  const cdx = await getJson(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}&output=json&fl=timestamp,statuscode&filter=statuscode:200&from=${from}&limit=-1`, cdxTimeoutMs);
   if (!isError(cdx)) return parseCdx(cdx, url);
   const available = await getJson(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, timeoutMs);
-  if (isError(available)) return { error: `${cdx.error}; availability API: ${available.error}` };
-  return parseAvailability(available, url);
+  if (isError(available)) return { error: `CDX API: ${cdx.error}; availability API: ${available.error}` };
+  return parseAvailability(available, url) ?? { error: `CDX API: ${cdx.error}; the availability API's closest capture is not a 200` };
 }
 
 /** Fetches the raw capture as text, through the same HTML-to-text path as a live page. */

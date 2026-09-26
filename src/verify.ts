@@ -225,6 +225,12 @@ async function verifyApp(
     usage,
   });
 
+  // A GitHub runner cannot rely on what such a vendor serves it (a 403, or a page without its text
+  // that would pass for a source), so the app is re-derived only from a residential connection.
+  if (app.blocked_from_cloud && process.env.GITHUB_ACTIONS === 'true') {
+    console.log(`[${app.id}] skipped on a GitHub runner: marked blocked_from_cloud; run verify for it from a residential connection`);
+    return keep('marked blocked_from_cloud; not re-derived on a GitHub runner');
+  }
   const { sources, prepared, failures } = await loadSources(app, fetcher);
   const size = sources.reduce((n, s) => n + s.text.length, 0);
   console.log(`[${app.id}] ${sources.length}/${app.sources.length} sources, ${size.toLocaleString()} chars${failures.length ? `; failed: ${failures.join(', ')}` : ''}`);

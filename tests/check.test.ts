@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyCell, groupFetchErrors, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { applyFix, classifyAll, classifyCell, groupFetchErrors, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
 
@@ -140,6 +140,26 @@ test('classifyCell with confirmOnly: a found quote counts, a missing one is an u
   assert.equal(found.status, 'ok');
   assert.equal(found.via, undefined, 'a live read, not an archive one');
   assert.equal(classifyCell(cell('a', 'x', 'yes'), page).status, 'fail', 'without confirmOnly a missing quote is still a failure');
+});
+
+test('classifyAll: for a distrusted app, a page with no quote found is unreadable; a page with one found fails the rest', () => {
+  const frame = 'https://shop.example/frame';
+  const real = 'https://shop.example/real';
+  const cells = [
+    cell('a', 'x', 'yes', 'A documented sentence about the feature.', frame),
+    cell('a', 'y', 'yes', 'Another sentence the vendor wrote down.', frame),
+    cell('a', 'z', 'yes', 'A documented sentence about the feature.', real),
+    cell('a', 'w', 'yes', 'A sentence a pull request made up.', real),
+  ];
+  const pages = new Map([
+    // what Amazon sent the runner: the site's frame, matching no quote
+    [frame, prepareText('Skip to Main content. Cart. Orders. Conditions of Use. Privacy Notice.')],
+    // the real page: one quote is there, so a missing one is a real miss
+    [real, prepareText('Intro. A documented sentence about the feature. Outro.')],
+  ]);
+  const byQuestion = (rs: CellReport[]) => Object.fromEntries(rs.map((r) => [r.question, r.status]));
+  assert.deepEqual(byQuestion(classifyAll(cells, pages, () => true)), { x: 'error', y: 'error', z: 'ok', w: 'fail' });
+  assert.deepEqual(byQuestion(classifyAll(cells, pages, () => false)), { x: 'fail', y: 'fail', z: 'ok', w: 'fail' }, 'a trusted reader fails every miss');
 });
 
 // --- Internet Archive fallback -------------------------------------------------------------------
