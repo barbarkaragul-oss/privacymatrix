@@ -82,7 +82,8 @@ export const CellSchema = z.object({
   /**
    * How verified_at was established when it was not a live fetch by the checker: 'archive' = the
    * quote was found in an Internet Archive capture of evidence_url (archive_timestamp), 'manual' = a
-   * maintainer read the live page from a connection the vendor does not block. Absent = live.
+   * maintainer read the live page in a browser (by hand, or through the reading page, scripts/manual.ts).
+   * Absent = live.
    */
   verified_via: VerifiedViaSchema.optional(),
   /** Wayback Machine timestamp (YYYYMMDDhhmmss) of the capture that confirmed the quote; only with verified_via 'archive'. */

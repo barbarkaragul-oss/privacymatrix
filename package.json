@@ -20,7 +20,8 @@
     "build": "tsx src/generate.ts",
     "test": "node --import tsx --test \"tests/*.test.ts\"",
     "typecheck": "tsc --noEmit",
-    "ci": "npm run typecheck && npm test && npm run build"
+    "ci": "npm run typecheck && npm test && npm run build",
+    "manual": "tsx scripts/manual.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",

@@ -18,7 +18,8 @@ rem in, and the code that runs is always exactly what is merged to main.
 rem
 rem It is a plain batch file on purpose: no PowerShell runs while the task runs.
 rem
-rem Arguments are passed on to residential.ts:  --force  (run now)  or  --dry-run  (nothing committed)
+rem Arguments are passed on to residential.ts:  --force  (run now),  --dry-run  (nothing committed)
+rem or  --read  (open the reading page for the pages only a person can read)
 
 rem Delayed expansion stays off, so that a "!" in the folder name is kept as it is.
 setlocal EnableExtensions DisableDelayedExpansion
