@@ -117,7 +117,7 @@ Two loops, one free and one that costs API credits.
 <!-- blocked:start -->
 ### Sources the checker cannot reach
 
-These vendors answer requests from cloud IP ranges, including GitHub's runners and our own server, with HTTP 403 or with a page that lacks its text, although their robots.txt permits the pages. Their pages can only be relied on when read from a residential connection. From the cloud a quote can only be confirmed, on the page or in the most recent Internet Archive capture of it, and a quote the cloud cannot find never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.
+These vendors answer requests from cloud IP ranges (GitHub's runners among them) with HTTP 403 or with a page that lacks its text, although their robots.txt permits the pages. Their pages can only be relied on when read from a residential connection. From the cloud a quote can only be confirmed, on the page or in the most recent Internet Archive capture of it, and a quote the cloud cannot find never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.
 
 - **ChatGPT** (openai.com, help.openai.com): 14 verified cells — 14 read by hand; verified 2026-09-23.
 - **Perplexity** (www.perplexity.ai): 13 verified cells — 13 read live; verified 2026-09-11.
@@ -179,7 +179,7 @@ The apps whose sources refuse cloud IP ranges or serve them a page without its t
 - a demotion goes to a pull request from `bot/residential-verification`, a branch the bot rebuilds on every run, so do not push to it;
 - quotes flagged missing are listed in an issue labelled `residential-recheck`, which is closed once every page has been read and nothing is flagged.
 
-It leaves `data/changes.json` to the weekly run, because it checks three apps and that file describes all of them.
+It leaves `data/changes.json` to the weekly run, because it checks only the blocked apps and that file describes all of them.
 
 On Windows it runs from a scheduled task, set up once from a checkout:
 

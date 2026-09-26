@@ -220,7 +220,7 @@ window.PRIVACYMATRIX = {"generated_at":"2026-09-23T18:05:00.000Z","apps":[{"id":
     const head = '<tr><th scope="col">Question</th>' + D.apps.map((a) => {
       const cs = D.cells.filter((c) => c.app === a.id);
       const y = cs.filter((c) => c.value === 'yes').length, p = cs.filter((c) => c.value === 'partial').length;
-      const blocked = a.blocked_from_cloud ? '<span class="count blocked" title="' + esc(BLOCKED_NOTE) + '">sources block cloud checks</span>' : '';
+      const blocked = a.blocked_from_cloud ? '<span class="count blocked" title="' + esc(BLOCKED_NOTE) + '">cloud checks unreliable</span>' : '';
       return '<th scope="col">' + esc(a.name) + '<span class="count">' + y + ' yes · ' + p + ' partial</span>' + blocked + '</th>';
     }).join('') + '</tr>';
     let body = '';

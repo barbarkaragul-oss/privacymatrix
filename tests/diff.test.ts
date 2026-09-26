@@ -48,7 +48,7 @@ test('renderChangesMarkdown produces a table with names, safe link destinations 
   assert.ok(md.includes('[source](https://e.x/a%29b)'));
   assert.ok(md.includes('<code>supports a &#124; b and &#91;links&#93;(x)</code>'));
   assert.ok(md.includes('App B'));
-  assert.ok(md.includes('Pages that could not be fetched this run (cells left untouched):'));
+  assert.ok(md.includes('Pages that could not be fetched or confirmed this run (cells left untouched):'));
   assert.ok(md.includes('- App A: 1 cell on 1 page (fetch failed: HTTP 503)'));
   assert.ok(md.includes('Quotes not found at their source this run (1).'));
   assert.ok(md.includes('- App A / Cap X — missing since 2026-09-03 — [source](https://e.x/p_%281%29)'));

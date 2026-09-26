@@ -93,7 +93,7 @@ export function renderBlockedSources(apps: App[], cells: Cell[]): string {
   const lines = [
     '### Sources the checker cannot reach',
     '',
-    "These vendors answer requests from cloud IP ranges, including GitHub's runners and our own server, with HTTP 403 or with a page that lacks its text, although their robots.txt permits the pages. Their pages can only be relied on when read from a residential connection. From the cloud a quote can only be confirmed, on the page or in the most recent Internet Archive capture of it, and a quote the cloud cannot find never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.",
+    "These vendors answer requests from cloud IP ranges (GitHub's runners among them) with HTTP 403 or with a page that lacks its text, although their robots.txt permits the pages. Their pages can only be relied on when read from a residential connection. From the cloud a quote can only be confirmed, on the page or in the most recent Internet Archive capture of it, and a quote the cloud cannot find never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.",
     '',
   ];
   for (const a of blocked) {
