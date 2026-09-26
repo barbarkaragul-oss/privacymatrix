@@ -18,12 +18,16 @@ What it sets up, all under -StateDir (default %LOCALAPPDATA%\PrivacyMatrix), out
 The task runs as you, only while you are logged on, so it needs no stored password and no
 administrator rights. It starts the batch launcher from the state folder in a console without a
 window (conhost --headless), and no PowerShell runs while it runs. It fires every day at -At, default
-13:00 (after the weekly cloud run on Monday morning), and at the next chance after a missed time.
-Each run exits early unless the last success is six or more days old.
+13:00 (after the weekly cloud run on Monday morning). It is also set to run at the next chance after
+a missed time, but a time missed while the machine slept was seen to be skipped, so the machine
+should be awake at -At. Each run exits early unless the last success is six or more days old.
+After every run, including one that exits early, it opens the reading page if pages only a person
+can read are due (scripts/manual.ts).
 
 Run once now:     Start-ScheduledTask -TaskName 'PrivacyMatrix residential check'
 Force a run:      cmd /c "%LOCALAPPDATA%\PrivacyMatrix\residential-launch.cmd" --force
 Dry run:          cmd /c "%LOCALAPPDATA%\PrivacyMatrix\residential-launch.cmd" --dry-run
+Read by hand:     cmd /c "%LOCALAPPDATA%\PrivacyMatrix\residential-launch.cmd" --read
 Remove the task:  Unregister-ScheduledTask -TaskName 'PrivacyMatrix residential check' -Confirm:$false
 Re-run this installer after the launcher template changes, or if the state folder is moved or deleted.
 #>
@@ -104,7 +108,7 @@ Register-ScheduledTask `
   -Description 'Re-checks the PrivacyMatrix apps whose sources refuse cloud IP ranges. See scripts/residential.ts.' `
   -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force | Out-Null
 
-Write-Host "Registered 'PrivacyMatrix residential check': daily at $At, or at the next chance after a missed time."
+Write-Host "Registered 'PrivacyMatrix residential check': daily at $At (keep the machine awake then; a time missed while it sleeps can be skipped)."
 Write-Host "Launcher: $launcher"
 Write-Host "Log:      $(Join-Path $StateDir 'residential.log')"
 Write-Host "Task Scheduler shows the last run result as 0 even when the launcher failed (the headless console returns 0); the last line of the log gives the launcher's exit code."

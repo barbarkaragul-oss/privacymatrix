@@ -12,7 +12,10 @@
  *       In any clean checkout: check, build and test, print what a real run would do, then put the
  *       generated files back. No pull, no commit, push or GitHub call.
  *   (from the launcher) ... residential.ts [--force]
- *       A real run, if due: the last success is MAX_AGE_DAYS or more old, or --force.
+ *       A real run, if due: the last success is MAX_AGE_DAYS or more old, or --force. Then, on
+ *       Windows, the reading page for the pages only a person can read, if any are due.
+ *   (from the launcher) ... residential.ts --read
+ *       Only the reading page (scripts/manual.ts), with every page the last run could not read.
  *
  * It runs under plain node, not tsx, because it may run `npm ci`, which on Windows cannot replace
  * files that a running tsx holds open.
@@ -31,7 +34,7 @@
  * The GitHub token comes from git's credential helper and is never printed.
  */
 import { type ChildProcess, execFileSync, spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -339,6 +342,9 @@ export async function run(opts: Options): Promise<number> {
   let pushedMain = false;
   try {
     await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked');
+    // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
+    // the checkout's own report is removed by the next run's clean.
+    if (stateDir && !opts.dryRun) copyFileSync('data/check-report.json', path.join(stateDir, 'last-report.json'));
     const report = readJson<{ ok: number; errors: number }>('data/check-report.json');
     if (report.ok === 0) throw new Error('every page failed to load; not publishing a run that verified nothing');
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
@@ -422,10 +428,59 @@ export async function run(opts: Options): Promise<number> {
   }
 }
 
+/** The task's time limit (install-residential-task.ps1), and what a save at the end of the reading time may need. */
+const TASK_LIMIT_MINUTES = 60;
+const SAVE_MARGIN_MINUTES = 15;
+
+/**
+ * Runs the reading page (scripts/manual.ts) from this checkout and waits for it to close. With
+ * remind it opens the browser only when pages are due and exits at once otherwise. Its time is
+ * what is left of the task's hour after the run, less a margin for the save it makes when the time
+ * is up, at most 40 minutes; if that leaves under 5 minutes, it is offered at the next run instead.
+ * It is stopped with its whole process tree when its time and the margin have passed.
+ */
+async function readingPage(stateDir: string, remind: boolean, startedAt: number): Promise<void> {
+  const tsx = path.join('node_modules', 'tsx', 'dist', 'cli.mjs');
+  if (!existsSync(tsx)) {
+    log('reading page not opened: dependencies are not installed yet');
+    return;
+  }
+  const used = (Date.now() - startedAt) / 60_000;
+  const minutes = remind ? Math.min(40, Math.floor(TASK_LIMIT_MINUTES - 5 - used - SAVE_MARGIN_MINUTES)) : 120;
+  if (minutes < 5) {
+    log(`reading page not opened: the run used ${Math.round(used)} of the task's ${TASK_LIMIT_MINUTES} minutes; it is offered at the next run`);
+    return;
+  }
+  const command = [process.execPath, tsx, path.join('scripts', 'manual.ts'), '--state', stateDir].map((a) => `"${a}"`).join(' ') + ` --minutes ${minutes}${remind ? ' --remind' : ''}`;
+  const { timedOut } = await runCommand(command, (minutes + SAVE_MARGIN_MINUTES) * 60_000);
+  if (timedOut) log('reading page stopped: it outlasted its time and the margin for saving');
+}
+
 const isMain = process.argv[1] && path.resolve(process.argv[1]).endsWith(path.join('scripts', 'residential.ts'));
 if (isMain) {
+  const startedAt = Date.now();
   const args = new Set(process.argv.slice(2));
-  run({ force: args.has('--force'), dryRun: args.has('--dry-run') }).then(
+  const stateDir = process.env.RESIDENTIAL_STATE_DIR;
+  const main = async (): Promise<number> => {
+    if (args.has('--read')) {
+      if (!stateDir) {
+        log('refused: --read opens the reading page of the task\'s own checkout; start it through residential-launch.cmd --read');
+        return 0;
+      }
+      process.chdir(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'));
+      await readingPage(stateDir, false, startedAt);
+      return 0;
+    }
+    const code = await run({ force: args.has('--force'), dryRun: args.has('--dry-run') });
+    // After every run of the task, the pages only a person can read are offered to the maintainer,
+    // unless the run found the checkout in a state it would not publish from.
+    if (stateDir && !args.has('--dry-run') && process.platform === 'win32') {
+      if (git('status', '--porcelain')) log('reading page not opened: the checkout has uncommitted changes');
+      else await readingPage(stateDir, true, startedAt);
+    }
+    return code;
+  };
+  main().then(
     (code) => {
       process.exitCode = code;
     },
