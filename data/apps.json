@@ -342,7 +342,8 @@
         "https://www.aboutamazon.com/news/devices/alexa-plus-international-launch",
         "https://www.aboutamazon.com/news/devices/new-alexa-generative-artificial-intelligence",
         "https://www.aboutamazon.com/news/devices/alexa-plus-available-free-prime-members-us"
-      ]
+      ],
+      "blocked_from_cloud": true
     },
     {
       "id": "snapchat-my-ai",

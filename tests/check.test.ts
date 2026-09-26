@@ -130,6 +130,18 @@ test('structuralProblems finds duplicates, unknown ids, missing quotes and missi
   assert.deepEqual(structuralProblems([cell('a', 'x', 'yes')], apps, qs).missing, ['a|y']);
 });
 
+test('classifyCell with confirmOnly: a found quote counts, a missing one is an unreadable page, not a failure', () => {
+  // The cloud run reading an app marked blocked_from_cloud, whose vendor may serve it a page without its text.
+  const page = prepareText('Skip to Main content. Cart. Orders. Conditions of Use. Privacy Notice.');
+  const missing = classifyCell(cell('a', 'x', 'yes'), page, { confirmOnly: true });
+  assert.equal(missing.status, 'error');
+  assert.match(missing.problems.join(' '), /only the residential re-check can show the quote is gone/);
+  const found = classifyCell(cell('a', 'x', 'yes'), prepareText('Intro. A documented sentence about the feature. Outro.'), { confirmOnly: true });
+  assert.equal(found.status, 'ok');
+  assert.equal(found.via, undefined, 'a live read, not an archive one');
+  assert.equal(classifyCell(cell('a', 'x', 'yes'), page).status, 'fail', 'without confirmOnly a missing quote is still a failure');
+});
+
 // --- Internet Archive fallback -------------------------------------------------------------------
 
 const archivedPage = (text: string, archiveTimestamp = '20260921065036'): ArchivedPage => ({ ...prepareText(text), via: 'archive', archiveTimestamp });

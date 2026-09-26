@@ -1,7 +1,7 @@
 /**
- * Residential re-check of the apps whose sources refuse cloud IP ranges (blocked_from_cloud in
- * data/apps.json). GitHub's runners cannot read those pages, so this runs on a machine whose
- * connection the vendors do not block.
+ * Residential re-check of the apps whose sources refuse cloud IP ranges or serve them a page without
+ * its text (blocked_from_cloud in data/apps.json). GitHub's runners cannot rely on those pages, so
+ * this runs on a machine whose connection the vendors do not block.
  *
  * A real run happens only in the task's own checkout, which scripts/residential-launch.cmd resets
  * to origin/main before starting this file. That keeps two promises: only code merged to main runs

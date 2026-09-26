@@ -153,7 +153,7 @@
     manual: { mark: '✎', text: 'read by a maintainer from a residential connection' },
     archive: { mark: '◷', text: 'confirmed from an Internet Archive capture' },
   };
-  const BLOCKED_NOTE = "This vendor's pages answer HTTP 403 to every request from a cloud IP range, although its robots.txt permits them. They can only be read live from a residential connection; from the cloud, quotes are confirmed against Internet Archive captures. Open a cell to see how and when it was verified.";
+  const BLOCKED_NOTE = "This vendor answers requests from cloud IP ranges with HTTP 403 or with a page that lacks its text, although its robots.txt permits them. Its pages can only be relied on when read from a residential connection; from the cloud, a quote can be confirmed but never found missing. Open a cell to see how and when it was verified.";
   const byKey = new Map(D.cells.map((c) => [c.app + '|' + c.question, c]));
   const appById = new Map(D.apps.map((a) => [a.id, a]));
   const questionById = new Map(D.questions.map((c) => [c.id, c]));
