@@ -20,6 +20,8 @@ export interface FetchResult {
   text: string;
   truncated: boolean;
   error?: string;
+  /** The server answered with a bot challenge (Cloudflare's `cf-mitigated: challenge`), which needs a browser; this checker cannot pass it. */
+  challenged?: boolean;
 }
 
 export interface FetchOptions {
@@ -32,7 +34,7 @@ export interface FetchOptions {
    * runner: from a home connection some vendors' 403 comes and goes within minutes, while from a
    * data centre it is permanent and retrying would only be rude. After a host refuses a page through
    * the whole round, a Fetcher asks its other pages once each until one of them answers (see
-   * Fetcher.refusingHosts).
+   * Fetcher.refusingHosts). A bot challenge is never retried (see Fetcher.challengingHosts).
    */
   retryForbidden?: boolean;
   forbiddenDelaysMs?: number[];
@@ -170,6 +172,7 @@ async function fetchOnce(url: string, opts: Required<FetchOptions>): Promise<Fet
       },
     });
     const contentType = res.headers.get('content-type') ?? '';
+    const challenged = res.headers.get('cf-mitigated') === 'challenge';
     const { buf, truncated } = await readBody(res, opts.maxBytes);
     const body = buf.toString('utf8');
     const text = looksLikeHtml(contentType, body) ? htmlToText(body) : stripInlineHtml(body.replace(/\r\n/g, '\n'));
@@ -183,6 +186,7 @@ async function fetchOnce(url: string, opts: Required<FetchOptions>): Promise<Fet
       text,
       truncated,
       ...(res.ok ? {} : { error: `HTTP ${res.status}` }),
+      ...(challenged ? { challenged } : {}),
     };
   } catch (err) {
     const message = err instanceof Error ? (err.name === 'AbortError' ? `timeout after ${opts.timeoutMs}ms` : err.message) : String(err);
@@ -217,7 +221,8 @@ export async function fetchText(url: string, options: FetchOptions = {}): Promis
   }
   if (opts.retryForbidden) {
     for (const wait of opts.forbiddenDelaysMs) {
-      if (last.status !== 403) break;
+      // A challenge wants a browser; asking again would only add requests from a flagged client.
+      if (last.status !== 403 || last.challenged) break;
       await sleep(wait);
       last = await fetchOnce(url, opts);
     }
@@ -240,6 +245,7 @@ export class Fetcher {
   private readonly queue: Array<() => void> = [];
   private nextStart = 0;
   private readonly refusing = new Set<string>();
+  private readonly challenging = new Set<string>();
 
   constructor(
     private readonly options: FetchOptions = {},
@@ -263,15 +269,29 @@ export class Fetcher {
     return [...this.refusing].sort();
   }
 
+  /** Hosts that answered a page with a bot challenge this run, sorted. Their other pages were not asked. */
+  get challengingHosts(): string[] {
+    return [...this.challenging].sort();
+  }
+
   // A host that refuses a page through every 403 retry is refusing this connection, not having a bad
   // minute: its other pages get one attempt each instead of the whole round, so a run from a blocked
   // network ends in minutes instead of outlasting its time limit. A page the host answers gives it
-  // the retries back. The host is the one asked, before any redirect.
+  // the retries back. A host that answers with a bot challenge is not asked again at all in this run:
+  // this checker cannot pass the challenge, and every further request comes from a client the host
+  // has already flagged. The host is the one asked, before any redirect.
   private async fetchOne(url: string): Promise<FetchResult> {
     if (!this.options.retryForbidden) return fetchText(url, this.options);
-    const host = hostOf(toFetchableUrl(url));
+    const fetchUrl = toFetchableUrl(url);
+    const host = hostOf(fetchUrl);
+    if (this.challenging.has(host)) {
+      return { url, fetchUrl, finalUrl: fetchUrl, status: 0, ok: false, contentType: '', text: '', truncated: false, error: `not asked: ${host} answered this run with a bot challenge` };
+    }
     const res = await fetchText(url, this.refusing.has(host) ? { ...this.options, retryForbidden: false } : this.options);
-    if (res.status === 403) this.refusing.add(host);
+    if (res.challenged) {
+      this.challenging.add(host);
+      this.refusing.delete(host);
+    } else if (res.status === 403) this.refusing.add(host);
     else if (res.ok) this.refusing.delete(host);
     return res;
   }

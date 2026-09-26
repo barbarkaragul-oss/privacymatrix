@@ -38,14 +38,17 @@ test('stripInlineHtml removes documentation tags inside markdown but leaves code
 
 // --- residential runner: 403 retry and request spacing, without the network ----------------------
 
-async function withFakeFetch<T>(statuses: number[], fn: (calls: number[]) => Promise<T>): Promise<T> {
+type FakeAnswer = number | { status: number; headers: Record<string, string> };
+
+async function withFakeFetch<T>(answers: FakeAnswer[], fn: (calls: number[]) => Promise<T>): Promise<T> {
   const real = globalThis.fetch;
   const calls: number[] = [];
   let i = 0;
   globalThis.fetch = (async () => {
     calls.push(Date.now());
-    const status = statuses[Math.min(i++, statuses.length - 1)] ?? 200;
-    return new Response(status === 200 ? 'plain text body of the page' : 'Forbidden', { status, headers: { 'content-type': 'text/plain' } });
+    const a = answers[Math.min(i++, answers.length - 1)] ?? 200;
+    const { status, headers } = typeof a === 'number' ? { status: a, headers: {} } : a;
+    return new Response(status === 200 ? 'plain text body of the page' : 'Forbidden', { status, headers: { 'content-type': 'text/plain', ...headers } });
   }) as typeof fetch;
   try {
     return await fn(calls);
@@ -121,5 +124,47 @@ test('Fetcher gives a host one round of 403 retries, then one attempt per page u
     assert.equal(calls.length, 4, 'two for the round, then one each');
     assert.equal((await f.get('https://e.example/1')).status, 429);
     assert.deepEqual(f.refusingHosts, ['d.example'], 'a 429 is not a refusal');
+  });
+});
+
+test('a bot challenge is never retried, and the rest of that host is not asked in the same run', async () => {
+  const challenge = { status: 403, headers: { 'cf-mitigated': 'challenge' } };
+  await withFakeFetch([challenge], async (calls) => {
+    const r = await fetchText('https://c.example/p', { retryForbidden: true, forbiddenDelaysMs: [1, 1] });
+    assert.equal(r.status, 403);
+    assert.equal(r.challenged, true);
+    assert.equal(calls.length, 1, 'a challenge wants a browser; asking again only adds requests');
+  });
+  await withFakeFetch([challenge, 200], async (calls) => {
+    const f = new Fetcher({ retryForbidden: true, forbiddenDelaysMs: [1, 1] }, 1);
+    assert.equal((await f.get('https://c.example/1')).challenged, true);
+    const second = await f.get('https://c.example/2');
+    assert.equal(second.ok, false);
+    assert.match(second.error ?? '', /not asked: c.example answered this run with a bot challenge/);
+    assert.equal(calls.length, 1, 'the other pages of a challenging host are not asked');
+    assert.equal((await f.get('https://d.example/1')).status, 200, 'other hosts are asked as usual');
+    assert.deepEqual(f.challengingHosts, ['c.example']);
+    assert.deepEqual(f.refusingHosts, [], 'a challenge is not counted as a plain refusal');
+  });
+  await withFakeFetch([challenge], async (calls) => {
+    const f = new Fetcher({}, 4);
+    await f.get('https://c.example/1');
+    await f.get('https://c.example/2');
+    assert.equal(calls.length, 2, 'the cloud run still asks every page, so each can fall back to the archive');
+    assert.deepEqual(f.challengingHosts, []);
+  });
+  await withFakeFetch([403, 403, 403], async (calls) => {
+    await fetchText('https://plain.example/p', { retryForbidden: true, forbiddenDelaysMs: [1, 1] });
+    assert.equal(calls.length, 3, 'a plain 403 keeps its round of retries');
+  });
+  await withFakeFetch([403, 403, 403, challenge], async (calls) => {
+    const f = new Fetcher({ retryForbidden: true, forbiddenDelaysMs: [1, 1] }, 1);
+    await f.get('https://e.example/1');
+    assert.deepEqual(f.refusingHosts, ['e.example']);
+    assert.equal((await f.get('https://e.example/2')).challenged, true);
+    await f.get('https://e.example/3');
+    assert.equal(calls.length, 4, 'a round for page 1, one attempt for page 2, none for page 3');
+    assert.deepEqual(f.challengingHosts, ['e.example']);
+    assert.deepEqual(f.refusingHosts, [], 'a host that turns to a challenge is listed once, as challenging');
   });
 });

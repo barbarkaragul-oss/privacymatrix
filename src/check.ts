@@ -17,7 +17,8 @@
  *                                 residential task): read blocked_from_cloud apps live, retry a
  *                                 403 a few times, one request at a time, no archive fallback. A
  *                                 host that refuses a page through every retry gets one attempt
- *                                 per page after that, until it answers one.
+ *                                 per page after that, until it answers one. A host that answers
+ *                                 with a bot challenge is not asked again in that run.
  *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
@@ -365,6 +366,9 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       console.log(`  FETCH ERROR ${url} (${problem})`);
     }),
   );
+  if (fetcher.challengingHosts.length) {
+    console.log(`  CHALLENGED ${fetcher.challengingHosts.join(', ')}: answered with a bot challenge (cf-mitigated: challenge), which this checker cannot pass; any later page from them was not asked this run`);
+  }
   if (fetcher.refusingHosts.length) {
     console.log(`  REFUSED ${fetcher.refusingHosts.join(', ')}: refused a page through every retry and returned no successful page after it; any later page from them was asked once`);
   }
