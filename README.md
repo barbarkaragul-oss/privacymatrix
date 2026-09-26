@@ -172,7 +172,7 @@ npm run verify                   # all apps, then: npm run build
 
 ### The residential re-check
 
-The apps whose sources refuse cloud IP ranges (listed under [How it works](#how-it-works)) are re-checked from a machine the vendors do not block. It reads only those apps live, one request at a time and at least 1.2 seconds apart, as `help.openai.com` asks. Then it rebuilds, runs the tests, and does what the weekly workflow does:
+The apps whose sources refuse cloud IP ranges (listed under [How it works](#how-it-works)) are re-checked from a machine the vendors do not block. It reads only those apps live, one request at a time and at least 1.2 seconds apart, as `help.openai.com` asks. A site that answers with a bot challenge, which needs a browser to pass, is not asked again in that run. Then it rebuilds, runs the tests, and does what the weekly workflow does:
 
 - refreshed dates and first misses are committed to `main`;
 - a demotion goes to a pull request from `bot/residential-verification`, a branch the bot rebuilds on every run, so do not push to it;
