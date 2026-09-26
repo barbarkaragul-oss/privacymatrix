@@ -48,24 +48,62 @@ export function parseAvailability(json: unknown, url: string): Capture | null {
 }
 
 /**
- * The most recent 200 capture of url; null when the archive has none; { error } when the archive
- * itself could not be asked (outage, timeout, a non-JSON answer), which must not be reported as
- * "no capture". Deliberately called without a timestamp parameter: with one, the API was observed
- * to return an empty result for pages that do have recent captures.
+ * Reads the response of the CDX API asked for the newest 200 capture (output=json, fl=timestamp,statuscode,
+ * filter=statuscode:200, limit=-1): a header row, then at most one row. Returns that capture, or null
+ * when there is none. Pure, so it can be tested without network.
  */
-export async function latestCapture(url: string, timeoutMs = 20_000): Promise<Capture | null | { error: string }> {
+export function parseCdx(json: unknown, url: string): Capture | null {
+  if (!Array.isArray(json) || json.length < 2 || !Array.isArray(json[0])) return null;
+  const header = json[0] as unknown[];
+  const ti = header.indexOf('timestamp');
+  const si = header.indexOf('statuscode');
+  if (ti < 0) return null;
+  for (let i = json.length - 1; i >= 1; i--) {
+    const row = json[i];
+    if (!Array.isArray(row)) continue;
+    const timestamp = typeof row[ti] === 'string' ? row[ti] : '';
+    if (si >= 0 && String(row[si]) !== '200') continue;
+    if (captureDate(timestamp)) return { timestamp, rawUrl: archiveRawUrl(timestamp, url) };
+  }
+  return null;
+}
+
+async function getJson(endpoint: string, timeoutMs: number): Promise<unknown | { error: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, { signal: controller.signal });
+    const res = await fetch(endpoint, { signal: controller.signal });
     if (!res.ok) return { error: `archive.org answered HTTP ${res.status}` };
-    return parseAvailability(await res.json(), url);
+    return await res.json();
   } catch (err) {
     const message = err instanceof Error ? (err.name === 'AbortError' ? `timeout after ${timeoutMs}ms` : err.message) : String(err);
     return { error: message };
   } finally {
     clearTimeout(timer);
   }
+}
+
+function isError(x: unknown): x is { error: string } {
+  return typeof x === 'object' && x !== null && !Array.isArray(x) && typeof (x as { error?: unknown }).error === 'string';
+}
+
+/**
+ * The most recent 200 capture of url; null when the archive has none; { error } when the archive
+ * itself could not be asked (outage, timeout, a non-JSON answer), which must not be reported as
+ * "no capture".
+ *
+ * Asked through the CDX API, filtered to 200 captures. The availability API answers with the single
+ * capture closest to now whatever its status, so a later redirect or empty capture (a 204 for
+ * openai.com's privacy policy on 24 September 2026) hid 200 captures from days before. It is still
+ * asked when the CDX API cannot be, without a timestamp parameter: with one, it was observed to
+ * return an empty result for pages that do have recent captures.
+ */
+export async function latestCapture(url: string, timeoutMs = 20_000): Promise<Capture | null | { error: string }> {
+  const cdx = await getJson(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}&output=json&fl=timestamp,statuscode&filter=statuscode:200&limit=-1`, timeoutMs);
+  if (!isError(cdx)) return parseCdx(cdx, url);
+  const available = await getJson(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, timeoutMs);
+  if (isError(available)) return { error: `${cdx.error}; availability API: ${available.error}` };
+  return parseAvailability(available, url);
 }
 
 /** Fetches the raw capture as text, through the same HTML-to-text path as a live page. */
