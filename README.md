@@ -189,12 +189,20 @@ powershell -ExecutionPolicy Bypass -File scripts\install-residential-task.ps1
 
 The task works in a clone of its own under `%LOCALAPPDATA%\PrivacyMatrix`, never in the checkout you work in. It resets that clone to `origin/main` before every run, so the only code it runs is code already merged to `main`: nothing from a pull request or a fork reaches the machine through it. The launcher it starts is a plain batch file of `git` and `node` commands, copied outside the repository, so a later pull cannot change it either; it runs in a console with no window, and no PowerShell runs during the task.
 
-The task runs as you, only while you are logged on, every day at 13:00 or at the next chance after a missed time. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`. Task Scheduler shows the task's last run result as 0 even when the launcher failed, because the windowless console the launcher runs in returns 0; the last line of the log, `launcher finished with exit code N`, gives the real result.
+The task runs as you, only while you are logged on, every day at 13:00 unless the installer's `-At` sets another time. Keep the machine awake then: a time missed while it slept was seen to be skipped. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`. Task Scheduler shows the task's last run result as 0 even when the launcher failed, because the windowless console the launcher runs in returns 0; the last line of the log, `launcher finished with exit code N`, gives the real result.
 
 To see what a run would do without committing anything, from any clean checkout:
 
 ```bash
 npm run residential -- --dry-run
+```
+
+#### Pages only a person can read
+
+Some vendors show every automated client a bot challenge, even on a home connection, so the run cannot read their pages. After each run the task opens a local reading page in your browser when such pages have not been read by hand for 28 days. "Open all" opens them in the browser; you pass any challenge the way anyone does, copy each page's text (Ctrl+A, Ctrl+C) and paste it into its box. The quotes are matched on your machine, and Save dates the cells whose quotes were found as read by hand and pushes the commit to `main`. A quote that is not found is only listed: a reading by hand never demotes a cell. What you paste goes only to the reading page's small program on your machine and is not stored. The reading page never fetches a vendor's page itself. It stays open for up to 40 minutes (less when the run itself took long, 2 hours when opened with `--read`), and when the time is up it saves what was read and closes. To open it at any time:
+
+```bat
+cmd /c "%LOCALAPPDATA%\PrivacyMatrix\residential-launch.cmd" --read
 ```
 
 ## Contributing
