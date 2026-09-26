@@ -20,7 +20,7 @@
 </p>
 
 <!-- stats:start -->
-**28 apps × 14 questions · 314/392 cells verified against their source · last verification 2026-09-23** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
+**28 apps × 14 questions · 314/392 cells verified against their source · last verification 2026-09-26** · ✅ 143 · 🟡 137 · ❌ 34 · ❔ 78
 <!-- stats:end -->
 
 Privacy policies are long, change quietly, and are almost never compared side by side with the actual sentences that matter. When someone asks "does ChatGPT train on my conversations?" the answer usually comes from a months-old news article. This repository answers from the policies themselves, and shows its work:
@@ -122,7 +122,7 @@ These vendors answer requests from cloud IP ranges (GitHub's runners among them)
 - **ChatGPT** (openai.com, help.openai.com): 14 verified cells — 14 read by hand; verified 2026-09-23.
 - **Perplexity** (www.perplexity.ai): 13 verified cells — 13 read live; verified 2026-09-11.
 - **Grok** (x.ai): 12 verified cells — 12 read live; verified 2026-09-11.
-- **Alexa+** (www.amazon.com, www.aboutamazon.com): 7 verified cells — 7 read live; verified 2026-09-21.
+- **Alexa+** (www.amazon.com, www.aboutamazon.com): 7 verified cells — 7 read live; verified 2026-09-26.
 <!-- blocked:end -->
 
 **When a policy changes, with an API key (`npm run verify`, run by whoever has a key):**

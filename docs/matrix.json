@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-23T18:05:00.000Z",
+  "generated_at": "2026-09-26T14:49:01.911Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -3259,7 +3259,7 @@
       "notes": "The Alexa Privacy Hub states that Alexa requests are used by default to train speech recognition and natural language understanding systems, and that voice recordings, transcripts and typed requests help Alexa learn preferences; saving is on by default. The pages predate Alexa+ branding but cover the same Alexa requests; no Alexa+-specific exclusion is documented.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3270,7 +3270,7 @@
       "notes": "A self-service control exists (Alexa app: More > Alexa Privacy > Manage Your Alexa Data), but it is scoped to voice recordings being used to develop new features or manually reviewed; typed Alexa+ chats and attachments are not addressed, and the training statement itself covers all Alexa requests, so the cell is partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3303,7 +3303,7 @@
       "notes": "There is no per-chat incognito mode; the closest control is the account-level Don’t save recordings option among four retention choices (save until deleted, 18 months, 3 months, don’t save). Even then transcripts and typed requests are kept until the chat has been inactive for 30 days so the history can be reviewed, and the page does not say whether requests under this setting are excluded from training, which makes an account-level setting partial under the rubric.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3325,7 +3325,7 @@
       "notes": "Individual recordings and transcripts can be deleted self-service online, in the Alexa app or on Echo Show devices (by day, device or profile), and a retention period can be set. Deleting the Amazon account itself is not described on the Alexa privacy pages and is a separate account-wide process, so only the conversation half is documented here.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3347,7 +3347,7 @@
       "notes": "A 30-day automatic deletion is stated for transcripts and typed requests of inactive chats, and manually deleted recordings and transcripts are said to be deleted from Amazon’s cloud, but no period is given for completing a manual deletion or an account deletion, and the Don’t save recordings setting can take up to 36 hours to apply. A period stated for one mechanism only is partial. The quote reproduces the page’s own spelling of transcripts.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3380,7 +3380,7 @@
       "notes": "Human review of requests is disclosed as part of training and quality improvement, not limited to safety or support cases, with a self-service opt-out for voice recordings; that is the rubric’s partial branch (review for broader purposes with a documented limit).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "alexa-plus",
@@ -3402,7 +3402,7 @@
       "notes": "An in-product Alexa Privacy dashboard (Alexa app > More > Alexa Privacy, or amazon.com/alexaprivacysettings) is documented for reviewing and deleting Alexa/Alexa+ interactions and attachments, but a general channel for access, portability or full-account deletion requests is only described in the unfetchable Privacy Notice/Request Your Data pages.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-09-21"
+      "verified_at": "2026-09-26"
     },
     {
       "app": "snapchat-my-ai",
