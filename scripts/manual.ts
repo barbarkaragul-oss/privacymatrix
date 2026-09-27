@@ -81,8 +81,16 @@ function isWebAddress(url: string): boolean {
 
 function openInBrowser(url: string): void {
   if (!isWebAddress(url)) return;
-  const [cmd, args] = process.platform === 'win32' ? ['explorer.exe', [url]] : process.platform === 'darwin' ? ['open', [url]] : ['xdg-open', [url]];
-  spawn(cmd as string, args as string[], { stdio: 'ignore', detached: true }).unref();
+  // The normalised form has no raw quotes or spaces (they are percent-encoded), so it can go
+  // inside the quotes below as it is.
+  const href = new URL(url).href;
+  if (process.platform === 'win32') {
+    // start hands the address to the default browser. explorer.exe, tried first, opened the
+    // Documents folder instead. start's first quoted argument is the window title, left empty.
+    spawn('cmd.exe', ['/d', '/c', `start "" "${href}"`], { stdio: 'ignore', detached: true, windowsHide: true, windowsVerbatimArguments: true }).unref();
+  } else {
+    spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [href], { stdio: 'ignore', detached: true }).unref();
+  }
 }
 
 function esc(s: string): string {
