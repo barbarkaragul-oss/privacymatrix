@@ -338,7 +338,12 @@ export async function run(opts: Options): Promise<number> {
       return 0;
     }
     // The launcher reset this checkout to origin/main a moment ago; anything else is not the task's checkout.
-    git('fetch', '--quiet', 'origin', 'main');
+    try {
+      git('fetch', '--quiet', 'origin', 'main');
+    } catch (err) {
+      log(`failed: could not reach GitHub to check this checkout (${(err as Error).message.split('\n').find((l) => l.startsWith('fatal:')) ?? 'git fetch failed'}); trying again at the next run`);
+      return 1;
+    }
     if (git('rev-parse', 'HEAD') !== git('rev-parse', 'FETCH_HEAD')) {
       log('skipped: this checkout is not at origin/main; the launcher resets it before every run');
       return 0;
