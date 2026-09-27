@@ -13,7 +13,8 @@ What it sets up, all under -StateDir (default %LOCALAPPDATA%\PrivacyMatrix), out
     the folder it sits in is the state folder, so leave it where it is;
   - checkout\, a clone the task alone uses, created on the first run and reset to origin/main before
     every run, so the task never touches the checkout you work in and only runs code merged to main;
-  - residential.log, last-success and installed-lock, written by the runs.
+  - residential.log, last-success and installed-lock, written by the runs; run-lock, a folder that
+    exists while a run is going, and refused.log, which notes a run that found it and stopped.
 
 The task runs as you, only while you are logged on, so it needs no stored password and no
 administrator rights. It starts the batch launcher from the state folder in a console without a
@@ -22,8 +23,8 @@ window (conhost --headless), and no PowerShell runs while it runs. It fires ever
 off is made up after it wakes, but that was seen to happen hours later (a run missed at 20:00 started
 at 17:46 the next day), so for a run at -At the machine should be awake then. Each run exits early
 unless the last success is six or more days old.
-After every run, including one that exits early, it opens the reading page if pages only a person
-can read are due (scripts/manual.ts).
+After every run, including one that exits early, the log says how many pages only a person can read
+are due; nothing opens on its own. --read opens the reading page for them (scripts/manual.ts).
 
 Run once now:     Start-ScheduledTask -TaskName 'PrivacyMatrix residential check'
 Force a run:      cmd /c "%LOCALAPPDATA%\PrivacyMatrix\residential-launch.cmd" --force

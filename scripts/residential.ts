@@ -72,14 +72,18 @@ export interface Plan {
   commit: 'none' | 'main' | 'main+pr';
   /** 'keep' when pages were unreachable: it cannot be said that every quote was found. */
   issue: 'open' | 'close' | 'keep';
-  pr: 'open' | 'close';
+  /**
+   * 'keep' when there is nothing to demote but pages were unreachable: a demotion pull request
+   * opened by an earlier run may still be right, since its quotes may be on the pages not read.
+   */
+  pr: 'open' | 'close' | 'keep';
 }
 
 export function decide(o: RunOutcome): Plan {
   return {
     commit: !o.dirty ? 'none' : o.valueChanges > 0 ? 'main+pr' : 'main',
     issue: o.valueChanges > 0 || o.flagged > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
-    pr: o.valueChanges > 0 ? 'open' : 'close',
+    pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
   };
 }
 
@@ -257,22 +261,26 @@ export async function commitIdentityArgs(): Promise<string[]> {
 const NOTE =
   "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts) and can only be re-quoted from a residential connection.";
 
-async function syncPullRequest(token: string, slug: string, action: 'open' | 'close', title: string, body: string): Promise<void> {
+export async function syncPullRequest(token: string, slug: string, action: Plan['pr'], title: string, body: string, call: typeof api = api): Promise<void> {
+  if (action === 'keep') {
+    log('pull request left as it is: some pages could not be read this run');
+    return;
+  }
   const owner = slug.split('/')[0];
-  const open = await api(token, 'GET', `/repos/${slug}/pulls?state=open&head=${encodeURIComponent(`${owner}:${BOT_BRANCH}`)}`);
+  const open = await call(token, 'GET', `/repos/${slug}/pulls?state=open&head=${encodeURIComponent(`${owner}:${BOT_BRANCH}`)}`);
   const existing = Array.isArray(open) && open.length ? open[0] : null;
   if (action === 'open') {
     if (existing) {
-      await api(token, 'PATCH', `/repos/${slug}/pulls/${existing.number}`, { title, body });
+      await call(token, 'PATCH', `/repos/${slug}/pulls/${existing.number}`, { title, body });
       log(`updated pull request #${existing.number}`);
     } else {
-      const pr = await api(token, 'POST', `/repos/${slug}/pulls`, { head: BOT_BRANCH, base: 'main', title, body });
+      const pr = await call(token, 'POST', `/repos/${slug}/pulls`, { head: BOT_BRANCH, base: 'main', title, body });
       log(`opened pull request #${pr.number}`);
     }
   } else if (existing) {
-    // The quotes it would demote were found again, or fixed: merging it now would be wrong.
-    await api(token, 'POST', `/repos/${slug}/issues/${existing.number}/comments`, { body: `The residential re-check of ${today()} no longer demotes any cell, so this pull request is out of date. Closing.` });
-    await api(token, 'PATCH', `/repos/${slug}/pulls/${existing.number}`, { state: 'closed' });
+    // Every page was read and the quotes it would demote were found again, or fixed: merging it now would be wrong.
+    await call(token, 'POST', `/repos/${slug}/issues/${existing.number}/comments`, { body: `The residential re-check of ${today()} read every page and no longer demotes any cell, so this pull request is out of date. Closing.` });
+    await call(token, 'PATCH', `/repos/${slug}/pulls/${existing.number}`, { state: 'closed' });
     log(`closed pull request #${existing.number}`);
   }
 }
@@ -453,37 +461,44 @@ export async function run(opts: Options): Promise<number> {
   }
 }
 
-/** The task's time limit (install-residential-task.ps1), and what a save at the end of the reading time may need. */
-const TASK_LIMIT_MINUTES = 60;
+/** How long the reading page stays open with --read, and what a save at the end of that time may need. */
+const READING_MINUTES = 120;
 const SAVE_MARGIN_MINUTES = 15;
 
-/**
- * Runs the reading page (scripts/manual.ts) from this checkout and waits for it to close. With
- * remind it opens the browser only when pages are due and exits at once otherwise. Its time is
- * what is left of the task's hour after the run, less a margin for the save it makes when the time
- * is up, at most 40 minutes; if that leaves under 5 minutes, it is offered at the next run instead.
- * It is stopped with its whole process tree when its time and the margin have passed.
- */
-async function readingPage(stateDir: string, remind: boolean, startedAt: number): Promise<void> {
+/** The reading page (scripts/manual.ts) of this checkout, through the tsx the checkout installed; null when it has none yet. */
+function manualCommand(stateDir: string, extra: string): string | null {
   const tsx = path.join('node_modules', 'tsx', 'dist', 'cli.mjs');
-  if (!existsSync(tsx)) {
+  if (!existsSync(tsx)) return null;
+  return [process.execPath, tsx, path.join('scripts', 'manual.ts'), '--state', stateDir].map((a) => `"${a}"`).join(' ') + ` ${extra}`;
+}
+
+/**
+ * Opens the reading page (residential-launch.cmd --read) and waits for it to close. It is stopped
+ * with its whole process tree when its time and the margin for its final save have passed.
+ */
+async function readingPage(stateDir: string): Promise<void> {
+  const command = manualCommand(stateDir, `--minutes ${READING_MINUTES}`);
+  if (!command) {
     log('reading page not opened: dependencies are not installed yet');
     return;
   }
-  const used = (Date.now() - startedAt) / 60_000;
-  const minutes = remind ? Math.min(40, Math.floor(TASK_LIMIT_MINUTES - 5 - used - SAVE_MARGIN_MINUTES)) : 120;
-  if (minutes < 5) {
-    log(`reading page not opened: the run used ${Math.round(used)} of the task's ${TASK_LIMIT_MINUTES} minutes; it is offered at the next run`);
-    return;
-  }
-  const command = [process.execPath, tsx, path.join('scripts', 'manual.ts'), '--state', stateDir].map((a) => `"${a}"`).join(' ') + ` --minutes ${minutes}${remind ? ' --remind' : ''}`;
-  const { timedOut } = await runCommand(command, (minutes + SAVE_MARGIN_MINUTES) * 60_000);
+  const { timedOut } = await runCommand(command, (READING_MINUTES + SAVE_MARGIN_MINUTES) * 60_000);
   if (timedOut) log('reading page stopped: it outlasted its time and the margin for saving');
+}
+
+/**
+ * After a run: writes to the log how many pages are due for a reading by hand. Nothing opens; the
+ * maintainer starts the reading page with residential-launch.cmd --read when they want to.
+ */
+async function countReadingPages(stateDir: string): Promise<void> {
+  const command = manualCommand(stateDir, '--check');
+  if (!command) return;
+  const { timedOut, code } = await runCommand(command, 120_000);
+  if (timedOut || code !== 0) log('could not count the pages due for a reading by hand');
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]).endsWith(path.join('scripts', 'residential.ts'));
 if (isMain) {
-  const startedAt = Date.now();
   const args = new Set(process.argv.slice(2));
   const stateDir = process.env.RESIDENTIAL_STATE_DIR;
   const main = async (): Promise<number> => {
@@ -493,15 +508,15 @@ if (isMain) {
         return 0;
       }
       process.chdir(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'));
-      await readingPage(stateDir, false, startedAt);
+      await readingPage(stateDir);
       return 0;
     }
     const code = await run({ force: args.has('--force'), dryRun: args.has('--dry-run') });
-    // After every run of the task, the pages only a person can read are offered to the maintainer,
+    // After every run of the task, the log says how many pages only a person can read are due,
     // unless the run found the checkout in a state it would not publish from.
-    if (stateDir && !args.has('--dry-run') && process.platform === 'win32') {
-      if (git('status', '--porcelain')) log('reading page not opened: the checkout has uncommitted changes');
-      else await readingPage(stateDir, true, startedAt);
+    if (stateDir && !args.has('--dry-run')) {
+      if (git('status', '--porcelain')) log('pages due for a reading by hand not counted: the checkout has uncommitted changes');
+      else await countReadingPages(stateDir);
     }
     return code;
   };

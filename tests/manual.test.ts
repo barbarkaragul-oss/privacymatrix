@@ -66,8 +66,10 @@ test('applyReadings dates only the cells whose quotes were found, as read by han
     cell('x', 'q2', A, { quote_missing_since: '2026-09-20' }),
     cell('x', 'q3', A),
   ];
-  const { cells: out, dated } = applyReadings(cells, [{ app: 'x', question: 'q1' }, { app: 'x', question: 'q2' }], '2026-09-26');
+  const read = (c: Cell) => ({ app: c.app, question: c.question, quote: c.quote, evidence_url: c.evidence_url });
+  const { cells: out, dated, skipped } = applyReadings(cells, [read(cells[0]!), read(cells[1]!)], '2026-09-26');
   assert.equal(dated, 2);
+  assert.equal(skipped, 0);
   assert.equal(out[0]?.verified_at, '2026-09-26');
   assert.equal(out[0]?.verified_via, 'manual');
   assert.equal('archive_timestamp' in (out[0] as object), false, 'no archive provenance left');
@@ -86,4 +88,21 @@ test('checkPastedPage: a quote that matches only without punctuation is not foun
   const exact = checkPastedPage([c], A, 'Intro. We never share your data. ' + 'More text of the page. '.repeat(3));
   assert.equal(exact.results[0]!.found, true);
   assert.equal(exact.results[0]!.note, undefined);
+});
+
+test('applyReadings skips a cell whose quote or page changed after it was read (Codex probe 3)', () => {
+  const original = cell('x', 'q1', A, { quote: 'Your privacy matters to our company.' });
+  const checked = checkPastedPage([original], A, 'Your privacy matters to our company. This is enough text to read the page.');
+  const found = checked.results.filter((r) => r.found);
+  assert.equal(found.length, 1);
+  // main moved while the page was open: the cell now cites another sentence on another page
+  const replaced: Cell = { ...original, quote: 'This different sentence was never read by the maintainer.', evidence_url: 'https://help.example/other', quote_missing_since: '2026-09-21' };
+  const { cells: [after], dated, skipped } = applyReadings([replaced], found, '2026-09-27');
+  assert.deepEqual(after, replaced, 'left exactly as it was: not dated, flag kept');
+  assert.equal(dated, 0);
+  assert.equal(skipped, 1);
+  // only the quote changed, the page is the same: still skipped
+  assert.equal(applyReadings([{ ...original, quote: 'Another sentence, changed on main.' }], found, '2026-09-27').skipped, 1);
+  // unchanged: dated
+  assert.equal(applyReadings([original], found, '2026-09-27').dated, 1);
 });
