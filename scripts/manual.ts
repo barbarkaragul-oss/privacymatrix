@@ -26,7 +26,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { applyReadings, checkPastedPage, duePages, unreachablePages, type PageCheck, type ReportCell } from '../src/manual.js';
 import type { Cell } from '../src/types.js';
-import { runCommand } from './residential.js';
+import { commitIdentityArgs, runCommand } from './residential.js';
 
 const DATA_PATHS = ['data/matrix.json', 'data/changes.json', 'data/changes.md', 'README.md', 'docs'];
 const FIRST_PORT = 47813;
@@ -260,10 +260,11 @@ async function main(): Promise<number> {
       }
       return git('rev-parse', 'HEAD');
     };
+    let identity: string[] = [];
     const commit = (dated: number): boolean => {
       git('add', '--', ...DATA_PATHS);
       if (!git('diff', '--cached', '--name-only')) return false;
-      git('commit', '--quiet', '-m', `matrix: read by hand in a browser: ${dated} quote(s) present on ${readUrls.length} page(s)`);
+      git(...identity, 'commit', '--quiet', '-m', `matrix: read by hand in a browser: ${dated} quote(s) present on ${readUrls.length} page(s)`);
       return true;
     };
     if (git('status', '--porcelain')) throw new Error('the checkout has uncommitted changes');
@@ -278,6 +279,8 @@ async function main(): Promise<number> {
         ok = true;
         return `Dry run: ${dated} quote(s) present on ${readUrls.length} page(s); nothing committed.`;
       }
+      // The commit carries the pushing account's GitHub noreply identity, never the machine's own.
+      identity = await commitIdentityArgs();
       if (commit(dated)) {
         try {
           git('push', '--quiet', 'origin', 'HEAD:main');

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { decide, isDue, MAX_AGE_DAYS, repoSlug, runCommand, summarize, withoutDemotions } from '../scripts/residential.js';
+import { decide, isDue, MAX_AGE_DAYS, noreplyIdentity, repoSlug, runCommand, summarize, withoutDemotions } from '../scripts/residential.js';
 
 test('isDue: runs when there is no success yet, or the last one is MAX_AGE_DAYS or more old', () => {
   assert.equal(isDue(null, '2026-09-28', MAX_AGE_DAYS), true);
@@ -97,4 +97,8 @@ setTimeout(() => {}, 120000);
 
 test('runCommand reports the exit code of a command that finishes in time', async () => {
   assert.deepEqual(await runCommand(`"${process.execPath}" -e "process.exit(3)"`, 30_000), { code: 3, timedOut: false });
+});
+
+test('noreplyIdentity gives the account name and its GitHub noreply address', () => {
+  assert.deepEqual(noreplyIdentity({ id: 247049124, login: 'barbarkaragul-oss' }), { name: 'barbarkaragul-oss', email: '247049124+barbarkaragul-oss@users.noreply.github.com' });
 });
