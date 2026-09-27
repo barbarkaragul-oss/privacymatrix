@@ -90,6 +90,10 @@
   kbd { font: 12px var(--mono); background: var(--bg-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
   .count { font-size: 11px; font-weight: 500; color: var(--text-3); display: block; margin-top: 2px; }
   .count.blocked { font-style: italic; cursor: help; }
+  @media (max-width: 600px) {
+    thead th:first-child, tbody th { width: 150px; min-width: 150px; max-width: 150px; white-space: normal; overflow-wrap: break-word; }
+    .meta { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -155,6 +159,16 @@
   };
   const BLOCKED_NOTE = "This vendor answers automated requests from cloud IP ranges with HTTP 403, a bot challenge or a page that lacks its text. From the cloud a quote can be confirmed, but a quote that is not found is not evidence that it was removed; for some vendors the residential re-check is blocked too. Open a cell to see how and when it was last confirmed.";
   const byKey = new Map(D.cells.map((c) => [c.app + '|' + c.question, c]));
+  const today = new Date().toISOString().slice(0, 10);
+  function freshness(cell) {
+    const date = cell.verified_at || '';
+    const stamp = Date.parse(date);
+    const age = Math.floor((Date.parse(today) - stamp) / 86400000);
+    if (!cell.verified || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(age) || age < 0 || new Date(stamp).toISOString().slice(0, 10) !== date) return { status: 'unknown', text: 'No valid confirmation date' };
+    if (age >= D.freshness_policy.stale_after_days) return { status: 'stale', text: 'Stale evidence: last confirmed ' + age + ' days ago; current accuracy is unconfirmed' };
+    if (age >= D.freshness_policy.warning_after_days) return { status: 'unconfirmed', text: 'Freshness unconfirmed: last confirmed ' + age + ' days ago' };
+    return { status: 'recent', text: 'Last confirmed ' + age + ' days ago' };
+  }
   const appById = new Map(D.apps.map((a) => [a.id, a]));
   const questionById = new Map(D.questions.map((c) => [c.id, c]));
 
@@ -185,6 +199,8 @@
   D.cells.forEach((c) => { counts[c.value] = (counts[c.value] || 0) + 1; });
   const viaArchive = D.cells.filter((c) => c.verified && c.verified_via === 'archive').length;
   stats.innerHTML = '<span><b>' + D.apps.length + '</b> apps</span><span><b>' + D.questions.length + '</b> questions</span><span><b>' + verified + '/' + D.cells.length + '</b> cells verified at source' + (viaArchive ? ' (' + viaArchive + ' via archived copies)' : '') + '</span><span>last verification <b>' + esc(dates.length ? dates[dates.length - 1] : 'never') + '</b></span>';
+  const ageing = D.cells.filter(c => ['unconfirmed', 'stale'].includes(freshness(c).status)).length;
+  stats.innerHTML += '<span><b>' + ageing + '</b> cells need a fresh confirmation (14+ days); ! marks ageing evidence, not a changed policy</span>';
 
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -235,9 +251,11 @@
           const v = cell.value || 'unknown';
           const cls = 'v ' + v + (v !== 'unknown' && !cell.verified ? ' unverified' : '');
           const via = cell.verified && VIA[cell.verified_via];
-          const label = esc(a.name) + ' — ' + esc(cap.name) + ': ' + LABEL[v] + (cell.verified ? ', verified ' + esc(cell.verified_at) + (via ? ', ' + via.text : '') : '');
+          const fresh = freshness(cell);
+          const label = esc(a.name) + ' — ' + esc(cap.name) + ': ' + LABEL[v] + (cell.verified ? ', verified ' + esc(cell.verified_at) + (via ? ', ' + via.text : '') + ', ' + esc(fresh.text) : '');
           const badge = via ? '<span class="badge" aria-hidden="true" title="' + esc(via.text) + '">' + via.mark + '</span>' : '';
-          body += '<td class="cell"><button type="button" class="' + cls + '" data-a="' + esc(a.id) + '" data-c="' + esc(cap.id) + '" aria-label="' + label + '">' + GLYPH[v] + badge + '</button></td>';
+          const ageBadge = ['unconfirmed', 'stale'].includes(fresh.status) ? '<span aria-hidden="true" title="' + esc(fresh.text) + '"> !</span>' : '';
+          body += '<td class="cell"><button type="button" class="' + cls + '" data-a="' + esc(a.id) + '" data-c="' + esc(cap.id) + '" aria-label="' + label + '">' + GLYPH[v] + badge + ageBadge + '</button></td>';
         });
         body += '</tr>';
       });
@@ -275,6 +293,7 @@
       verifiedText = 'quote found at source on ' + esc(cell.verified_at);
     }
     html += '<span>Verified</span><span>' + verifiedText + '</span>';
+    html += '<span>Freshness</span><span>' + esc(freshness(cell).text) + '. A scheduled check does not guarantee a successful reading of every source.</span>';
     if (cell.verified_via === 'archive' && /^\d{14}$/.test(cell.archive_timestamp || '') && isHttp(cell.evidence_url)) {
       const archived = 'https://web.archive.org/web/' + cell.archive_timestamp + '/' + cell.evidence_url;
       html += '<span>Archived copy</span><a href="' + esc(archived) + '" target="_blank" rel="noopener">' + esc(archived) + '</a>';

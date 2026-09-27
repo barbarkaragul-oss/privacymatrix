@@ -169,7 +169,7 @@ export function sourceProblem(r: Pick<FetchResult, 'ok' | 'status' | 'error' | '
   return unusablePage(r.text, r.truncated);
 }
 
-async function loadSources(app: App, fetcher: Fetcher): Promise<{ sources: SourceText[]; prepared: Map<string, PreparedText>; failures: string[] }> {
+export async function loadSources(app: App, fetcher: Pick<Fetcher, 'get'>): Promise<{ sources: SourceText[]; prepared: Map<string, PreparedText>; failures: string[] }> {
   const results = await Promise.all(app.sources.map((u) => fetcher.get(u)));
   const sources: SourceText[] = [];
   const prepared = new Map<string, PreparedText>();
@@ -189,7 +189,8 @@ async function loadSources(app: App, fetcher: Fetcher): Promise<{ sources: Sourc
     }
     const text = r.text.length > limit ? r.text.slice(0, limit) : r.text;
     sources.push({ url: r.url, text, truncated: text.length < r.text.length });
-    prepared.set(toFetchableUrl(r.url), prepareText(text));
+    // The model's input budget is not the evidence boundary: search the entire downloaded page.
+    prepared.set(toFetchableUrl(r.url), prepareText(r.text));
   });
   return { sources, prepared, failures };
 }

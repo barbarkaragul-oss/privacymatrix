@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-27T09:17:03.905Z",
+  "generated_at": "2026-09-27T17:16:53.624Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -11,7 +11,9 @@
       "notes": "Training is on by default for consumer ChatGPT and Codex, and the control is an opt-out: the page tells users to turn off \"Improve the model for everyone\" under Settings > Data controls, or select \"Do not train on my content\" in the Privacy Portal. OpenAI Support conversations are used as well while that toggle is on, and a conversation attached to thumbs up/down feedback may be used even after opting out. Excluded by default: ChatGPT Business, Enterprise, Edu, Academic Researchers workspaces and the API (see business_no_training), and temporary chats while they stay temporary (see temporary_chat). Codex has a separate \"Include environments\" setting that neither control changes.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "feb9ad20f6573d1ed6efeed4ae7cc6dd"
     },
     {
       "app": "chatgpt",
@@ -22,7 +24,9 @@
       "notes": "Two self-service routes, both free and in-product: the \"Improve the model for everyone\" toggle under Settings > Data controls, or \"Do not train on my content\" in OpenAI’s Privacy Portal; the page states either is sufficient for ChatGPT conversations and Codex tasks. The effect is prospective, covering new conversations, and the page describes no side effect on chat history. Two carve-outs are stated on the same page: the whole conversation attached to thumbs up/down feedback may still be used after opting out, and Codex’s separate \"Include environments\" setting is not changed by either control.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "9f1eaea4b1d32eb4e29848650a8a23a6"
     },
     {
       "app": "chatgpt",
@@ -33,7 +37,9 @@
       "notes": "Uploaded files and images are part of \"Content\" and follow the same rule as chats: used for training by default on consumer plans and covered by the same \"Improve the model for everyone\" opt-out, so exclusion depends on a setting that is on by default. Business, Enterprise and API uploads are not used for training (see business_no_training). The previous quote was a four-word fragment that would have kept matching even if the page dropped the training framing entirely; this one carries it.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "616aeaeeb7996a043facba5220156dc0"
     },
     {
       "app": "chatgpt",
@@ -44,7 +50,9 @@
       "notes": "Exclusion is the default — no contract term and no setting to flip — for ChatGPT Business, Enterprise, Edu, the API and ChatGPT for Academic Researchers workspaces. The only route in is opt-in: API organization owners can enable data sharing, after which members can choose to share feedback and the current API Playground chat. Cited from this help article because openai.com pages answer HTTP 403 to the checker.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "0ee4bedb48e1bd03eaee43a155ad2b47"
     },
     {
       "app": "chatgpt",
@@ -55,7 +63,9 @@
       "notes": "A per-chat mode: the page states temporary chats are excluded from model improvement and from chat history and do not create or update memories. \"While they remain temporary\" is not a plan or region limit — saving the chat converts it to a regular chat, which then follows the account’s settings. On retention, the Privacy Policy says temporary chats \"will be automatically deleted within 30 days (unless we have to retain them for safety or legal reasons, as described further below).\" That sentence sits on openai.com/policies/privacy-policy/, not on this cell’s source, and openai.com answers HTTP 403 to the checker, so the 30-day element rests on a capture taken by hand on 2026-09-23 rather than on the weekly check.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "31c3d18d32a6c070a8ed67a6afe513de"
     },
     {
       "app": "chatgpt",
@@ -66,8 +76,9 @@
       "notes": "Memory is managed at Settings > Personalization > Memory: the memory summary can be edited, individual saved memories deleted, and \"Delete and turn off memory\" removes what the summary shows and turns Memory off. Partial for two reasons the page states outright: turning Memory off does not disable limited safety and security uses of context, so it cannot be switched off entirely; and the summary \"does not necessarily include every detail or source that Memory can reference\", so what the controls show is not guaranteed to be everything the model can draw on. The page was rewritten (now titled \"Memory in ChatGPT\"), which is why the previous quote is gone.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "4d3208779f5231930c0cde6d6d3ba897"
     },
     {
       "app": "chatgpt",
@@ -78,8 +89,9 @@
       "notes": "Individual chats are deleted from the sidebar (three-dot menu > Delete) or all at once in Settings > Data controls; account deletion is in Settings > Account > Delete account on web and mobile. Self-service account deletion is not available in Business, Enterprise, Edu or Healthcare workspaces.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "46a77136aec9904033aa324482194817"
     },
     {
       "app": "chatgpt",
@@ -90,8 +102,9 @@
       "notes": "Settings > Data controls > Export data emails a ZIP with chat history and account data (link valid 24 hours, may take up to 7 days); available on Free, Go, Plus, Pro and eligible Edu, not while logged out and not in Business/Enterprise/Healthcare workspaces, where the workspace owner controls exports. The Privacy Portal offers an alternative 'Download my data' request.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "9c90cf5b22a08dd199db572a3c44d89f"
     },
     {
       "app": "chatgpt",
@@ -102,8 +115,9 @@
       "notes": "30-day commitment applies to deleted chats, deleted accounts and Temporary Chats, but the exceptions go beyond legal/security holds: content already de-identified for model training (the default for consumer accounts with training on) is not removed, and content or accounts banned for usage-policy violations may be kept to protect against abuse.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "9fefff8a7152013d1384b64067577374"
     },
     {
       "app": "chatgpt",
@@ -114,8 +128,9 @@
       "notes": "Ads are shown to Free and Go users (US test from February 9, 2026; not to under-18s, Plus, Pro, Business, Enterprise or Edu); the current conversation's context is always used to select ads, and with ad personalization on, past chats and memories may be used too. Settings > Ad Controls lets users turn off personalization and clear ads data (retained up to 30 days), but current-thread context still drives ads; personalized ads are initially unavailable in the EEA and Switzerland; conversations are not shared with advertisers.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "fcbc5364e9cd4dc34ddb6fc7a1bcd2d2"
     },
     {
       "app": "chatgpt",
@@ -126,7 +141,9 @@
       "notes": "The ads FAQ says OpenAI does not sell data to advertisers, but the Privacy Policy states that limited information is shared with \"select marketing partners who are not service providers in order to promote our products and services on third-party properties\", some of them through cookies, with a choice offered \"depending on applicable law\" (Settings > Data Controls > Marketing Privacy). That is sharing for the vendor’s own marketing with an opt-out, which the rubric puts at partial rather than yes. Earlier notes here also attributed a \"cross-context behavioral advertising\" characterisation and a list of hashed identifiers to a separate help article; neither phrase occurs in the cited Privacy Policy, so both have been dropped rather than carried unverified.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "00c3caf2ebb327c9b2ff10ca2060b950"
     },
     {
       "app": "chatgpt",
@@ -137,8 +154,9 @@
       "notes": "OpenAI discloses a combination of automated systems and human review for monitoring content that may violate its terms, and the Data Controls FAQ says Temporary Chats 'may be reviewed only to monitor for abuse'; however the consumer documents contain no general statement that staff or contractors cannot otherwise read conversations (for example during model-training data preparation), so the limits are only partially stated. The Enterprise Privacy page, which addresses employee access for business plans, could not be fetched (403).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-23",
-      "verified_via": "manual"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "5fda316f7543e12f10401a9580a19177"
     },
     {
       "app": "chatgpt",
@@ -149,7 +167,9 @@
       "notes": "By default only the general area derived from IP address is determined (for security and better responses); precise GPS location is collected only if the user chooses to grant it for a feature. The ads FAQ adds that advertisers never receive precise location or IP address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "ad636a6624cda506513e3f65caa3b926"
     },
     {
       "app": "chatgpt",
@@ -160,7 +180,9 @@
       "notes": "The privacy policy offers the Privacy Portal (privacy.openai.com) and the designated mailbox dsar@openai.com to all users for access, deletion, correction, portability and objection requests, while noting that statutory rights depend on where you live, which does not demote under the revised rubric; in-product controls also cover export, chat and account deletion, and the training and marketing opt-outs. The portal itself returns 403 to the crawler, so the policy sentence is the citable evidence; the DPO is reachable at dpo@openai.com.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "db27bde1b248332ac6394c21d617c8c8"
     },
     {
       "app": "claude",
@@ -633,7 +655,7 @@
       "notes": "The same article states that for Free, Perplexity Pro and Perplexity Max users the 'AI Data Retention' setting is enabled by default and 'Some data may be used to train AI models and improve search quality, unless you opt out through Account Settings'. The Privacy Notice lists 'Improve or create services and products, including our AI models' as a use of data. Only Enterprise data is excluded without action.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27"
     },
     {
       "app": "perplexity",
@@ -644,7 +666,7 @@
       "notes": "Free, Pro and Max users have a self-service 'AI data retention' toggle (Account settings > Preferences; the Memory article calls the same control Settings > Preferences > Artificial Intelligence) that stops their data being used for AI training. The article states that opt-outs apply only to data collected after the opt-out date and that previously collected training data cannot be deleted, which the revised rubric still counts as YES (prospective settings count; earlier conversations are not covered). Enterprise data is excluded without any action; Incognito mode is an additional per-session option.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27"
     },
     {
       "app": "perplexity",
@@ -655,7 +677,7 @@
       "notes": "The help article says uploaded files are used only to customise responses, but the Privacy Notice lists 'uploads' under User Content that it processes and lists improving 'our AI models' as a purpose, and the training opt-out article never says whether the toggle covers files. Documents are not fully consistent, so partial rather than yes. Files attached to sessions are retained 30 days (7 days for Enterprise Pro).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27"
     },
     {
       "app": "perplexity",
@@ -666,7 +688,9 @@
       "notes": "Enterprise Terms 'Model Training' clause; the help center repeats that Enterprise data is 'never' used for training and the API docs (docs.perplexity.ai/docs/resources/privacy-security) state a Zero Data Retention policy for the Chat Completions API with no training on customer data. Applies to Enterprise Pro/Max and API; does not cover individual Pro/Max plans.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "0390211eb2e3a90d2838c8ed808d9bfd"
     },
     {
       "app": "perplexity",
@@ -677,7 +701,9 @@
       "notes": "Incognito mode exists in the app and web; sessions 'expire within 24 hours and are not recoverable' (Incognito Mode Troubleshooting article) and are not saved to history or memory. No document explicitly states that incognito queries are excluded from model training, so the training half of the rubric is not confirmed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "71d3e1f51b8122b12428115545898ab3"
     },
     {
       "app": "perplexity",
@@ -688,7 +714,9 @@
       "notes": "Settings > Memory offers separate toggles for 'Use search history' and 'Notes' (memory), a 'Manage memories' view to search and delete individual entries, and clear-all. Turning memory off does not clear existing memories; a log of cleared memories may be kept up to 30 days for safety/debugging. Memory content may be used for training unless 'AI Data Retention' is off.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "5ce153c729992cd88fe9acf5d1d8f7ac"
     },
     {
       "app": "perplexity",
@@ -699,7 +727,9 @@
       "notes": "Account deletion is self-service at perplexity.ai/account/details; individual threads, all threads, projects and pages can be deleted from the Library/History menu. Files can only be deleted by deleting the session (or via a form for immediate deletion).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "355f9a91205e7bb81310ab1840928f1e"
     },
     {
       "app": "perplexity",
@@ -710,7 +740,9 @@
       "notes": "Self-service 'Export my data' button at https://www.perplexity.ai/account/details, described as covering the Right to Access; the article does not itemise whether the export contains all threads. Formal portability requests can also go through the Data Privacy Form.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "c0ce89d10ead0f3688c1b2364d84355c"
     },
     {
       "app": "perplexity",
@@ -721,7 +753,9 @@
       "notes": "A 30-day window is stated for account deletion (and files expire after 30 days), but no timeline is given for deleting individual threads, and the Privacy Notice says data may be kept 'to comply with legal obligations, resolve disputes, enforce agreements, or for other business purposes' and in backups, which is broader than legal/safety holds.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "86e4be2ad01680f4aa534626a1a22f5f"
     },
     {
       "app": "perplexity",
@@ -732,7 +766,9 @@
       "notes": "The July 2026 Privacy Notice headline says queries, prompts and conversation content are not sent to advertisers, but its disclosure table lists 'Internet or other electronic network activity information', defined to include search history, under 'Sharing for Targeted Advertising' with Advertising Partners, and describes first-party advertising measurement with third parties that 'may use this data to serve ads tailored to your interests'. Because search history is conversation content for a search product, the documents contradict each other, so partial rather than yes; opt-outs exist via the cookie banner, Global Privacy Control and mobile settings. Enterprise plans are not affected.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "cf6f311eb3d8af37b8856b4f7314b902"
     },
     {
       "app": "perplexity",
@@ -743,7 +779,9 @@
       "notes": "No sale for money, but the disclosure table lists 'Sharing for Targeted Advertising' of identifiers, commercial information, internet activity and non-precise geolocation with Advertising Partners, and the notice says third parties may use it to serve ads tailored to your interests; opt-out via cookie consent, Global Privacy Control or mobile settings. Sensitive data is not sold or shared.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "b59cbdd395288b564c4afa9e7a4ea797"
     },
     {
       "app": "perplexity",
@@ -765,7 +803,9 @@
       "notes": "The Privacy Notice says the services collect only general location derived from the IP address, and the disclosure table lists geolocation as 'non-precise'; precise location is collected only when the user opts in through the 'Share location' setting documented in the Account Settings help article (an older account-settings article adds that browser-level permission must be granted first). Precise geolocation is otherwise mentioned only as sensitive data a user might type into a prompt. An explicit, declinable opt-in for a named feature is the rubric's partial branch, not yes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "d16be0088d4fb7b57f13e8ec844830eb"
     },
     {
       "app": "perplexity",
@@ -776,7 +816,9 @@
       "notes": "The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-11"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "3e91a58fa555dd3647a5f1acb447ce65"
     },
     {
       "app": "grok",

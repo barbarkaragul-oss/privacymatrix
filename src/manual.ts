@@ -83,6 +83,23 @@ export interface PageCheck {
   results: QuoteResult[];
 }
 
+/** A reviewable local receipt, not an applied verification or a publication. */
+export function readingDraft(cells: Cell[], checks: Map<string, PageCheck>, at: string) {
+  const usable = [...checks].filter(([, check]) => !check.unusable);
+  const found = usable.flatMap(([, check]) => check.results.filter(r => r.found));
+  const updated = applyReadings(cells, found, at.slice(0, 10));
+  const originals = new Map(cells.map(c => [`${c.app}|${c.question}`, c]));
+  const matched = new Set(found.map(c => `${c.app}|${c.question}`));
+  return {
+    version: 1, mode: 'manual-local-draft', read_at: at,
+    pages: usable.map(([url, check]) => ({ url, matched: check.results.filter(r => r.found).length, total: check.results.length })),
+    changes: updated.cells.filter(c => matched.has(`${c.app}|${c.question}`)).map(cell => ({
+      base_fingerprint: fingerprint(originals.get(`${cell.app}|${cell.question}`)!), cell,
+    })),
+    unmatched: usable.flatMap(([, check]) => check.results.filter(r => !r.found)),
+  };
+}
+
 /**
  * Matches every quoted cell cited on url against text pasted from that page. A bot challenge or a
  * scrap of text is refused, so it can neither confirm nor seem to lack a quote.

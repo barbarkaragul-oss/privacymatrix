@@ -40,6 +40,8 @@ set "LOCK=%STATE%\run-lock"
 rem A scheduled task has nobody to answer a credential prompt: fail instead of hanging.
 set "GIT_TERMINAL_PROMPT=0"
 set "GCM_INTERACTIVE=never"
+rem Keep TLS verification enabled, using roots already trusted by Windows too (Node 22.19+).
+if not defined NODE_USE_SYSTEM_CA set "NODE_USE_SYSTEM_CA=1"
 set "RESIDENTIAL_STATE_DIR=%STATE%"
 
 rem mkdir either creates the folder or fails, in one step, so two launchers cannot both take it.
@@ -65,8 +67,12 @@ exit /b %CODE%
 rem Exit code 0 when the lock is more than three hours old (the task stops a run after one hour)
 rem and has been removed; 1 when it is recent, or its age cannot be read.
 node -e "process.exit(Date.now()-require('fs').statSync(process.argv[1]).mtimeMs>3*3600e3?0:1)" "%LOCK%" 2>nul || exit /b 1
->>"%LOG%" echo removed a lock more than three hours old, left by a run that was killed
 rmdir "%LOCK%" 2>nul
+if exist "%LOCK%" (
+  >>"%LOG%" echo could not remove the stale lock
+  exit /b 1
+)
+>>"%LOG%" echo removed a lock more than three hours old, left by a run that was killed
 exit /b 0
 
 :run

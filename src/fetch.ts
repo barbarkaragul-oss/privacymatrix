@@ -10,6 +10,8 @@
  *   and retries on transient errors. Downloads stop at maxBytes.
  */
 
+import { networkError } from './network-error.js';
+
 export interface FetchResult {
   url: string;
   fetchUrl: string;
@@ -189,7 +191,7 @@ async function fetchOnce(url: string, opts: Required<FetchOptions>): Promise<Fet
       ...(challenged ? { challenged } : {}),
     };
   } catch (err) {
-    const message = err instanceof Error ? (err.name === 'AbortError' ? `timeout after ${opts.timeoutMs}ms` : err.message) : String(err);
+    const message = networkError(err, opts.timeoutMs);
     return { url, fetchUrl, finalUrl: fetchUrl, status: 0, ok: false, contentType: '', text: '', truncated: false, error: message };
   } finally {
     clearTimeout(timer);

@@ -39,10 +39,12 @@
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { captureDate, fetchCapture, landedCapture, latestCapture } from './archive.js';
+import { captureDate } from './archive.js';
+import { ArchiveReader } from './archive-cache.js';
 import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
 import { Fetcher, type FetchResult } from './fetch.js';
 import { fingerprint } from './fingerprint.js';
+import { dueSources, loadSourceState, saveSourceState, sourceSignatures, updateSourceState } from './source-state.js';
 import { findQuote, prepareText, quoteProblems, type MatchMethod, type PreparedText } from './quotes.js';
 import {
   DATA_DIR,
@@ -127,6 +129,8 @@ export interface CheckOptions {
    * confirmed in this run, or the check fails (see unverifiedChanges). Never with fix.
    */
   changedSince: string | null;
+  sourceState?: string | null;
+  dueOnly?: boolean;
 }
 
 export function parseArgs(argv: string[]): CheckOptions {
@@ -140,6 +144,12 @@ export function parseArgs(argv: string[]): CheckOptions {
     else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
     else if (a === '--residential') out.residential = true;
     else if (a === '--only-blocked') out.onlyBlocked = true;
+    else if (a === '--source-state') {
+      const file = argv[++i];
+      if (!file || file.startsWith('--')) throw new UsageError('--source-state needs a file');
+      out.sourceState = file;
+    }
+    else if (a === '--due-only') out.dueOnly = true;
     else if (a === '--changed-since') {
       // A missing ref must not quietly turn the pull-request gate into an ordinary check.
       const ref = argv[++i];
@@ -155,6 +165,8 @@ export function parseArgs(argv: string[]): CheckOptions {
   // --fix rewrites the cells it checks (a live read drops verified_via 'manual'), which would erase
   // the very evidence the gate is asked to judge.
   if (out.fix && out.changedSince) throw new UsageError('--changed-since cannot be combined with --fix');
+  if ((out.sourceState || out.dueOnly) && (!out.residential || out.changedSince)) throw new UsageError('source scheduling is only for residential runs, never the PR gate');
+  if (out.dueOnly && !out.sourceState) throw new UsageError('--due-only requires --source-state');
   return out;
 }
 
@@ -532,7 +544,11 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const { problems: structural, missing } = structuralProblems(matrix.cells, apps, qs.questions);
 
   const blockedApps = new Set(apps.filter((a) => a.blocked_from_cloud).map((a) => a.id));
-  const inScope = (c: Cell): boolean => (!opts.app || c.app === opts.app) && (!opts.onlyBlocked || blockedApps.has(c.app));
+  const requested = (c: Cell): boolean => (!opts.app || c.app === opts.app) && (!opts.onlyBlocked || blockedApps.has(c.app));
+  const signatures = sourceSignatures(matrix.cells.filter(requested));
+  const sourceState = opts.sourceState ? loadSourceState(opts.sourceState) : null;
+  const due = opts.dueOnly && sourceState ? dueSources(signatures, sourceState, new Date().toISOString()) : null;
+  const inScope = (c: Cell): boolean => requested(c) && (!due || due.has(c.evidence_url));
   const targets = matrix.cells.filter(inScope);
   // Read before any page is fetched, so a bad ref fails at once.
   let base: { changed: Set<string>; blocked: Set<string> } | null = null;
@@ -584,35 +600,20 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   }
 
   // Internet Archive fallback, two at a time to be gentle with archive.org. Sorted so the log is stable.
+  const archive = new ArchiveReader(path.join(ROOT, '.cache', 'archive-captures.json'));
   toArchive.sort((a, b) => a.url.localeCompare(b.url));
   await eachLimited(toArchive, 2, async ({ url, reason }) => {
-    const capture = await latestCapture(url);
-    if (!capture || 'error' in capture) {
-      const error = capture ? `${reason}; Internet Archive lookup failed: ${capture.error}` : `${reason}; no Internet Archive capture`;
+    const found = await archive.read(url, unusablePage);
+    if ('error' in found) {
+      const error = `${reason}; ${found.error}`;
       pages.set(url, { error });
       console.log(`  FETCH ERROR ${url} (${error})`);
       return;
     }
-    const res = await fetchCapture(capture);
+    const { response: res, capture } = found;
     if (opts.dump) dumpPage(opts.dump, capture.rawUrl, res);
-    const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
-    if (problem) {
-      const error = `${reason}; Internet Archive capture ${capture.timestamp} unusable: ${problem}`;
-      pages.set(url, { error });
-      console.log(`  FETCH ERROR ${url} (${error})`);
-      return;
-    }
-    // The cell is dated to the capture that was read, which is not always the one asked for.
-    const landed = landedCapture(res.finalUrl, url);
-    if ('error' in landed) {
-      const error = `${reason}; Internet Archive ${landed.error}`;
-      pages.set(url, { error });
-      console.log(`  FETCH ERROR ${url} (${error})`);
-      return;
-    }
-    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: landed.timestamp });
-    const moved = landed.timestamp !== capture.timestamp ? `, redirected from the capture of ${capture.timestamp}` : '';
-    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(landed.timestamp)}, ${landed.timestamp}${moved})`);
+    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: capture.timestamp });
+    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(capture.timestamp)}, ${capture.timestamp}${found.cached ? ', previously read capture' : ''})`);
   });
 
   if (opts.dump && opts.extraUrls.length) {
@@ -730,6 +731,7 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     console.log(`Wrote data/matrix.json (${demoted} cells demoted to unknown, ${pending.length} quotes pending, ${missing.length} missing cells added), data/changes.json, data/changes.md`);
   }
   saveJson(path.join(DATA_DIR, 'check-report.json'), report);
+  if (opts.sourceState && sourceState) saveSourceState(opts.sourceState, updateSourceState(sourceState, signatures, reports, report.run_at));
 
   const bad = failures.length + structural.length + (opts.fix ? 0 : missing.length) + unverified.length;
   return bad > 0 && !opts.soft ? 1 : 0;

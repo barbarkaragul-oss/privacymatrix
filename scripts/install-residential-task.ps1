@@ -13,7 +13,7 @@ What it sets up, all under -StateDir (default %LOCALAPPDATA%\PrivacyMatrix), out
     the folder it sits in is the state folder, so leave it where it is;
   - checkout\, a clone the task alone uses, created on the first run and reset to origin/main before
     every run, so the task never touches the checkout you work in and only runs code merged to main;
-  - residential.log, last-success and installed-lock, written by the runs; run-lock, a folder that
+  - residential.log, last-success, source-state.json and installed-lock, written by the runs; run-lock, a folder that
     exists while a run is going (a run killed part way leaves it for up to three hours from its
     start, then a later run removes it; it can also be deleted by hand), and refused.log, which
     notes a run that found it and stopped.
@@ -24,7 +24,8 @@ window (conhost --headless), and no PowerShell runs while it runs. It fires ever
 13:00 (after the weekly cloud run on Monday morning). A time missed while the machine is asleep or
 off is made up after it wakes, but that was seen to happen hours later (a run missed at 20:00 started
 at 17:46 the next day), so for a run at -At the machine should be awake then. Each run exits early
-unless the last success is six or more days old.
+unless a source is due: completed readings wait six days, unreadable sources retry the next day,
+and missing quotes are rechecked on each run until resolved. Failed publication is retried too.
 After every run, including one that exits early, the log says how many pages only a person can read
 are due; nothing opens on its own. --read opens the reading page for them (scripts/manual.ts).
 
@@ -47,6 +48,10 @@ foreach ($tool in 'git', 'node', 'npm') {
   if (-not (Get-Command $tool -ErrorAction SilentlyContinue)) {
     throw "$tool was not found on PATH; install it or fix PATH before registering the task."
   }
+}
+$nodeVersion = [version]((& node -p 'process.versions.node').Trim())
+if ($LASTEXITCODE -ne 0 -or -not (($nodeVersion.Major -eq 22 -and $nodeVersion.Minor -ge 19) -or $nodeVersion -ge [version]'24.6.0')) {
+  throw 'Node 22.19+ (22.x) or 24.6+ is required for the system certificate store and TypeScript launcher.'
 }
 $remote = (& git -C $repo remote get-url origin).Trim()
 if ($remote -notmatch '^https://github\.com/') {
