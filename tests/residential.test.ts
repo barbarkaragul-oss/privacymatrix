@@ -15,7 +15,7 @@ test('isDue: runs when there is no success yet, or the last one is MAX_AGE_DAYS 
 });
 
 test('decide: flags and dates go to main, demotions go to a pull request, the issue follows the flags', () => {
-  const base = { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: false };
+  const base = { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, requote: 0, dirty: false };
   // Nothing changed and every page was read: close the issue and any stale demotion PR.
   assert.deepEqual(decide(base), { commit: 'none', issue: 'close', pr: 'close' });
   // Dates refreshed: straight to main.
@@ -30,7 +30,18 @@ test('decide: flags and dates go to main, demotions go to a pull request, the is
   // pull request from an earlier run are left alone.
   assert.deepEqual(decide({ ...base, unreachable: 2, dirty: true }), { commit: 'main', issue: 'keep', pr: 'keep' });
   // Codex probe 4: a flagged cell, nothing to demote, a page unreadable: the old demotion PR stays open.
-  assert.deepEqual(decide({ valueChanges: 0, pending: 0, flagged: 1, unreachable: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'keep' });
+  assert.deepEqual(decide({ valueChanges: 0, pending: 0, flagged: 1, unreachable: 1, requote: 0, dirty: true }), { commit: 'main', issue: 'open', pr: 'keep' });
+  // Codex re-check P2, inverted: a quote that matched only with punctuation ignored had its page read
+  // but its cell left as it is; the issue opens for it, as the weekly run's does.
+  assert.deepEqual(decide({ ...base, requote: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'close' });
+  assert.deepEqual(decide({ ...base, flagged: 1, requote: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'close' });
+  assert.deepEqual(decide({ ...base, unreachable: 1, requote: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'keep' });
+  assert.deepEqual(decide({ ...base, valueChanges: 1, requote: 1, dirty: true }), { commit: 'main+pr', issue: 'open', pr: 'open' });
+  assert.deepEqual(decide({ ...base, requote: 1 }), { commit: 'none', issue: 'open', pr: 'close' });
+  // ...but a re-quote never keeps a demotion pull request: every page was read and nothing was demoted,
+  // so a cell the PR demotes was found again or matches without punctuation (a quote still missing
+  // would have been demoted again, making valueChanges > 0).
+  for (const requote of [1, 2, 5]) for (const flagged of [0, 1]) assert.notEqual(decide({ ...base, requote, flagged, dirty: true }).pr, 'keep');
 });
 
 test('syncPullRequest: keep makes no API call; close closes the open demotion pull request', async () => {
@@ -64,10 +75,10 @@ test('withoutDemotions keeps every other change and puts the demoted cells back 
 });
 
 test('summarize reads like the weekly run summary', () => {
-  assert.equal(summarize({ ok: 39 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: true }), '0 value changes, 39 quotes present, 0 newly missing, 0 cells on unreachable pages');
-  assert.equal(summarize({ ok: 38 }, { valueChanges: 1, pending: 1, flagged: 1, unreachable: 1, dirty: true }), '1 value change, 38 quotes present, 1 newly missing, 1 cells on unreachable pages');
+  assert.equal(summarize({ ok: 39 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, requote: 0, dirty: true }), '0 value changes, 39 quotes present, 0 newly missing, 0 cells on unreachable pages');
+  assert.equal(summarize({ ok: 38 }, { valueChanges: 1, pending: 1, flagged: 1, unreachable: 1, requote: 0, dirty: true }), '1 value change, 38 quotes present, 1 newly missing, 1 cells on unreachable pages');
   // A quote to re-quote is not a cell on an unreachable page.
-  assert.equal(summarize({ ok: 38, requote: 1 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: true }), '0 value changes, 38 quotes present, 0 newly missing, 0 cells on unreachable pages, 1 to re-quote');
+  assert.equal(summarize({ ok: 38 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, requote: 1, dirty: true }), '0 value changes, 38 quotes present, 0 newly missing, 0 cells on unreachable pages, 1 to re-quote');
 });
 
 test('repoSlug reads https and ssh GitHub remotes', () => {

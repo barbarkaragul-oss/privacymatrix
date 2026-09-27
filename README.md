@@ -179,7 +179,7 @@ The apps whose sources refuse cloud IP ranges or serve them a page without its t
 
 - refreshed dates and first misses are committed to `main`;
 - a demotion goes to a pull request from `bot/residential-verification`, a branch the bot force-pushes whenever a run demotes a cell, so do not push to it;
-- quotes flagged missing are listed in an issue labelled `residential-recheck`, which is closed once every page has been read and nothing is flagged.
+- quotes flagged missing, and quotes that match only with punctuation ignored (to re-quote), are listed in an issue labelled `residential-recheck`, which is closed once every page has been read and nothing is flagged or left to re-quote.
 
 It leaves `data/changes.json` to the weekly run, because it checks only the blocked apps and that file describes all of them.
 

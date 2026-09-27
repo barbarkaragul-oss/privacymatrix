@@ -71,6 +71,8 @@ export function renderChangesMarkdown(
   fetchErrors: string[] = [],
   pending: PendingQuote[] = [],
   archive: ArchiveSummary = { confirmed: 0, dated: 0, oldestDated: null },
+  /** Cells whose quote matched only with punctuation ignored: named one by one, since each needs its quote copied again. */
+  requote: Array<{ app: string; question: string; evidence_url: string }> = [],
 ): string {
   const appName = new Map(apps.map((a) => [a.id, a.name]));
   const questionName = new Map(questions.map((c) => [c.id, c.name]));
@@ -97,6 +99,13 @@ export function renderChangesMarkdown(
     lines.push(`Quotes not found at their source this run (${pending.length}). The cells keep their value for now and are demoted to unknown if the quote is still missing a week later. A human look now is cheaper than a demotion later:`);
     for (const p of pending) {
       lines.push(`- ${escapeMd(appName.get(p.app) ?? p.app)} / ${escapeMd(questionName.get(p.question) ?? p.question)} — missing since ${p.since} — [source](${mdUrl(p.evidence_url)})`);
+    }
+  }
+  if (requote.length > 0) {
+    lines.push('');
+    lines.push(`Quotes to re-quote (${requote.length}). Each matches its page only when punctuation is ignored, which can hide an exception added after it, so the cell is left as it is until the quote is copied from the page again, exactly:`);
+    for (const q of requote) {
+      lines.push(`- ${escapeMd(appName.get(q.app) ?? q.app)} / ${escapeMd(questionName.get(q.question) ?? q.question)} — [source](${mdUrl(q.evidence_url)})`);
     }
   }
   if (fetchErrors.length > 0) {

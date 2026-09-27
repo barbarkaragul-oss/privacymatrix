@@ -675,7 +675,16 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     saveJson(path.join(DATA_DIR, 'changes.json'), changes);
     writeFileSync(
       path.join(DATA_DIR, 'changes.md'),
-      renderChangesMarkdown(changes, apps, qs.questions, groupFetchErrors(errors, apps), pending, { confirmed: okViaArchive.length, dated: dated.length, oldestDated }),
+      renderChangesMarkdown(
+        changes,
+        apps,
+        qs.questions,
+        // Re-quotes get a list of their own: their pages were read.
+        groupFetchErrors(errors.filter((e) => !needsRequote(e)), apps),
+        pending,
+        { confirmed: okViaArchive.length, dated: dated.length, oldestDated },
+        requote.map((r) => ({ app: r.app, question: r.question, evidence_url: r.evidence_url })),
+      ),
       'utf8',
     );
     console.log(`Wrote data/matrix.json (${demoted} cells demoted to unknown, ${pending.length} quotes pending, ${missing.length} missing cells added), data/changes.json, data/changes.md`);
