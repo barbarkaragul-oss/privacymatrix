@@ -45,7 +45,7 @@ export function renderMatrixMarkdown(apps: App[], qs: ReturnType<typeof loadQues
   const byKey = new Map(cells.map((c) => [cellKey(c.app, c.question), c]));
   const out: string[] = [];
   const provenanceNote = cells.some((c) => c.verified && c.verified_via)
-    ? ' A tooltip that starts with [manual] was read by a maintainer from a residential connection, and one that starts with [archive] was confirmed from an Internet Archive capture, because the vendor blocks automated checks from cloud servers.'
+    ? ' A tooltip that starts with [manual] was confirmed by a maintainer against the page as their browser showed it (the maintainer vouches for the page), and one that starts with [archive] was confirmed from an Internet Archive capture; both stand in where the vendor blocks automated checks.'
     : '';
   out.push(`Legend: ✅ yes · 🟡 partial · ❌ no · ❔ unknown. Yes is always the more privacy-protective answer; the cells describe what the documents say, not what vendors do. Not legal advice. On desktop, hover a cell for the quote (for ❌ cells, the explanation); click it to open the source.${provenanceNote} On mobile, use the [interactive matrix](https://barbarkaragul-oss.github.io/privacymatrix/).`);
   out.push('');
@@ -93,7 +93,7 @@ export function renderBlockedSources(apps: App[], cells: Cell[]): string {
   const lines = [
     '### Sources the checker cannot reach',
     '',
-    "These vendors answer requests from cloud IP ranges (GitHub's runners among them) with HTTP 403 or with a page that lacks its text, although their robots.txt permits the pages. Their pages can only be relied on when read from a residential connection. From the cloud a quote can only be confirmed, on the page or in the most recent Internet Archive capture of it, and a quote the cloud cannot find never demotes a cell. Each cell says how it was last verified, and the dates below show how fresh each row is.",
+    "These vendors answer automated requests from cloud IP ranges (GitHub's runners among them) with HTTP 403, a bot challenge or a page that lacks its text. For them a cloud run can confirm a quote, on the page or in the most recent Internet Archive capture of it, but a quote it cannot find is not evidence that the quote was removed, so it never flags or demotes a cell. The residential re-check reads them from an ordinary connection, and some of their pages block that too. Each cell says whether it was last confirmed live, from an archive capture or by a maintainer against the page in their browser; the dates below are the last successful confirmation, which can be older than the latest scheduled run. A pull request that adds or changes one of their quotes must have it confirmed by the checker, or vouched for by a maintainer who read the page in the last 14 days.",
     '',
   ];
   for (const a of blocked) {

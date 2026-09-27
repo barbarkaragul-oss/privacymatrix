@@ -37,12 +37,14 @@ export const AppSchema = z.object({
   repo: httpUrl.nullable(),
   sources: z.array(httpUrl).min(1),
   /**
-   * The vendor answers data-centre IP ranges (GitHub's runners, our VPS) with HTTP 403, or with a
-   * page that lacks its text (Amazon, at times), so the weekly cloud run cannot trust what it reads
-   * for this app: there a quote can be confirmed but never found missing. Such apps are read live
-   * with `check --residential --only-blocked` from a connection vendors do not block, and are
-   * labelled on the site. The Internet Archive fallback does not depend on this flag: it follows any
-   * 403, page by page.
+   * The vendor answers data-centre IP ranges (GitHub's runners, our VPS) with HTTP 403, a bot
+   * challenge, or a page that lacks its text (Amazon, at times), so a quote missing from what the
+   * cloud run reads is not evidence that it was removed: there a quote can be confirmed but never
+   * found missing. Such apps are read live with `check --residential --only-blocked` from an
+   * ordinary connection, which some of their pages block too, and are labelled on the site. On a
+   * pull request, a changed cell of such an app can be vouched for by a maintainer's reading; only
+   * the flag as the base has it counts (unverifiedChanges in src/check.ts). The Internet Archive
+   * fallback does not depend on this flag: it follows any 403, page by page.
    */
   blocked_from_cloud: z.boolean().optional(),
 });
@@ -82,7 +84,8 @@ export const CellSchema = z.object({
   /**
    * How verified_at was established when it was not a live fetch by the checker: 'archive' = the
    * quote was found in an Internet Archive capture of evidence_url (archive_timestamp), 'manual' = a
-   * maintainer read the live page in a browser (by hand, or through the reading page, scripts/manual.ts).
+   * maintainer confirmed the quote against the live page as their browser showed it (by hand, or by
+   * pasting its text into the reading page, scripts/manual.ts); the maintainer vouches for the page.
    * Absent = live.
    */
   verified_via: VerifiedViaSchema.optional(),

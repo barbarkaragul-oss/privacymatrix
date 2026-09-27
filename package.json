@@ -2,7 +2,7 @@
   "name": "privacymatrix",
   "version": "0.1.0",
   "private": true,
-  "description": "Does this AI app train on your chats? 28 AI assistant apps, 14 privacy questions; every cell quotes the vendor's own policy and is re-checked weekly.",
+  "description": "Does this AI app train on your chats? 28 AI assistant apps, 14 privacy questions; every cell quotes the vendor's own policy; quotes are checked weekly where the source can be read.",
   "type": "module",
   "license": "MIT",
   "repository": {
