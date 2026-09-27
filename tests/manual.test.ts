@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { fingerprint } from '../src/fingerprint.js';
 import { applyReadings, checkPastedPage, duePages, lastReadByHand, MANUAL_EVERY_DAYS, unreachablePages } from '../src/manual.js';
 import type { Cell } from '../src/types.js';
 
@@ -105,4 +106,11 @@ test('applyReadings skips a cell whose quote or page changed after it was read (
   assert.equal(applyReadings([{ ...original, quote: 'Another sentence, changed on main.' }], found, '2026-09-27').skipped, 1);
   // unchanged: dated
   assert.equal(applyReadings([original], found, '2026-09-27').dated, 1);
+});
+
+test('applyReadings records which evidence the reading covers', () => {
+  const c = cell('x', 'q1', A);
+  const { cells: [read] } = applyReadings([c], [{ app: 'x', question: 'q1', quote: c.quote, evidence_url: c.evidence_url }], '2026-09-27');
+  assert.equal(read?.manual_fingerprint, fingerprint(read!));
+  assert.equal(read?.verified_at, '2026-09-27');
 });

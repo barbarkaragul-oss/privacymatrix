@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, UsageError, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, authorityFromEnv, UsageError, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { fingerprint } from '../src/fingerprint.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
 
@@ -361,12 +362,16 @@ test('unverifiedChanges: a confirmation from the live page or an archive capture
 
 test('unverifiedChanges: a recent maintainer reading of an app the base marks blocked is attested, nothing else is', () => {
   const miss = (c: Cell): CellReport => classifyCell(c, prepareText('A page from which the quote is absent, long enough to count.'), { confirmOnly: true });
-  const manual = (days: string, extra: Partial<Cell> = {}): Cell => ({ ...cell('b', 'x', 'yes'), verified_via: 'manual', verified_at: days, ...extra });
+  // A reading recorded as the reading page or npm run attest records it: fingerprint of the cell as read.
+  const manual = (days: string, extra: Partial<Cell> = {}): Cell => {
+    const c: Cell = { ...cell('b', 'x', 'yes'), verified_via: 'manual', verified_at: days, ...extra };
+    return 'manual_fingerprint' in extra ? c : { ...c, manual_fingerprint: fingerprint(c) };
+  };
   const run = (c: Cell, baseBlocked: string[], headBlocked = baseBlocked) => unverifiedChanges([miss(c)], new Set(['b|x']), byKey([c]), new Set(baseBlocked), new Set(headBlocked), TODAY);
 
   const recent = run(manual('2026-09-21'), ['b']);
   assert.deepEqual(recent.unverified, []);
-  assert.match(recent.attested[0]!, /^ATTESTED b\/x \(manual, 2026-09-21\)/);
+  assert.match(recent.attested[0]!, /^ATTESTED b\/x \(manual, 2026-09-21, fp [0-9a-f]{8}; vouched for by whoever runs this check locally\)/);
 
   assert.match(run(manual('2026-09-08'), ['b']).unverified[0]!, /not within 14 days/, '20 days old');
   assert.equal(run(manual('2026-10-05'), ['b']).unverified.length, 1, 'a date in the future');
@@ -383,7 +388,8 @@ test('unverifiedChanges: a recent maintainer reading of an app the base marks bl
 });
 
 test('unverifiedChanges: a maintainer reading does not cover a quote the run found malformed or matching only without punctuation', () => {
-  const reading: Cell = { ...cell('b', 'x', 'yes', 'too short'), verified_via: 'manual', verified_at: '2026-09-27' };
+  const unbound: Cell = { ...cell('b', 'x', 'yes', 'too short'), verified_via: 'manual', verified_at: '2026-09-27' };
+  const reading: Cell = { ...unbound, manual_fingerprint: fingerprint(unbound) };
   // A malformed quote fails outright, even for a blocked app; the summary must say so, not ATTESTED.
   const malformed = classifyCell(reading, prepareText('A page with text on it that is long enough to count.'), { confirmOnly: true });
   assert.equal(malformed.status, 'fail');
@@ -400,7 +406,8 @@ test('unverifiedChanges: a maintainer reading does not cover a quote the run fou
     assert.match(g.unverified[0]!, /^UNVERIFIED b\/x: quote malformed \(quote shorter than 12 characters/);
   }
   // A punctuation-only match: the page was read, so the quote needs copying again, not vouching for.
-  const cut: Cell = { ...reading, quote: 'We never share your data.' };
+  const cutUnbound: Cell = { ...reading, quote: 'We never share your data.' };
+  const cut: Cell = { ...cutUnbound, manual_fingerprint: fingerprint(cutUnbound) };
   const requote = classifyCell(cut, prepareText('We never share your data, except with advertising partners.'), { confirmOnly: true });
   const g2 = unverifiedChanges([requote], new Set(['b|x']), byKey([cut]), new Set(['b']), new Set(['b']), TODAY);
   assert.deepEqual(g2.attested, []);
@@ -437,4 +444,94 @@ test('parseArgs: --changed-since without a ref is refused, so the gate cannot be
   assert.throws(() => parseArgs(['--changed-since', '']), needsRef);
   assert.throws(() => parseArgs(['--changed-since', '--soft']), needsRef, 'the next flag is not a ref');
   assert.throws(() => parseArgs(['--fix', '--changed-since', '']), (err: unknown) => err instanceof UsageError);
+});
+
+// --- A maintainer's reading is bound to the evidence it covers (Codex re-check P1) ---------------
+
+const unreadable = (c: Cell): CellReport => classifyCell(c, { error: 'HTTP 403' }, { confirmOnly: true });
+const gateOne = (c: Cell, authority?: { allowed: boolean; by: string }) =>
+  unverifiedChanges([unreadable(c)], new Set([`${c.app}|${c.question}`]), byKey([c]), new Set([c.app]), new Set([c.app]), TODAY, authority);
+const readAs = (c: Cell, day: string): Cell => {
+  const r: Cell = { ...c, verified: true, verified_via: 'manual', verified_at: day };
+  return { ...r, manual_fingerprint: fingerprint(r) };
+};
+
+test('unverifiedChanges: an old reading does not carry over to a changed quote (Codex re-check P1, inverted)', () => {
+  // Codex's case: a real manual cell (read 23 September), only the quote changed to an invented one.
+  const read = readAs(cell('chatgpt', 'memory_controls', 'partial', 'Memory can be turned off in Settings at any time.'), '2026-09-23');
+  const invented: Cell = { ...read, quote: 'We invented this privacy guarantee for the audit.' };
+  const g = gateOne(invented);
+  assert.deepEqual(g.attested, []);
+  assert.match(g.unverified[0]!, /the reading covers a different value, quote, URL or date; read the page again and run npm run attest/);
+  // The same for a changed value, a changed URL, or a date moved without a new reading.
+  for (const changed of [{ ...read, value: 'yes' as const }, { ...read, evidence_url: 'https://help.example/other' }, { ...read, verified_at: '2026-09-27' }]) {
+    assert.match(gateOne(changed).unverified[0]!, /covers a different value, quote, URL or date/);
+  }
+  // A manual cell with no fingerprint at all (read before fingerprints existed) is not enough either.
+  const legacy: Cell = { ...read };
+  delete legacy.manual_fingerprint;
+  assert.match(gateOne(legacy).unverified[0]!, /no record of which quote the reading covers/);
+});
+
+test('unverifiedChanges: reading A, then changing the quote to B in a later commit, needs a reading of B', () => {
+  const base = cell('b', 'x', 'yes', 'Quote A, the sentence the maintainer read.');
+  const readA = readAs(base, '2026-09-27');
+  assert.equal(gateOne(readA).attested.length, 1, 'A as read: attested');
+  // A later commit in the same pull request: quote B, date and fingerprint untouched.
+  const nowB: Cell = { ...readA, quote: 'Quote B, a sentence nobody read on the page.' };
+  assert.deepEqual(gateOne(nowB).attested, []);
+  // The maintainer reads B too, the same day: attested, bound to B.
+  const readB = readAs(nowB, '2026-09-27');
+  const g = gateOne(readB);
+  assert.equal(g.attested.length, 1);
+  assert.ok(g.attested[0]!.includes(`fp ${readB.manual_fingerprint!.slice(0, 8)}`));
+  assert.notEqual(readA.manual_fingerprint, readB.manual_fingerprint, 'two readings on one day are told apart by what they cover');
+});
+
+test('unverifiedChanges: only a pull request opened by a maintainer can rest on a reading', () => {
+  // Anyone can compute a fingerprint; it is the pull request's author that GitHub vouches for.
+  const read = readAs(cell('b', 'x', 'yes', 'A sentence on a page the cloud cannot read.'), '2026-09-27');
+  const outsider = authorityFromEnv({ GITHUB_ACTIONS: 'true', PM_PR_AUTHOR_ASSOCIATION: 'CONTRIBUTOR' });
+  assert.equal(outsider.allowed, false);
+  const g = gateOne(read, outsider);
+  assert.deepEqual(g.attested, []);
+  assert.match(g.unverified[0]!, /counts only in a pull request opened by a maintainer of this repository, and this one was opened by an author GitHub lists as CONTRIBUTOR/);
+  for (const association of ['OWNER', 'MEMBER', 'COLLABORATOR']) {
+    const a = authorityFromEnv({ GITHUB_ACTIONS: 'true', PM_PR_AUTHOR_ASSOCIATION: association });
+    assert.ok(a.allowed);
+    assert.match(gateOne(read, a).attested[0]!, new RegExp(`vouched for by the pull request's author \\(${association}\\)`));
+  }
+  for (const association of ['NONE', 'FIRST_TIME_CONTRIBUTOR', 'FIRST_TIMER', '', undefined]) {
+    assert.equal(authorityFromEnv({ GITHUB_ACTIONS: 'true', PM_PR_AUTHOR_ASSOCIATION: association }).allowed, false, `${association} must not vouch`);
+  }
+  assert.ok(authorityFromEnv({}).allowed, 'a local run: the person running it decides');
+});
+
+test('changedCells: a fingerprint added or changed on its own is a change of evidence', () => {
+  const plain = cell('b', 'x', 'yes');
+  const withFp: Cell = { ...plain, manual_fingerprint: fingerprint(plain) };
+  assert.deepEqual([...changedCells([plain], [withFp])], ['b|x']);
+});
+
+test('the fingerprint is stable and unambiguous', () => {
+  const c = { app: 'a', question: 'x', value: 'yes' as const, quote: '  A sentence.  ', evidence_url: 'https://e.x/p', verified_at: '2026-09-27' };
+  assert.match(fingerprint(c), /^[0-9a-f]{32}$/);
+  assert.equal(fingerprint(c), fingerprint({ ...c, quote: 'A sentence.' }), 'edge whitespace does not count');
+  // Pinned, so an accidental change of the encoding shows up here and not as every reading going stale.
+  assert.equal(fingerprint(c), '4b0d6c1ba4dc3d9cf6480b23a778b977');
+  // A separator inside a field cannot make two different cells hash alike.
+  assert.notEqual(fingerprint({ ...c, app: 'a|x', question: 'y' }), fingerprint({ ...c, app: 'a', question: 'x|y' }));
+});
+
+test('a live, archive or demoting run drops the reading\'s fingerprint with the rest of its provenance', () => {
+  const read = readAs(cell('b', 'x', 'yes'), '2026-09-20');
+  const live: CellReport = { app: 'b', question: 'x', value: 'yes', status: 'ok', method: 'exact', evidence_url: read.evidence_url, problems: [] };
+  assert.equal(applyFix([read], [live], [], '2026-09-28').cells[0]!.manual_fingerprint, undefined);
+  assert.equal(applyFix([read], [archiveOk('b', 'x', '20260925120000')], [], '2026-09-28').cells[0]!.manual_fingerprint, undefined);
+  // An older capture leaves the manual reading, fingerprint and all.
+  assert.equal(applyFix([read], [archiveOk('b', 'x', '20260910120000')], [], '2026-09-28').cells[0]!.manual_fingerprint, read.manual_fingerprint);
+  const flagged: Cell = { ...read, quote_missing_since: '2026-09-10' };
+  const demoted = applyFix([flagged], [{ ...live, status: 'fail', method: 'none', problems: ['quote not found on page'] }], [], '2026-09-28').cells[0]!;
+  assert.equal(demoted.value, 'unknown');
+  assert.equal(demoted.manual_fingerprint, undefined);
 });

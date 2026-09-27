@@ -22,8 +22,9 @@
  *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
  *   npm run check -- --changed-since <ref>   the pull-request gate: exit 1 unless every cell whose
  *                                 evidence differs from <ref> is confirmed in this run (or, for an
- *                                 app <ref> marks blocked_from_cloud, was read by a maintainer in the
- *                                 last ATTEST_DAYS days); see unverifiedChanges. Not with --fix.
+ *                                 app <ref> marks blocked_from_cloud, rests on a maintainer's reading
+ *                                 of exactly that evidence, in a pull request a maintainer opened);
+ *                                 see unverifiedChanges. Not with --fix.
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
  * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
@@ -41,6 +42,7 @@ import path from 'node:path';
 import { captureDate, fetchCapture, landedCapture, latestCapture } from './archive.js';
 import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
 import { Fetcher, type FetchResult } from './fetch.js';
+import { fingerprint } from './fingerprint.js';
 import { findQuote, prepareText, quoteProblems, type MatchMethod, type PreparedText } from './quotes.js';
 import {
   DATA_DIR,
@@ -300,7 +302,7 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
  * The fields that make up a cell's evidence: what it claims, the quote and page it rests on, and
  * the confirmation shown on the site. A pull request that changes any of them is making a new claim.
  */
-const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via', 'archive_timestamp'] as const;
+const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via', 'archive_timestamp', 'manual_fingerprint'] as const;
 
 /** Keys of the quoted cells in head whose evidence is new or differs from base (a notes-only edit is not a change). */
 export function changedCells(base: Cell[], head: Cell[]): Set<string> {
@@ -340,12 +342,16 @@ function unverifiedReason(r: CellReport | undefined): string {
 
 /**
  * The pull-request gate. Every changed cell (changedCells) must be confirmed in this run, live or
- * from an Internet Archive capture. The one exception is a maintainer's reading: an app that the base
- * already marks blocked_from_cloud, a cell verified with verified_via 'manual' at most ATTEST_DAYS
- * ago (UTC dates), whose page this run could not read. That is the maintainer vouching for the page,
- * and it is listed as ATTESTED for the reviewer. It does not cover a quote the run found malformed
- * or matching only with punctuation ignored. An app marked blocked_from_cloud in the same change does
- * not qualify: the flag is reviewed first.
+ * from an Internet Archive capture. The one exception is a maintainer's reading, listed as ATTESTED
+ * for the reviewer, and only when all of these hold:
+ *   - the app is blocked_from_cloud in the BASE (a flag added in the same change is reviewed first);
+ *   - the cell is verified with verified_via 'manual', dated at most ATTEST_DAYS ago (UTC);
+ *   - its manual_fingerprint matches the cell as it is now (src/fingerprint.ts): the reading was
+ *     for this value, quote, URL and date, not for evidence changed since, in this pull request or
+ *     another;
+ *   - this run could not read the page, and the quote is neither malformed nor a punctuation-only
+ *     match (a reading stands in for an unreadable page, not for a quote that needs fixing);
+ *   - the pull request was opened by a maintainer (authority; see authorityFromEnv).
  */
 export function unverifiedChanges(
   reports: CellReport[],
@@ -354,6 +360,7 @@ export function unverifiedChanges(
   baseBlocked: Set<string>,
   headBlocked: Set<string>,
   today: string,
+  authority: Authority = LOCAL_AUTHORITY,
 ): { unverified: string[]; attested: string[]; confirmed: number } {
   const byKey = new Map(reports.map((r) => [cellKey(r.app, r.question), r]));
   const unverified: string[] = [];
@@ -374,20 +381,49 @@ export function unverifiedChanges(
     // The status alone is not enough: a malformed quote on a page that failed to load, or read from
     // an archive capture, is status 'error' too.
     const unreadable = r?.status === 'error' && !needsRequote(r) && !isMalformed(r);
-    if (cell && manual && baseBlocked.has(cell.app) && unreadable && age >= 0 && age <= ATTEST_DAYS) {
-      attested.push(`ATTESTED ${label} (manual, ${cell.verified_at}): ${unverifiedReason(r)}`);
+    // The reading must be for this very evidence: the fingerprint covers value, quote, URL and date,
+    // so any later change of them, in this pull request or another, needs a new reading.
+    const bound = !!cell?.manual_fingerprint && cell.manual_fingerprint === fingerprint(cell);
+    if (cell && manual && baseBlocked.has(cell.app) && authority.allowed && unreadable && bound && age >= 0 && age <= ATTEST_DAYS) {
+      attested.push(`ATTESTED ${label} (manual, ${cell.verified_at}, fp ${cell.manual_fingerprint?.slice(0, 8)}; vouched for by ${authority.by}): ${unverifiedReason(r)}`);
       continue;
     }
     let why = unverifiedReason(r);
     if (cell && manual && !baseBlocked.has(cell.app) && headBlocked.has(cell.app)) why += ' (app marked blocked_from_cloud in this change; review the flag first)';
     else if (cell && manual && baseBlocked.has(cell.app)) {
-      if (!unreadable) why += " (a maintainer's reading stands in only for a page the checker could not read)";
+      if (!authority.allowed) why += ` (a maintainer's reading counts only in a pull request opened by a maintainer of this repository, and this one was opened by ${authority.by}; a maintainer can read the page and open one)`;
+      else if (!unreadable) why += " (a maintainer's reading stands in only for a page the checker could not read)";
+      else if (!cell.manual_fingerprint) why += ' (no record of which quote the reading covers; read the page again and run npm run attest)';
+      else if (!bound) why += " (the reading covers a different value, quote, URL or date; read the page again and run npm run attest)";
       else if (age < 0) why += ` (manual reading of ${cell.verified_at} is dated after today, UTC)`;
       else why += ` (manual reading of ${cell.verified_at || 'no date'} is not within ${ATTEST_DAYS} days)`;
     }
     unverified.push(`UNVERIFIED ${label}: ${why}`);
   }
   return { unverified, attested, confirmed };
+}
+
+/** Whether this run may accept a maintainer's reading, and whose word it would be. */
+export interface Authority {
+  allowed: boolean;
+  by: string;
+}
+
+const LOCAL_AUTHORITY: Authority = { allowed: true, by: 'whoever runs this check locally' };
+const MAINTAINER_ASSOCIATIONS = new Set(['OWNER', 'MEMBER', 'COLLABORATOR']);
+
+/**
+ * Who may vouch for a reading comes from GitHub, not from the data: in CI, the pull request's
+ * author_association (ci.yml passes it as PM_PR_AUTHOR_ASSOCIATION), which a pull request cannot
+ * set without editing the workflow, a change reviewed as code. It is the author's association, so a
+ * maintainer's commit on a contributor's pull request does not count: the maintainer opens their
+ * own. Missing under GitHub Actions means no. Outside CI the person running the check decides.
+ */
+export function authorityFromEnv(env: NodeJS.ProcessEnv): Authority {
+  if (env.GITHUB_ACTIONS !== 'true') return LOCAL_AUTHORITY;
+  const association = (env.PM_PR_AUTHOR_ASSOCIATION ?? '').trim();
+  if (MAINTAINER_ASSOCIATIONS.has(association)) return { allowed: true, by: `the pull request's author (${association})` };
+  return { allowed: false, by: association ? `an author GitHub lists as ${association}` : 'an author GitHub did not identify' };
 }
 
 /** A file as it is at a git ref, for the pull-request gate's base. */
@@ -417,6 +453,7 @@ function withoutProvenance(cell: Cell): Cell {
   const copy = withoutFlag(cell);
   delete copy.verified_via;
   delete copy.archive_timestamp;
+  delete copy.manual_fingerprint;
   return copy;
 }
 
@@ -432,7 +469,8 @@ function verifiedLive(cell: Cell, today: string): Cell {
 function verifiedFromArchive(cell: Cell, timestamp: string | undefined): Cell {
   const date = captureDate(timestamp ?? '');
   if (!date || date <= cell.verified_at) return cell;
-  return { ...cell, verified: true, verified_at: date, verified_via: 'archive', archive_timestamp: timestamp };
+  const { manual_fingerprint: _reading, ...rest } = cell;
+  return { ...rest, verified: true, verified_at: date, verified_via: 'archive', archive_timestamp: timestamp };
 }
 
 /**
@@ -608,7 +646,9 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
 
   let unverified: string[] = [];
   if (opts.changedSince && base) {
-    const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso());
+    const authority = authorityFromEnv(process.env);
+    if (authority.allowed && process.env.GITHUB_ACTIONS !== 'true') console.log("  (a maintainer's reading is accepted here because this is a local run; CI accepts it only in a pull request opened by a maintainer)");
+    const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso(), authority);
     unverified = gate.unverified;
     for (const line of [...gate.attested, ...gate.unverified]) console.log(`  ${line}`);
     const scoped = [opts.app ? `--app ${opts.app}` : '', opts.onlyBlocked ? '--only-blocked' : ''].filter(Boolean).join(' ');

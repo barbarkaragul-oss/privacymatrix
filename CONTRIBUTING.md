@@ -49,7 +49,7 @@ One entry per app × question:
 - `quote`: 12 to 400 characters, one contiguous excerpt, copied exactly. Smart quotes and dashes, markdown emphasis, capitalisation and whitespace differences are tolerated; different wording or punctuation is not (a quote that matches only when punctuation is ignored is reported as `REQUOTE` and does not confirm its cell, because a cut at a comma can hide an exception that follows it). Some vendors serve a regional variant of the same page depending on the reader's IP address (Meta's policy says "Help Centers" to a US reader and "Help Centres" elsewhere). The weekly check runs from a GitHub runner in the United States, so quote the US variant or, better, a sentence that is identical in every variant; the `Debug fetch` workflow shows the text the runner receives.
 - `evidence_url`: the page that contains the quote. Fragments (`#section`) are fine.
 - `value: "unknown"` cells have an empty quote and `verified: false`. Silence in the documents is always *unknown*, never *no*.
-- Leave `verified`, `verified_at` and `verified_via` alone; `npm run check -- --fix` sets them. A re-quoted cell keeps its date until the next scheduled check re-dates it; do not edit `verified_at` by hand to match. The one exception is a maintainer's reading of a blocked page, described under [Evidence the checker cannot read](#evidence-the-checker-cannot-read).
+- Leave `verified`, `verified_at`, `verified_via` and `manual_fingerprint` alone; `npm run check -- --fix` sets them. A re-quoted cell keeps its date until the next scheduled check re-dates it; do not edit `verified_at` by hand to match. The one exception is a maintainer's reading of a blocked page, described under [Evidence the checker cannot read](#evidence-the-checker-cannot-read).
 
 ## Workflow
 
@@ -71,7 +71,14 @@ On a pull request, CI runs `npm run check -- --changed-since <base>` (locally, u
 - The quote was not found: check it against the page. The text the runner receives can differ from what your browser shows; the `Debug fetch` workflow (below) shows it.
 - The page cannot be read from the cloud at all (it is built by JavaScript, answers with no text, or shows a bot challenge): mark the app `blocked_from_cloud` in `data/apps.json` in a separate pull request, with the `Debug fetch` output as evidence, and have that reviewed first.
 
-For an app that the base already marks `blocked_from_cloud`, a maintainer can vouch for a changed cell whose page the checker could not read: read the page in a browser, confirm the quote is on it, and set `verified: true`, `verified_via: "manual"` and `verified_at` to that day's date in UTC. This does not cover a quote the checker read and found malformed or matching only with punctuation ignored; copy that one again. CI lists such cells as `ATTESTED`, not confirmed, so the reviewer can weigh them; the exception lapses 14 days after `verified_at`, after which the page is read again and the date renewed. Both lists also appear in the job summary. A flag added in the same pull request does not count.
+For an app that the base already marks `blocked_from_cloud`, a maintainer can vouch for a changed cell whose page the checker could not read: read the page in a browser, confirm the quote is on it exactly, and run `npm run attest -- <app> <question>`, then `npm run build`. That marks the cell verified today (UTC), `verified_via: "manual"`, and records `manual_fingerprint`, which ties the reading to the cell's value, quote, URL and date. CI lists such cells as `ATTESTED`, not confirmed, with the fingerprint's first characters, so the reviewer can weigh them. The reading counts only while:
+
+- the fingerprint still matches the cell: change the value, quote, URL or date afterwards, in the same pull request or a later one, and the page has to be read and attested again;
+- the pull request was opened by a maintainer of this repository (GitHub's author association OWNER, MEMBER or COLLABORATOR, which CI reads from GitHub, not from the data). A maintainer's commit on a contributor's pull request does not count; the maintainer opens a pull request of their own;
+- it is at most 14 days old;
+- the checker could not read the page. It does not cover a quote the checker read and found malformed or matching only with punctuation ignored; copy that one again.
+
+A flag added in the same pull request does not count, and both lists also appear in the job summary. Two limits: a maintainer who runs `attest` without reading the page is trusted, which is why the `ATTESTED` line names whose word it is; and a pull request that changes `.github/` or `src/` can change the gate itself, so such changes are reviewed as code, not as data. A local run accepts a reading from whoever runs it.
 
 Pull requests opened by the weekly workflow do not run CI (see below), so this check does not cover them; they are reviewed by hand.
 
