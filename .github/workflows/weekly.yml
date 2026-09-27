@@ -105,13 +105,16 @@ jobs:
             const c = require('./data/changes.json');
             let summary = c.changes.length + ' value changes';
             let pending = 0;
+            let requote = 0;
             if (fs.existsSync('./data/check-report.json')) {
               const r = require('./data/check-report.json');
               pending = (r.pending || []).length;
-              summary += ', ' + r.ok + ' quotes present, ' + pending + ' quotes newly missing, ' + r.errors + ' cells on unreachable pages';
+              // errors also counts quotes that matched only with punctuation ignored (requote): their pages were read.
+              requote = r.requote || 0;
+              summary += ', ' + r.ok + ' quotes present, ' + pending + ' quotes newly missing, ' + (r.errors - requote) + ' cells on unreachable pages' + (requote ? ', ' + requote + ' to re-quote' : '');
             }
-            const title = 'Policy text changed: ' + c.changes.length + ' cell(s) demoted, ' + pending + ' quote(s) newly missing';
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'pending=' + pending + '\n' + 'summary=' + summary + '\n' + 'issue_title=' + title + '\n');
+            const title = 'Policy text changed: ' + c.changes.length + ' cell(s) demoted, ' + pending + ' quote(s) newly missing' + (requote ? ', ' + requote + ' quote(s) to re-quote' : '');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'pending=' + pending + '\n' + 'requote=' + requote + '\n' + 'summary=' + summary + '\n' + 'issue_title=' + title + '\n');
             console.log(summary);
           "
 
@@ -150,9 +153,11 @@ jobs:
             README.md
             docs/
 
+      # A quote to re-quote opens the issue too: its cell is left as it is and would otherwise age
+      # with nothing pointing at it.
       - name: Find the open recheck issue, if any (free mode)
         id: issue
-        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0') && steps.mode.outputs.mode == 'free'
+        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0' || steps.changes.outputs.requote != '0') && steps.mode.outputs.mode == 'free'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -161,7 +166,7 @@ jobs:
           echo "Existing issue: ${NUMBER:-none}"
 
       - name: Open or update the issue for cells that need a human (free mode)
-        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0') && steps.mode.outputs.mode == 'free'
+        if: (steps.changes.outputs.count != '0' || steps.changes.outputs.pending != '0' || steps.changes.outputs.requote != '0') && steps.mode.outputs.mode == 'free'
         uses: peter-evans/create-issue-from-file@v6
         with:
           issue-number: ${{ steps.issue.outputs.number }}

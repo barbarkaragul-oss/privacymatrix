@@ -138,7 +138,12 @@ export function parseArgs(argv: string[]): CheckOptions {
     else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
     else if (a === '--residential') out.residential = true;
     else if (a === '--only-blocked') out.onlyBlocked = true;
-    else if (a === '--changed-since') out.changedSince = argv[++i] || null;
+    else if (a === '--changed-since') {
+      // A missing ref must not quietly turn the pull-request gate into an ordinary check.
+      const ref = argv[++i];
+      if (!ref || ref.startsWith('--')) throw new UsageError('--changed-since needs a git ref');
+      out.changedSince = ref;
+    }
     else if (a === '--help' || a === '-h') {
       console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked] [--changed-since <git-ref>]');
       process.exit(0);

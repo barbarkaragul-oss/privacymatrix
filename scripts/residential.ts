@@ -12,10 +12,12 @@
  *       In any clean checkout: check, build and test, print what a real run would do, then put the
  *       generated files back. No pull, no commit, push or GitHub call.
  *   (from the launcher) ... residential.ts [--force]
- *       A real run, if due: the last success is MAX_AGE_DAYS or more old, or --force. Then, on
- *       Windows, the reading page for the pages only a person can read, if any are due.
+ *       A real run, if due: the last success is MAX_AGE_DAYS or more old, or --force. Afterwards
+ *       the log says how many pages only a person can read are due; nothing opens
+ *       (residential-launch.cmd --read opens the reading page).
  *   (from the launcher) ... residential.ts --read
- *       Only the reading page (scripts/manual.ts), with every page the last run could not read.
+ *       Only the reading page (scripts/manual.ts), with the pages due, or every page the last run
+ *       could not read when none is due.
  *
  * It runs under plain node, not tsx, because it may run `npm ci`, which on Windows cannot replace
  * files that a running tsx holds open.
