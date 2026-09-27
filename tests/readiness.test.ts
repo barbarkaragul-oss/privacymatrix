@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { freshness } from '../src/freshness.js';
 import { dueSources, EMPTY_SOURCE_STATE, sourceSignatures, updateSourceState } from '../src/source-state.js';
-import { readNothing } from '../scripts/residential.js';
+import { afterCheck, readNothing } from '../scripts/residential.js';
 import { ArchiveReader } from '../src/archive-cache.js';
 import { archiveRawUrl, getArchiveJson } from '../src/archive.js';
 import { decide, protectedPush, publishCurrentCommit } from '../scripts/residential.js';
@@ -136,7 +136,7 @@ test('TLS failures explain the trusted system certificate setting without dumpin
   assert.doesNotMatch(message, /secret/);
 });
 
-test('partial scheduling cannot suppress missing evidence or close a previous issue or demotion PR', () => {
+test('partial scheduling cannot suppress missing evidence; sources not due do not keep an issue or PR open', () => {
   const signatures = new Map([['https://example.test/p', 'evidence']]);
   const state = updateSourceState(EMPTY_SOURCE_STATE(), signatures, [
     { evidence_url: 'https://example.test/p', status: 'fail', method: 'none', problems: ['quote absent'] },
@@ -155,7 +155,7 @@ test('partial scheduling cannot suppress missing evidence or close a previous is
   assert.throws(() => parseArgs(['--residential', '--source-state', 'state.json', '--changed-since', 'HEAD']), /PR gate/);
 });
 
-test('a run whose due pages are all still unreadable is the usual state, not a failure; a dead connection still is', () => {
+test('on the real schedule, only the unreadable pages are due between two full reads, and reading none of them reads nothing', () => {
   // Six days of the real schedule: 9 sources read, 14 unreadable (Perplexity, OpenAI's help centre).
   const url = (i: number) => `https://vendor.example/page-${i}`;
   const cells = Array.from({ length: 23 }, (_, i) => ({ app: 'v', question: `q${i}`, value: 'yes', quote: `A sentence number ${i}.`, evidence_url: url(i) }));
@@ -222,4 +222,43 @@ test('a certificate the system store cannot fix is reported without the NODE_USE
   assert.equal(expired, 'TLS certificate verification failed (CERT_HAS_EXPIRED)');
   assert.doesNotMatch(networkError(new Error('fetch failed', { cause: { code: 'ERR_TLS_CERT_ALTNAME_INVALID' } })), /NODE_USE_SYSTEM_CA/);
   assert.match(networkError(new Error('fetch failed', { cause: { code: 'SELF_SIGNED_CERT_IN_CHAIN' } })), /NODE_USE_SYSTEM_CA=1/);
+});
+
+test('reading nothing is the usual state only when every due page was unreadable before; an outage fails every day', () => {
+  // 23 sources, 9 of them readable. A run's decision, and what run() does to the stored state with it:
+  // the state is kept on 'nothing-to-publish', put back as it was on 'read-nothing'.
+  const url = (i: number) => `https://vendor.example/p${i}`;
+  const cells = Array.from({ length: 23 }, (_, i) => ({ app: 'v', question: `q${i}`, value: 'yes', quote: `Sentence ${i}.`, evidence_url: url(i) }));
+  const signatures = sourceSignatures(cells);
+  const reading = (u: string, alive: boolean) => (alive && Number(u.slice(-2).replace('p', '')) < 9
+    ? { evidence_url: u, status: 'ok', method: 'exact', problems: [] }
+    : { evidence_url: u, status: 'error', method: 'none', problems: ['HTTP 403'] });
+  const day = (state: ReturnType<typeof EMPTY_SOURCE_STATE>, at: string, alive: boolean) => {
+    const due = dueSources(signatures, state, at);
+    const allDueUnreadable = [...due].every((u) => state.sources[u]?.status === 'unreachable');
+    const readings = [...due].map((u) => reading(u, alive));
+    const ok = readings.filter((r) => r.status === 'ok').length;
+    const decision = afterCheck({ ok, failed: 0, errors: readings.length - ok }, allDueUnreadable);
+    const after = updateSourceState(state, signatures, readings, at);
+    return { decision, state: decision === 'read-nothing' ? state : after, due: due.size };
+  };
+  let state = updateSourceState(EMPTY_SOURCE_STATE(), signatures, cells.map((c) => reading(c.evidence_url, true)), '2026-09-28T17:00:00Z');
+  // Ordinary days: only the 14 unreadable pages are due; reading none of them is not a failure.
+  let r = day(state, '2026-09-29T17:00:00Z', true);
+  assert.deepEqual([r.decision, r.due], ['nothing-to-publish', 14]);
+  state = r.state;
+  for (const d of ['2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03']) state = day(state, `${d}T17:00:00Z`, true).state;
+  // Sixth day, and this machine can reach nothing: readable pages were due, so it fails...
+  r = day(state, '2026-10-04T17:00:00Z', false);
+  assert.deepEqual([r.decision, r.due], ['read-nothing', 23]);
+  state = r.state;
+  // ...and the next day too, because the failed day left no 'unreadable' marks on readable pages.
+  r = day(state, '2026-10-05T17:00:00Z', false);
+  assert.deepEqual([r.decision, r.due], ['read-nothing', 23]);
+  state = r.state;
+  // Connection back: it publishes.
+  assert.equal(day(state, '2026-10-06T17:00:00Z', true).decision, 'publish');
+  // A quote found missing, or one to re-quote, means a page was read.
+  assert.equal(afterCheck({ ok: 0, failed: 1, errors: 5 }, false), 'publish');
+  assert.equal(afterCheck({ ok: 0, errors: 2, requote: 2 }, false), 'publish');
 });
