@@ -254,7 +254,7 @@ export function classifyCell(cell: Cell, page: PageResult | undefined, opts: { c
  * with advertising partners"). Such a match neither confirms the cell nor shows the quote is gone:
  * the cell is left as it is and reported, until someone copies the quote from the page again.
  */
-function requoteProblem(where: string): string {
+export function requoteProblem(where: string): string {
   return `quote matches ${where} only when punctuation is ignored, which can hide an added exception; re-quote it exactly from the page`;
 }
 

@@ -133,3 +133,52 @@ test('sourceProblem: a bot challenge, a truncated page or too little text is not
   assert.equal(sourceProblem(page('short')), 'too little text');
   assert.equal(sourceProblem(page('', { ok: false, status: 403 })), 'HTTP 403');
 });
+
+test('reconcile: a quote that matches only with punctuation ignored confirms nothing (Codex re-check P3)', async () => {
+  const url = 'https://docs.example/ads';
+  const text = 'We never share your data, except with advertising partners when you consent. More text so the page is long enough.';
+  const page = async (u: string) => (u === url ? prepareText(text) : null);
+  const q = [qs[0]!];
+  const key = cellKey('a', 'hooks');
+
+  // A new proposal whose quote was cut at the comma: demoted, with the re-quote reason.
+  const proposal = await reconcile('a', q, [model('hooks', 'yes', 'We never share your data.', url)], new Map(), page, '2026-09-27');
+  assert.equal(proposal.verifiedCount, 0);
+  assert.equal(proposal.demoted, 1);
+  assert.match(proposal.cells[0]!.notes, /^UNVERIFIED \(quote matches the page only when punctuation is ignored/);
+
+  // A previous cell whose quote now matches only that way: kept exactly as it was, not re-dated.
+  const prev = prevCell('hooks', 'yes', 'We never share your data.', url);
+  const restore = await reconcile('a', q, [model('hooks', 'unknown', '', '')], new Map([[key, prev]]), page, '2026-09-27');
+  assert.deepEqual(restore.cells[0], prev);
+  assert.deepEqual([restore.requote, restore.restored, restore.kept], [1, 0, 0]);
+
+  // Both at once (the model repeats the old quote): the cell is unchanged, as check.ts leaves a REQUOTE cell.
+  const both = await reconcile('a', q, [model('hooks', 'yes', 'We never share your data.', url)], new Map([[key, prev]]), page, '2026-09-27');
+  assert.deepEqual(both.cells[0], prev);
+  assert.deepEqual([both.demoted, both.requote, both.verifiedCount], [1, 1, 0]);
+
+  // The flag and archive provenance survive, since nothing was confirmed.
+  const archived: Cell = { ...prev, verified_via: 'archive', archive_timestamp: '20260921065036', quote_missing_since: '2026-09-18' };
+  assert.deepEqual((await reconcile('a', q, [], new Map([[key, archived]]), page, '2026-09-27')).cells[0], archived);
+
+  // An unverified previous cell has nothing confirmed to keep.
+  const unverified = await reconcile('a', q, [], new Map([[key, { ...prev, verified: false }]]), page, '2026-09-27');
+  assert.equal(unverified.cells[0]!.value, 'unknown');
+  assert.equal(unverified.requote, 0);
+
+  // A compact proposal, but the previous quote matches exactly: restored and re-dated.
+  const exactPrev = prevCell('hooks', 'partial', 'except with advertising partners when you consent.', url);
+  const restored = await reconcile('a', q, [model('hooks', 'yes', 'We never share your data.', url)], new Map([[key, exactPrev]]), page, '2026-09-27');
+  assert.deepEqual([restored.demoted, restored.restored, restored.requote], [1, 1, 0]);
+  assert.equal(restored.cells[0]!.verified_at, '2026-09-27');
+
+  // A normalized match (straight vs curly quotes) still confirms; an ellipsis never reaches the compact pass.
+  const curly = async () => prepareText('Intro. We “never” share your data. More text so the page is long enough to count.');
+  assert.equal((await reconcile('a', q, [model('hooks', 'yes', 'We "never" share your data.', url)], new Map(), curly, '2026-09-27')).verifiedCount, 1);
+  const ellipsis = await reconcile('a', q, [model('hooks', 'yes', 'We never share your data ... when you consent.', url)], new Map(), page, '2026-09-27');
+  assert.match(ellipsis.cells[0]!.notes, /^UNVERIFIED \(quote not found at source\)/);
+  // A malformed quote is reported as malformed even if it would match without punctuation.
+  const long = `We never share your data${'!'.repeat(400)}`;
+  assert.match((await reconcile('a', q, [model('hooks', 'yes', long, url)], new Map(), page, '2026-09-27')).cells[0]!.notes, /^UNVERIFIED \(quote longer than 400 characters\)/);
+});
