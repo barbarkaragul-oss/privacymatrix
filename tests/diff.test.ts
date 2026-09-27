@@ -73,3 +73,14 @@ test('renderChangesMarkdown says how many quotes an archive capture confirmed, a
   assert.ok(renderChangesMarkdown(file, [], [], [], [], { confirmed: 2, dated: 0, oldestDated: null }).includes('so every date is unchanged'));
   assert.ok(!renderChangesMarkdown(file, [], []).includes('Internet Archive'));
 });
+
+test('renderChangesMarkdown names each quote to re-quote, so the issue says which cell to fix', () => {
+  const file = { run_at: 'r', model: 'm', changes: [], pending: [], stats: { apps_checked: 1, apps_failed: [], cells_total: 1, cells_verified: 1, cells_unknown: 0, cells_verified_via_archive: 0 } };
+  const apps = [{ id: 'a', name: 'App A', vendor: 'v', homepage: 'https://a.x/', repo: null, sources: ['https://a.x/'] }];
+  const questions = [{ id: 'x', group: 'g', name: 'Cap X', question: 'q', rubric: 'r' }];
+  const md = renderChangesMarkdown(file, apps, questions, [], [], undefined, [{ app: 'a', question: 'x', evidence_url: 'https://a.x/privacy' }]);
+  assert.ok(md.includes('Quotes to re-quote (1).'));
+  assert.ok(md.includes('- App A / Cap X — [source](https://a.x/privacy)'));
+  assert.ok(!md.includes('Pages that could not be fetched'), 'a re-quote is not a page that could not be read');
+  assert.ok(!renderChangesMarkdown(file, apps, questions).includes('Quotes to re-quote'));
+});

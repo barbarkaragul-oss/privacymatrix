@@ -28,8 +28,10 @@
  *   - a cell demoted (a value changed)       -> the same commit to main without the demotions, then
  *                                               the demotions on top, pushed to
  *                                               bot/residential-verification as a pull request
- *   - any quote flagged missing              -> an issue labelled residential-recheck, opened or updated
- *   - nothing flagged, every page read       -> that issue closed; a demotion PR no longer needed, closed
+ *   - any quote flagged missing, or matching only with punctuation ignored (to re-quote)
+ *                                            -> an issue labelled residential-recheck, opened or updated
+ *   - nothing flagged or to re-quote, every page read
+ *                                            -> that issue closed; a demotion PR no longer needed, closed
  * data/changes.json and changes.md stay as the weekly cloud run wrote them: this run checks only the
  * blocked apps, and its record would replace the record of all 28. Its own report goes into the issue and PR.
  *
@@ -66,13 +68,22 @@ export interface RunOutcome {
   flagged: number;
   /** Cells whose page could not be read this run. */
   unreachable: number;
+  /**
+   * Cells whose quote matched only with punctuation ignored (needsRequote in src/check.ts): the page
+   * was read, the cell left as it is, and someone has to copy the quote again.
+   */
+  requote: number;
   /** Whether the check and build changed any tracked file. */
   dirty: boolean;
 }
 
 export interface Plan {
   commit: 'none' | 'main' | 'main+pr';
-  /** 'keep' when pages were unreachable: it cannot be said that every quote was found. */
+  /**
+   * 'open' also for a quote to re-quote, as in .github/workflows/weekly.yml: its cell is left as it is
+   * and would otherwise age with nothing pointing at it. 'keep' when pages were unreachable: it cannot
+   * be said that every quote was found.
+   */
   issue: 'open' | 'close' | 'keep';
   /**
    * 'keep' when there is nothing to demote but pages were unreachable: a demotion pull request
@@ -84,13 +95,17 @@ export interface Plan {
 export function decide(o: RunOutcome): Plan {
   return {
     commit: !o.dirty ? 'none' : o.valueChanges > 0 ? 'main+pr' : 'main',
-    issue: o.valueChanges > 0 || o.flagged > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
+    issue: o.valueChanges > 0 || o.flagged > 0 || o.requote > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
+    // A re-quote does not keep a demotion pull request: when every page was read and nothing was
+    // demoted, each cell the PR demotes was found again or matches without punctuation, so its
+    // demotion for a missing quote is out of date either way; a quote still missing would have been
+    // demoted again.
     pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
   };
 }
 
-export function summarize(report: { ok: number; requote?: number }, o: RunOutcome): string {
-  const requote = report.requote ? `, ${report.requote} to re-quote` : '';
+export function summarize(report: { ok: number }, o: RunOutcome): string {
+  const requote = o.requote ? `, ${o.requote} to re-quote` : '';
   return `${o.valueChanges} value change${o.valueChanges === 1 ? '' : 's'}, ${report.ok} quotes present, ${o.pending} newly missing, ${o.unreachable} cells on unreachable pages${requote}`;
 }
 
@@ -305,7 +320,7 @@ async function syncIssue(token: string, slug: string, action: 'open' | 'close' |
       log(`opened issue #${issue.number}`);
     }
   } else if (existing) {
-    await api(token, 'POST', `/repos/${slug}/issues/${existing.number}/comments`, { body: `The residential re-check of ${today()} read every page and found no quote missing. Closing.` });
+    await api(token, 'POST', `/repos/${slug}/issues/${existing.number}/comments`, { body: `The residential re-check of ${today()} read every page and found no quote missing or to re-quote. Closing.` });
     await api(token, 'PATCH', `/repos/${slug}/issues/${existing.number}`, { state: 'closed' });
     log(`closed issue #${existing.number}`);
   }
@@ -400,6 +415,7 @@ export async function run(opts: Options): Promise<number> {
       flagged: result.cells.filter((c) => blocked.has(c.app) && c.quote_missing_since).length,
       // A quote that matches only without punctuation is reported as an error too, but its page was read.
       unreachable: report.errors - (report.requote ?? 0),
+      requote: report.requote ?? 0,
       dirty: git('status', '--porcelain', '--', ...DATA_PATHS) !== '',
     };
     const plan = decide(outcome);
@@ -453,7 +469,7 @@ export async function run(opts: Options): Promise<number> {
     if (!slug) throw new Error('origin is not a GitHub remote; the pull request and issue were not updated');
     const token = githubToken();
     await syncPullRequest(token, slug, plan.pr, `matrix: residential re-verification (${summary})`, `${NOTE}\n\n${changesMd}`);
-    const issueTitle = `Residential check: ${outcome.valueChanges} cell(s) demoted, ${outcome.flagged} quote(s) flagged missing`;
+    const issueTitle = `Residential check: ${outcome.valueChanges} cell(s) demoted, ${outcome.flagged} quote(s) flagged missing${outcome.requote ? `, ${outcome.requote} quote(s) to re-quote` : ''}`;
     await syncIssue(token, slug, plan.issue, issueTitle, `${NOTE}\n\n${changesMd}`);
 
     writeFileSync(path.join(stateDir as string, 'last-success'), `${today()}\n`, 'utf8');
