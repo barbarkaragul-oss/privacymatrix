@@ -7,6 +7,9 @@
  * source: no cell cites one. It is used for one thing only, to confirm that the quoted sentence is
  * still on the vendor's page as of the capture date. It can never demote a cell, because an old
  * capture cannot show that a sentence is missing from the live page today.
+ *
+ * For the apps marked blocked_from_cloud the weekly workflow first asks the Wayback Machine to make
+ * a fresh capture (src/capture.ts); the checker reads that one before searching for the latest.
  */
 import { fetchText, type FetchResult } from './fetch.js';
 

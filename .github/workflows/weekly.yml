@@ -77,13 +77,31 @@ jobs:
             npm run verify
           fi
 
+      # Fresh Wayback captures of the pages the cloud cannot read (apps marked blocked_from_cloud),
+      # made with the maintainer's archive.org keys, for the check below to read first
+      # (src/capture.ts). Without the keys, or if archive.org fails, the check reads the archive as
+      # it is, so this step never fails the run.
+      - name: Capture the blocked apps' pages in the Wayback Machine (free mode)
+        if: steps.mode.outputs.mode == 'free'
+        continue-on-error: true
+        timeout-minutes: 20
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+        run: |
+          if [ -n "$APP_INPUT" ]; then
+            npm run capture -- --out captures.json --app "$APP_INPUT"
+          else
+            npm run capture -- --out captures.json
+          fi
+
       - name: Re-check every quote against its source (free mode)
         if: steps.mode.outputs.mode == 'free'
         run: |
           if [ -n "$APP_INPUT" ]; then
-            npm run check -- --fix --soft --app "$APP_INPUT"
+            npm run check -- --fix --soft --captures captures.json --app "$APP_INPUT"
           else
-            npm run check -- --fix --soft
+            npm run check -- --fix --soft --captures captures.json
           fi
 
       - name: Refuse to publish a run that verified nothing

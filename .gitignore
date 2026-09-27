@@ -9,3 +9,4 @@ scripts/.cache_*
 data/check-report.json
 .claude/
 debug-dump/
+captures.json

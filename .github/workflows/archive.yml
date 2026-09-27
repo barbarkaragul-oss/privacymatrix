@@ -1,0 +1,37 @@
+name: Archive blocked pages
+
+# Asks the Wayback Machine to capture the pages of the apps marked blocked_from_cloud (Save Page
+# Now, with the maintainer's archive.org keys; src/capture.ts), then checks their quotes against
+# those captures without writing anything. The weekly workflow does the same before its check; this
+# one is for trying it by hand, and it runs on pull requests that change the capture code. Changes
+# nothing in the repository.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/capture.ts'
+      - '.github/workflows/archive.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    # Secrets are not passed to pull requests from forks; this job needs them.
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Capture the blocked apps' pages
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+        run: npm run capture -- --out captures.json
+      - name: Check their quotes against the captures (nothing is written)
+        run: npm run check -- --soft --only-blocked --captures captures.json

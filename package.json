@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit",
     "ci": "npm run typecheck && npm test && npm run build",
     "manual": "tsx scripts/manual.ts",
-    "attest": "tsx src/attest.ts"
+    "attest": "tsx src/attest.ts",
+    "capture": "tsx src/capture.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.124.0",

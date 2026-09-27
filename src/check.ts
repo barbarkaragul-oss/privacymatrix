@@ -20,6 +20,9 @@
  *                                 per page after that, until it answers one. A host that answers
  *                                 with a bot challenge is not asked again in that run.
  *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
+ *   npm run check -- --captures <file>   the Wayback captures `npm run capture` made this run
+ *                                 (src/capture.ts): for a page that blocks the checker, read that
+ *                                 capture first, and search the archive's index only if it is unusable
  *   npm run check -- --changed-since <ref>   the pull-request gate: exit 1 unless every cell whose
  *                                 evidence differs from <ref> is confirmed in this run (or, for an
  *                                 app <ref> marks blocked_from_cloud, rests on a maintainer's reading
@@ -37,9 +40,9 @@
  * verification; it can never demote a cell or touch the missing-quote clock (see src/archive.ts).
  */
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { captureDate, fetchCapture, landedCapture, latestCapture } from './archive.js';
+import { archiveRawUrl, captureDate, fetchCapture, landedCapture, latestCapture, type Capture } from './archive.js';
 import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
 import { Fetcher, type FetchResult } from './fetch.js';
 import { fingerprint } from './fingerprint.js';
@@ -127,10 +130,16 @@ export interface CheckOptions {
    * confirmed in this run, or the check fails (see unverifiedChanges). Never with fix.
    */
   changedSince: string | null;
+  /**
+   * A file written by `npm run capture` (src/capture.ts): page -> timestamp of a Wayback capture
+   * made this run. For a page that blocks the checker, that capture is read first, and the archive's
+   * index is searched only if it cannot be used.
+   */
+  captures: string | null;
 }
 
 export function parseArgs(argv: string[]): CheckOptions {
-  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [], residential: false, onlyBlocked: false, changedSince: null };
+  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [], residential: false, onlyBlocked: false, changedSince: null, captures: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--soft') out.soft = true;
@@ -140,6 +149,7 @@ export function parseArgs(argv: string[]): CheckOptions {
     else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
     else if (a === '--residential') out.residential = true;
     else if (a === '--only-blocked') out.onlyBlocked = true;
+    else if (a === '--captures') out.captures = argv[++i] ?? null;
     else if (a === '--changed-since') {
       // A missing ref must not quietly turn the pull-request gate into an ordinary check.
       const ref = argv[++i];
@@ -147,7 +157,7 @@ export function parseArgs(argv: string[]): CheckOptions {
       out.changedSince = ref;
     }
     else if (a === '--help' || a === '-h') {
-      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked] [--changed-since <git-ref>]');
+      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked] [--changed-since <git-ref>] [--captures <file>]');
       process.exit(0);
     }
   }
@@ -426,6 +436,25 @@ export function authorityFromEnv(env: NodeJS.ProcessEnv): Authority {
   return { allowed: false, by: association ? `an author GitHub lists as ${association}` : 'an author GitHub did not identify' };
 }
 
+/**
+ * The captures `npm run capture` made this run, page -> timestamp. A missing or unreadable file
+ * means none (the capture step may have been skipped); a timestamp that is not a Wayback timestamp
+ * is left out.
+ */
+export function loadFreshCaptures(file: string | null): Map<string, string> {
+  const out = new Map<string, string>();
+  if (!file || !existsSync(file)) return out;
+  try {
+    const captures = (JSON.parse(readFileSync(file, 'utf8')) as { captures?: unknown }).captures;
+    if (captures && typeof captures === 'object') {
+      for (const [url, ts] of Object.entries(captures as Record<string, unknown>)) if (typeof ts === 'string' && captureDate(ts)) out.set(url, ts);
+    }
+  } catch {
+    // an unreadable file is the same as no captures
+  }
+  return out;
+}
+
 /** A file as it is at a git ref, for the pull-request gate's base. */
 function readAtRef(ref: string, file: string): unknown {
   try {
@@ -585,34 +614,44 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
 
   // Internet Archive fallback, two at a time to be gentle with archive.org. Sorted so the log is stable.
   toArchive.sort((a, b) => a.url.localeCompare(b.url));
+  // A capture made this run by `npm run capture` is read first: it is fresh, and reading it needs no
+  // search of the archive's index, whose lookups often fail. If it cannot be used, the index is asked
+  // for the newest capture, as for every other page.
+  const freshCaptures = loadFreshCaptures(opts.captures);
+  if (opts.captures) console.log(`  ${freshCaptures.size} capture(s) made this run, from ${opts.captures}`);
   await eachLimited(toArchive, 2, async ({ url, reason }) => {
+    const failures: string[] = [];
+    const read = async (capture: Capture, made: boolean): Promise<boolean> => {
+      const res = await fetchCapture(capture);
+      if (opts.dump) dumpPage(opts.dump, capture.rawUrl, res);
+      const label = `Internet Archive capture ${capture.timestamp}${made ? ' (made this run)' : ''}`;
+      const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
+      if (problem) {
+        failures.push(`${label} unusable: ${problem}`);
+        return false;
+      }
+      // The cell is dated to the capture that was read, which is not always the one asked for.
+      const landed = landedCapture(res.finalUrl, url);
+      if ('error' in landed) {
+        failures.push(`${label}: ${landed.error}`);
+        return false;
+      }
+      pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: landed.timestamp });
+      const moved = landed.timestamp !== capture.timestamp ? `, redirected from the capture of ${capture.timestamp}` : '';
+      console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(landed.timestamp)}, ${landed.timestamp}${made ? ', made this run' : ''}${moved})`);
+      return true;
+    };
+    const fresh = freshCaptures.get(url);
+    if (fresh && (await read({ timestamp: fresh, rawUrl: archiveRawUrl(fresh, url) }, true))) return;
     const capture = await latestCapture(url);
-    if (!capture || 'error' in capture) {
-      const error = capture ? `${reason}; Internet Archive lookup failed: ${capture.error}` : `${reason}; no Internet Archive capture`;
-      pages.set(url, { error });
-      console.log(`  FETCH ERROR ${url} (${error})`);
-      return;
-    }
-    const res = await fetchCapture(capture);
-    if (opts.dump) dumpPage(opts.dump, capture.rawUrl, res);
-    const problem = !res.ok ? (res.error ?? `HTTP ${res.status}`) : unusablePage(res.text, res.truncated);
-    if (problem) {
-      const error = `${reason}; Internet Archive capture ${capture.timestamp} unusable: ${problem}`;
-      pages.set(url, { error });
-      console.log(`  FETCH ERROR ${url} (${error})`);
-      return;
-    }
-    // The cell is dated to the capture that was read, which is not always the one asked for.
-    const landed = landedCapture(res.finalUrl, url);
-    if ('error' in landed) {
-      const error = `${reason}; Internet Archive ${landed.error}`;
-      pages.set(url, { error });
-      console.log(`  FETCH ERROR ${url} (${error})`);
-      return;
-    }
-    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: landed.timestamp });
-    const moved = landed.timestamp !== capture.timestamp ? `, redirected from the capture of ${capture.timestamp}` : '';
-    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(landed.timestamp)}, ${landed.timestamp}${moved})`);
+    if (!capture) failures.push('no Internet Archive capture');
+    else if ('error' in capture) failures.push(`Internet Archive lookup failed: ${capture.error}`);
+    else if (capture.timestamp === fresh) {
+      // the index's newest is the capture already tried
+    } else if (await read(capture, false)) return;
+    const error = `${reason}; ${failures.join('; ')}`;
+    pages.set(url, { error });
+    console.log(`  FETCH ERROR ${url} (${error})`);
   });
 
   if (opts.dump && opts.extraUrls.length) {
