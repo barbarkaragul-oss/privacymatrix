@@ -1046,7 +1046,7 @@
       "app": "meta-ai",
       "question": "no_sale_sharing",
       "value": "partial",
-      "quote": "We don't sell your information and we never will.",
+      "quote": "We don’t sell your information, and we never will.",
       "evidence_url": "https://mbasic.facebook.com/privacy/policy/printable/?locale=en_US",
       "notes": "Meta states it never sells information, but it shares information with advertisers, Audience Network publishers and 'select partners' such as search engines for AI responses, and runs an ad ecosystem with opt-outs via Ad preferences; the statement is not a no-sharing-for-marketing commitment.",
       "confidence": "medium",
