@@ -42,8 +42,9 @@ export const AppSchema = z.object({
    * cloud run reads is not evidence that it was removed: there a quote can be confirmed but never
    * found missing. Such apps are read live with `check --residential --only-blocked` from an
    * ordinary connection, which some of their pages block too, and are labelled on the site. On a
-   * pull request, a changed cell of such an app can be vouched for by a maintainer's reading; only
-   * the flag as the base has it counts (unverifiedChanges in src/check.ts). The Internet Archive
+   * pull request, a changed cell of such an app can rest on a maintainer's reading of exactly that
+   * evidence (manual_fingerprint), in a pull request a maintainer opened; only the flag as the base
+   * has it counts (unverifiedChanges in src/check.ts). The Internet Archive
    * fallback does not depend on this flag: it follows any 403, page by page.
    */
   blocked_from_cloud: z.boolean().optional(),
@@ -84,13 +85,21 @@ export const CellSchema = z.object({
   /**
    * How verified_at was established when it was not a live fetch by the checker: 'archive' = the
    * quote was found in an Internet Archive capture of evidence_url (archive_timestamp), 'manual' = a
-   * maintainer confirmed the quote against the live page as their browser showed it (by hand, or by
-   * pasting its text into the reading page, scripts/manual.ts); the maintainer vouches for the page.
+   * maintainer confirmed the quote against the live page as their browser showed it (read by hand and
+   * recorded with `npm run attest`, or by pasting its text into the reading page, scripts/manual.ts);
+   * the maintainer vouches for the page, and manual_fingerprint says which evidence the reading covered.
    * Absent = live.
    */
   verified_via: VerifiedViaSchema.optional(),
   /** Wayback Machine timestamp (YYYYMMDDhhmmss) of the capture that confirmed the quote; only with verified_via 'archive'. */
   archive_timestamp: z.string().optional(),
+  /**
+   * Only with verified_via 'manual', written by the reading page or `npm run attest`: fingerprint()
+   * (src/fingerprint.ts) of the cell's app, question, value, quote, URL and verified_at at the moment
+   * of the reading. A pull request's changed cell rests on the reading only while this still matches.
+   * Published with the data like every field; not shown on the site.
+   */
+  manual_fingerprint: z.string().regex(/^[0-9a-f]{32}$/).optional(),
 });
 export type Cell = z.infer<typeof CellSchema>;
 

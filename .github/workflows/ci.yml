@@ -56,3 +56,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check -- --changed-since HEAD^1
+        env:
+          # Who may vouch for a maintainer's reading (a cell verified_via manual): only a pull
+          # request opened by an OWNER, MEMBER or COLLABORATOR. See authorityFromEnv in src/check.ts.
+          PM_PR_AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association }}

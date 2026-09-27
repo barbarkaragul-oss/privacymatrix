@@ -97,6 +97,10 @@ test('reconcile: a restore is a live read, so it drops archive or manual provena
   assert.equal(r.restored, 1);
   assert.equal(hooks.verified_at, '2026-10-05');
   for (const k of ['verified_via', 'archive_timestamp', 'quote_missing_since']) assert.ok(!(k in hooks), `${k} survived a live restore`);
+  // A maintainer's reading is superseded the same way, its fingerprint with it.
+  const manual: Cell = { ...prevCell('hooks', 'yes', 'lifecycle events such as PreToolUse', 'https://docs.example/hooks'), verified_via: 'manual', manual_fingerprint: '0123456789abcdef0123456789abcdef' };
+  const m = (await reconcile('a', qs, [model('hooks', 'unknown', '', '')], new Map([[cellKey('a', 'hooks'), manual]]), lookup, '2026-10-05')).cells.find((c) => c.question === 'hooks')!;
+  assert.ok(!('manual_fingerprint' in m) && !('verified_via' in m), 'the reading survived a live restore');
 });
 
 test('reconcile rejects malformed quotes even when the words appear on the page', async () => {

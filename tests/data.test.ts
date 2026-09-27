@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { fingerprint } from '../src/fingerprint.js';
 import { cellKey, loadApps, loadQuestions, loadMatrix } from '../src/types.js';
 
 test('data files parse and are internally consistent', () => {
@@ -43,4 +44,17 @@ test('an app marked blocked_from_cloud has quoted cells to check from the reside
   const blocked = loadApps().filter((a) => a.blocked_from_cloud);
   const quoted = new Set(loadMatrix().cells.filter((c) => c.quote.trim()).map((c) => c.app));
   for (const a of blocked) assert.ok(quoted.has(a.id), `${a.id} is marked blocked_from_cloud but has no quoted cells`);
+});
+
+test('a manual fingerprint appears only on a manual reading, and matches the cell', () => {
+  for (const cell of loadMatrix().cells) {
+    if (cell.manual_fingerprint === undefined) continue;
+    const key = cellKey(cell.app, cell.question);
+    assert.equal(cell.verified_via, 'manual', `${key} has a manual_fingerprint but is not verified_via manual`);
+    assert.equal(
+      cell.manual_fingerprint,
+      fingerprint(cell),
+      `${key}: manual_fingerprint does not match the cell; its value, quote, URL or date changed after the reading. Read the page again and run npm run attest -- ${cell.app} ${cell.question}`,
+    );
+  }
 });

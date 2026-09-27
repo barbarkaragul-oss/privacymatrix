@@ -353,7 +353,7 @@ export async function reconcile(
       if (match?.found && match.method !== 'compact') {
         // lookup() only reads live pages, so this is a live read: it supersedes any archive or
         // manual provenance, and a quote found again clears the missing-quote flag.
-        const { verified_via: _via, archive_timestamp: _ts, quote_missing_since: _since, ...rest } = prev;
+        const { verified_via: _via, archive_timestamp: _ts, quote_missing_since: _since, manual_fingerprint: _reading, ...rest } = prev;
         cell = { ...rest, verified: true, verified_at: today };
         restored++;
       } else if (prev.verified && (page === null || match?.method === 'compact')) {

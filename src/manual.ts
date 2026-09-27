@@ -13,6 +13,7 @@
  * that have not been read by hand for MANUAL_EVERY_DAYS.
  */
 import { BOT_CHALLENGE, unusablePage } from './check.js';
+import { fingerprint } from './fingerprint.js';
 import { findQuote, prepareText, type MatchMethod } from './quotes.js';
 import type { Cell } from './types.js';
 
@@ -128,6 +129,8 @@ export function applyReadings(
     const copy: Cell = { ...c, verified: true, verified_at: today, verified_via: 'manual' };
     delete copy.archive_timestamp;
     delete copy.quote_missing_since;
+    // Records that this reading covers exactly this quote and page (matched above), on this day.
+    copy.manual_fingerprint = fingerprint(copy);
     return copy;
   });
   return { cells: out, dated, skipped };
