@@ -12,7 +12,7 @@
  *       In any clean checkout: check, build and test, print what a real run would do, then put the
  *       generated files back. No pull, no commit, push or GitHub call.
  *   (from the launcher) ... residential.ts [--force]
- *       A real run, if due: the last success is MAX_AGE_DAYS or more old, or --force. Afterwards
+ *       A real run, if any source is due, publication failed, or --force. Afterwards
  *       the log says how many pages only a person can read are due; nothing opens
  *       (residential-launch.cmd --read opens the reading page).
  *   (from the launcher) ... residential.ts --read
@@ -23,8 +23,8 @@
  * files that a running tsx holds open.
  *
  * What a real run does, mirroring .github/workflows/weekly.yml:
- *   - dates refreshed, first misses flagged -> commit to main and push. The flags must reach main,
- *                                               or the grace period would restart every week.
+ *   - dates refreshed, first misses flagged -> push to main, or open a reading PR if protected.
+ *                                               Flags must be merged to start the grace period.
  *   - a cell demoted (a value changed)       -> the same commit to main without the demotions, then
  *                                               the demotions on top, pushed to
  *                                               bot/residential-verification as a pull request
@@ -38,9 +38,10 @@
  * The GitHub token comes from git's credential helper and is never printed.
  */
 import { type ChildProcess, execFileSync, spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dueSources, loadSourceState, sourceSignatures } from '../src/source-state.ts';
 
 export const MAX_AGE_DAYS = 6;
 export const BOT_BRANCH = 'bot/residential-verification';
@@ -73,6 +74,8 @@ export interface RunOutcome {
    * was read, the cell left as it is, and someone has to copy the quote again.
    */
   requote: number;
+  /** Sources left for a later run: a partial check must not close an earlier issue or PR. */
+  deferred?: number;
   /** Whether the check and build changed any tracked file. */
   dirty: boolean;
 }
@@ -95,18 +98,19 @@ export interface Plan {
 export function decide(o: RunOutcome): Plan {
   return {
     commit: !o.dirty ? 'none' : o.valueChanges > 0 ? 'main+pr' : 'main',
-    issue: o.valueChanges > 0 || o.flagged > 0 || o.requote > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
+    issue: o.valueChanges > 0 || o.flagged > 0 || o.requote > 0 ? 'open' : o.unreachable > 0 || (o.deferred ?? 0) > 0 ? 'keep' : 'close',
     // A re-quote does not keep a demotion pull request: when every page was read and nothing was
     // demoted, each cell the PR demotes was found again or matches without punctuation, so its
     // demotion for a missing quote is out of date either way; a quote still missing would have been
     // demoted again.
-    pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
+    pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 || (o.deferred ?? 0) > 0 ? 'keep' : 'close',
   };
 }
 
 export function summarize(report: { ok: number }, o: RunOutcome): string {
   const requote = o.requote ? `, ${o.requote} to re-quote` : '';
-  return `${o.valueChanges} value change${o.valueChanges === 1 ? '' : 's'}, ${report.ok} quotes present, ${o.pending} newly missing, ${o.unreachable} cells on unreachable pages${requote}`;
+  const deferred = o.deferred ? `, ${o.deferred} sources not due` : '';
+  return `${o.valueChanges} value change${o.valueChanges === 1 ? '' : 's'}, ${report.ok} quotes present, ${o.pending} newly missing, ${o.unreachable} cells on unreachable pages${requote}${deferred}`;
 }
 
 /** owner/repo from an https or ssh GitHub remote URL. */
@@ -275,6 +279,40 @@ export async function commitIdentityArgs(): Promise<string[]> {
   return ['-c', `user.name=${who.name}`, '-c', `user.email=${who.email}`];
 }
 
+export function protectedPush(error: unknown): boolean {
+  const failure = error as { stderr?: unknown; message?: unknown };
+  return /GH006|GH013|protected branch|repository rule violations|changes must be made through a pull request|required status check/i.test(String(failure?.stderr ?? failure?.message ?? error));
+}
+
+/** A rejected protected-main push is published for review, never merged or force-pushed. */
+export async function publishCurrentCommit(prefix: string, title: string, body: string,
+  deps: { git?: typeof git; token?: () => string; call?: typeof api } = {},
+): Promise<{ kind: 'main' } | { kind: 'pr'; url: string }> {
+  const run = deps.git ?? git;
+  try {
+    run('push', '--quiet', 'origin', 'HEAD:main');
+    return { kind: 'main' };
+  } catch (error) {
+    if (!protectedPush(error)) throw error;
+  }
+  const sha = run('rev-parse', 'HEAD');
+  const slug = repoSlug(run('remote', 'get-url', 'origin'));
+  if (!slug || !/^[a-f0-9]{40,64}$/.test(sha) || !/^bot\/[a-z0-9-]+$/.test(prefix)) throw new Error('cannot safely name a publication branch');
+  // A branch per commit preserves earlier, unmerged readings when tomorrow checks a different
+  // set of sources. Replacing a single date-refresh branch could silently discard those readings.
+  const branch = `${prefix}/${sha}`;
+  run('push', '--quiet', 'origin', `HEAD:refs/heads/${branch}`);
+  const token = (deps.token ?? githubToken)();
+  const call = deps.call ?? api;
+  const open = await call(token, 'GET', `/repos/${slug}/pulls?state=open&head=${encodeURIComponent(`${slug.split('/')[0]}:${branch}`)}`);
+  const pr = Array.isArray(open) && open.length ? open[0] : await call(token, 'POST', `/repos/${slug}/pulls`, {
+    head: branch, base: 'main', title,
+    body: `${body}\n\nThe protected main branch rejected a direct push. These readings are published for review; no merge was performed. Earlier pending reading PRs are not overwritten.`,
+  });
+  if (!Number.isInteger(pr?.number)) throw new Error(`published ${branch}, but GitHub did not return a pull request number`);
+  return { kind: 'pr', url: `https://github.com/${slug}/pull/${pr.number}` };
+}
+
 const NOTE =
   "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts). A changed quote is confirmed by the residential re-check, an Internet Archive capture, or a maintainer's reading of the page (CONTRIBUTING.md, Evidence the checker cannot read).";
 
@@ -355,6 +393,8 @@ export async function run(opts: Options): Promise<number> {
     return 0;
   }
   const stateDir = process.env.RESIDENTIAL_STATE_DIR;
+  const publicationPending = stateDir ? path.join(stateDir, 'publication-pending') : null;
+  const retryPublication = !!publicationPending && existsSync(publicationPending);
   if (!opts.dryRun) {
     if (!stateDir) {
       log("refused: a real run happens only in the task's own checkout (see scripts/install-residential-task.ps1); use --dry-run here");
@@ -362,9 +402,26 @@ export async function run(opts: Options): Promise<number> {
     }
     const stamp = path.join(stateDir, 'last-success');
     const last = existsSync(stamp) ? readFileSync(stamp, 'utf8').trim() : null;
-    if (!opts.force && !isDue(last, today(), MAX_AGE_DAYS)) {
-      log(`skipped: last success ${last}, not due until ${MAX_AGE_DAYS} days after it`);
-      return 0;
+    if (!opts.force && !retryPublication) {
+      const sourceFile = path.join(stateDir, 'source-state.json');
+      if (existsSync(sourceFile)) {
+        const apps = readJson<{ apps: Array<{ id: string; blocked_from_cloud?: boolean }> }>('data/apps.json');
+        const blocked = new Set(apps.apps.filter(a => a.blocked_from_cloud).map(a => a.id));
+        const cells = readJson<{ cells: Parameters<typeof sourceSignatures>[0] }>('data/matrix.json').cells.filter(c => blocked.has(c.app));
+        if (dueSources(sourceSignatures(cells), loadSourceState(sourceFile), new Date().toISOString()).size === 0) {
+          log('skipped: no source is due; completed sources wait six days, unreadable sources one day');
+          return 0;
+        }
+      } else {
+        // Migrate the old global clock: a partial success must not postpone failed pages six days.
+        const reportFile = path.join(stateDir, 'last-report.json');
+        const report = existsSync(reportFile) ? readJson<{ run_at?: string; errors?: number; requote?: number }>(reportFile) : null;
+        const partial = (report?.errors ?? 0) > (report?.requote ?? 0);
+        if (!isDue(partial ? report?.run_at?.slice(0, 10) ?? last : last, today(), partial ? 1 : MAX_AGE_DAYS)) {
+          log(`skipped: last ${partial ? 'partial reading' : 'success'} ${last}; not due yet`);
+          return 0;
+        }
+      }
     }
     // The launcher reset this checkout to origin/main a moment ago; anything else is not the task's checkout.
     try {
@@ -391,13 +448,22 @@ export async function run(opts: Options): Promise<number> {
 
   let pushedMain = false;
   try {
-    await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked');
-    const report = readJson<{ ok: number; errors: number; requote?: number }>('data/check-report.json');
-    if (report.ok === 0) throw new Error('every page failed to load; not publishing a run that verified nothing');
+    if (publicationPending && !opts.dryRun) writeFileSync(publicationPending, `${today()}\n`, 'utf8');
+    const scheduleArgs = stateDir && !opts.dryRun ? ['--source-state', `"${path.join(stateDir, 'source-state.json')}"`, ...(opts.force || retryPublication ? [] : ['--due-only'])] : [];
+    await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked', ...scheduleArgs);
+    const report = readJson<{ run_at: string; ok: number; errors: number; requote?: number }>('data/check-report.json');
+    if (report.ok === 0 && report.errors > (report.requote ?? 0)) throw new Error('no quote confirmed and pages were unreachable; not publishing this run');
     // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
     // the checkout's own report is removed by the next run's clean. A run that read nothing (the
     // connection was down) is not copied: it would list every page, including those normally read.
-    if (stateDir && !opts.dryRun) copyFileSync('data/check-report.json', path.join(stateDir, 'last-report.json'));
+    if (stateDir && !opts.dryRun) {
+      const lastFile = path.join(stateDir, 'last-report.json');
+      const current = readJson<{ cells: Array<{ app: string; question: string; evidence_url: string }> }>('data/check-report.json');
+      const old = existsSync(lastFile) ? readJson<typeof current>(lastFile) : { cells: [] };
+      const cells = new Map(old.cells.map(c => [`${c.app}|${c.question}`, c]));
+      for (const c of current.cells) cells.set(`${c.app}|${c.question}`, c);
+      writeJson(lastFile, { ...current, cells: [...cells.values()] });
+    }
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
     const changesMd = readFileSync('data/changes.md', 'utf8');
     // Keep the weekly cloud run's record of all apps; this run's report goes to the issue and PR.
@@ -407,15 +473,18 @@ export async function run(opts: Options): Promise<number> {
     const result = readJson<MatrixFile>('data/matrix.json');
     await npm('run', 'build');
     await npm('run', 'typecheck');
-    await npm('test');
+    await npm(...(opts.dryRun ? ['run', 'test:no-git'] : ['test']));
+
+    const sourceStatuses = stateDir && !opts.dryRun ? Object.values(loadSourceState(path.join(stateDir, 'source-state.json')).sources) : [];
 
     const outcome: RunOutcome = {
       valueChanges: changes.changes.length,
       pending: changes.pending.length,
       flagged: result.cells.filter((c) => blocked.has(c.app) && c.quote_missing_since).length,
       // A quote that matches only without punctuation is reported as an error too, but its page was read.
-      unreachable: report.errors - (report.requote ?? 0),
-      requote: report.requote ?? 0,
+      unreachable: Math.max(report.errors - (report.requote ?? 0), sourceStatuses.reduce((n, s) => n + (s.unreachable ?? 0), 0)),
+      requote: Math.max(report.requote ?? 0, sourceStatuses.reduce((n, s) => n + (s.requote ?? 0), 0)),
+      deferred: sourceStatuses.filter(s => s.last_attempt_at !== report.run_at).length,
       dirty: git('status', '--porcelain', '--', ...DATA_PATHS) !== '',
     };
     const plan = decide(outcome);
@@ -444,14 +513,14 @@ export async function run(opts: Options): Promise<number> {
         const what = plan.commit === 'main+pr' ? 'dates and flags; the demotions are in a pull request' : summary;
         git(...identity, 'commit', '--quiet', '-m', `matrix: residential re-verification: ${what}`);
         try {
-          git('push', '--quiet', 'origin', 'HEAD:main');
+          const published = await publishCurrentCommit('bot/residential-dates', `matrix: residential readings (${summary})`, changesMd);
+          pushedMain = published.kind === 'main';
+          log(published.kind === 'main' ? 'pushed to main' : `readings await review: ${published.url}`);
         } catch (err) {
           // Most likely the weekly cloud run pushed while this one was checking. Start over next time.
           throw new Error(`push to main rejected; the next run starts from the new main (${(err as Error).message.split('\n')[0]})`);
         }
-        pushedMain = true;
         mainCommit = git('rev-parse', 'HEAD');
-        log('pushed to main');
       }
       if (plan.commit === 'main+pr') {
         writeJson('data/matrix.json', result);
@@ -473,6 +542,7 @@ export async function run(opts: Options): Promise<number> {
     await syncIssue(token, slug, plan.issue, issueTitle, `${NOTE}\n\n${changesMd}`);
 
     writeFileSync(path.join(stateDir as string, 'last-success'), `${today()}\n`, 'utf8');
+    if (publicationPending && existsSync(publicationPending)) unlinkSync(publicationPending);
     log('done');
     return 0;
   } catch (err) {

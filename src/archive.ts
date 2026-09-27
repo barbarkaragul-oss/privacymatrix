@@ -9,6 +9,7 @@
  * capture cannot show that a sentence is missing from the live page today.
  */
 import { fetchText, type FetchResult } from './fetch.js';
+import { networkError } from './network-error.js';
 
 export interface Capture {
   /** Wayback Machine timestamp, YYYYMMDDhhmmss. */
@@ -68,16 +69,45 @@ export function parseCdx(json: unknown, url: string): Capture | null {
   return null;
 }
 
-async function getJson(endpoint: string, timeoutMs: number): Promise<unknown | { error: string }> {
+export interface ArchiveRetryOptions {
+  retries?: number;
+  sleep?: (ms: number) => Promise<void>;
+  now?: () => number;
+  random?: () => number;
+}
+
+/** The entire lookup, including waits and retries, shares one time budget. */
+export async function getArchiveJson(endpoint: string, timeoutMs: number, options: ArchiveRetryOptions = {}): Promise<unknown | { error: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const now = options.now ?? Date.now;
+  const deadline = now() + timeoutMs;
+  const sleep = options.sleep ?? ((ms) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
+  const random = options.random ?? Math.random;
+  const retries = options.retries ?? 2;
   try {
-    const res = await fetch(endpoint, { signal: controller.signal });
-    if (!res.ok) return { error: `archive.org answered HTTP ${res.status}` };
-    return await res.json();
-  } catch (err) {
-    const message = err instanceof Error ? (err.name === 'AbortError' ? `timeout after ${timeoutMs}ms` : err.message) : String(err);
-    return { error: message };
+    for (let attempt = 0; ; attempt++) {
+      let retryAfter = 0;
+      let error: string;
+      let transient = true;
+      try {
+        const res = await fetch(endpoint, { signal: controller.signal });
+        if (res.ok) return await res.json();
+        error = `archive.org answered HTTP ${res.status}`;
+        transient = [429, 502, 503, 504].includes(res.status);
+        const hint = res.headers.get('retry-after');
+        if (hint) retryAfter = /^\d+(\.\d+)?$/.test(hint) ? Number(hint) * 1000 : Math.max(0, Date.parse(hint) - now()) || 0;
+        await res.body?.cancel();
+      } catch (err) {
+        error = networkError(err, timeoutMs);
+        transient = !controller.signal.aborted && !error.startsWith('TLS certificate');
+      }
+      const delay = Math.max(retryAfter, 500 * 2 ** attempt + Math.floor(random() * 500));
+      // Do not shorten a server's Retry-After to squeeze another request into the budget.
+      if (!transient || attempt >= retries || now() + delay >= deadline) return { error };
+      await sleep(delay);
+      if (controller.signal.aborted || now() >= deadline) return { error };
+    }
   } finally {
     clearTimeout(timer);
   }
@@ -102,11 +132,11 @@ function isError(x: unknown): x is { error: string } {
  * result for pages that do have recent captures. When it too finds no 200 capture, the answer is an
  * error, not "no capture", since the lookup that could have found one did not run.
  */
-export async function latestCapture(url: string, timeoutMs = 20_000, cdxTimeoutMs = 60_000): Promise<Capture | null | { error: string }> {
+export async function latestCapture(url: string, timeoutMs = 20_000, cdxTimeoutMs = 60_000, retry: ArchiveRetryOptions = {}): Promise<Capture | null | { error: string }> {
   const from = new Date().getUTCFullYear() - 1;
-  const cdx = await getJson(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}&output=json&fl=timestamp,statuscode&filter=statuscode:200&from=${from}&limit=-1`, cdxTimeoutMs);
+  const cdx = await getArchiveJson(`https://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(url)}&output=json&fl=timestamp,statuscode&filter=statuscode:200&from=${from}&limit=-1`, cdxTimeoutMs, retry);
   if (!isError(cdx)) return parseCdx(cdx, url);
-  const available = await getJson(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, timeoutMs);
+  const available = await getArchiveJson(`https://archive.org/wayback/available?url=${encodeURIComponent(url)}`, timeoutMs, retry);
   if (isError(available)) return { error: `CDX API: ${cdx.error}; availability API: ${available.error}` };
   return parseAvailability(available, url) ?? { error: `CDX API: ${cdx.error}; the availability API's closest capture is not a 200` };
 }

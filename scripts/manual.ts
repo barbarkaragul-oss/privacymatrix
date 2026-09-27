@@ -3,6 +3,8 @@
  * pages that the residential re-check could not read (see src/manual.ts).
  *
  *   npm run manual -- --state <folder> [--check] [--minutes N] [--dry-run]
+ *   npm run manual -- --state <folder> --local-only --all
+ *       Match pasted pages and save a review draft in that folder, without Git or data edits.
  *
  * The residential task runs it after every run with --check, which only counts the pages due for a
  * reading by hand, writes that number to the task's log and exits: nothing opens on its own.
@@ -13,20 +15,21 @@
  *
  * On the page, "Open all" opens the pages in the browser, the maintainer pastes each page's text
  * into its box, and the quotes are matched at once. "Save" dates the cells whose quotes were found
- * (verified_via 'manual'), rebuilds, runs the tests, and pushes the commit to main from the task's
+ * (verified_via 'manual'), rebuilds, runs the tests, and publishes from the task's
  * own checkout, as the residential run pushes its date refreshes. Readings not saved when the time
  * runs out are saved then. It never fetches a vendor's page itself, and it listens on 127.0.0.1 only,
- * answering requests that carry the token in the page's address.
+ * answering requests that carry the token in the page's address. With --local-only, Save and the
+ * expiry timer only write a review draft: no Git command, project-data edit or publication occurs.
  */
 import { execFileSync, spawn, type SpawnOptions } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyReadings, checkPastedPage, duePages, MANUAL_EVERY_DAYS, unreachablePages, type PageCheck, type ReportCell } from '../src/manual.js';
+import { applyReadings, checkPastedPage, duePages, MANUAL_EVERY_DAYS, readingDraft, unreachablePages, type PageCheck, type ReportCell } from '../src/manual.js';
 import type { Cell } from '../src/types.js';
-import { commitIdentityArgs, runCommand } from './residential.js';
+import { commitIdentityArgs, publishCurrentCommit, runCommand } from './residential.js';
 
 const DATA_PATHS = ['data/matrix.json', 'data/changes.json', 'data/changes.md', 'README.md', 'docs'];
 const FIRST_PORT = 47813;
@@ -39,10 +42,12 @@ interface Options {
   dryRun: boolean;
   /** Do not open the browser; print the page's full address instead (for testing). */
   noOpen: boolean;
+  localOnly: boolean;
+  all: boolean;
 }
 
 function parseArgs(argv: string[]): Options {
-  const opts: Options = { state: null, check: false, minutes: 120, dryRun: false, noOpen: false };
+  const opts: Options = { state: null, check: false, minutes: 120, dryRun: false, noOpen: false, localOnly: false, all: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--state') opts.state = argv[++i] ?? null;
@@ -50,6 +55,8 @@ function parseArgs(argv: string[]): Options {
     else if (a === '--minutes') opts.minutes = Math.max(1, Number(argv[++i]) || 120);
     else if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--no-open') opts.noOpen = true;
+    else if (a === '--local-only') opts.localOnly = true;
+    else if (a === '--all') opts.all = true;
   }
   return opts;
 }
@@ -128,7 +135,7 @@ interface PageInfo {
   quotes: number;
 }
 
-function renderPage(pages: PageInfo[], appName: Map<string, string>, token: string, minutes: number, nonce: string, reportDate: string): string {
+function renderPage(pages: PageInfo[], appName: Map<string, string>, token: string, minutes: number, nonce: string, reportDate: string, localOnly: boolean): string {
   const byApp = new Map<string, PageInfo[]>();
   for (const p of pages) byApp.set(p.app, [...(byApp.get(p.app) ?? []), p]);
   const sections = [...byApp.entries()]
@@ -170,15 +177,16 @@ textarea { width: 100%; box-sizing: border-box; height: 64px; font: 13px/1.4 ui-
 #saved { font-size: 14px; }
 </style></head><body>
 <h1>Pages to read by hand</h1>
+${localOnly ? '<p><strong>Local draft mode — no commit, push or GitHub request.</strong> Save writes a review file on this computer; the project data stays unchanged until the draft is reviewed and applied.</p>' : ''}
 <p>These ${pages.length} page${pages.length === 1 ? '' : 's'} block automatic reading${reportDate ? ` (found in the check of ${reportDate})` : ''}, so their quotes are checked from what you paste. Open each page in this browser, pass any check it shows, select all its text (Ctrl+A), copy it (Ctrl+C) and paste it into its box.</p>
-<p>What you paste goes only to a small program on this computer (127.0.0.1), which looks for the quotes in it. The text is not stored and does not leave this computer. Save sends only the new dates to the repository on GitHub (main).</p>
+<p>What you paste goes only to a small program on this computer (127.0.0.1), which looks for the quotes in it. The full pasted text is not stored and does not leave this computer. ${localOnly ? 'Save records matched quotes, dates and fingerprints in a local draft for review. No repository files are changed.' : 'Save sends the reading dates and their evidence fingerprints to GitHub. If main requires a pull request, Save opens one for your review.'}</p>
 <p>This page is open for ${minutes} minutes. When the time is up, it saves whatever you have read and closes.</p>
 <button id="open">Open all ${pages.length} page${pages.length === 1 ? '' : 's'}</button>
 ${sections}
-<div class="bar"><button id="save" class="primary" disabled>Save</button><span id="saved" role="status" aria-live="polite"></span></div>
+<div class="bar"><button id="save" class="primary" disabled>${localOnly ? 'Save local draft' : 'Save'}</button><span id="saved" role="status" aria-live="polite"></span></div>
 <script nonce="${nonce}">
 const TOKEN = ${JSON.stringify(token)};
-const CLOSED = 'The reading page has closed. Open it again with: residential-launch.cmd --read';
+const CLOSED = ${JSON.stringify(localOnly ? 'The reading page has closed. Restart it with --local-only to continue without publishing.' : 'The reading page has closed. Open it again with: residential-launch.cmd --read')};
 const post = (path, body) => fetch(path, { method: 'POST', headers: { 'content-type': 'application/json', 'x-token': TOKEN }, body: JSON.stringify(body || {}) }).then((r) => r.json()).catch(() => ({ error: CLOSED }));
 const save = document.getElementById('save');
 const readCount = () => document.querySelectorAll('.status.ok, .status.bad').length;
@@ -189,9 +197,9 @@ for (const page of document.querySelectorAll('.page')) {
   box.addEventListener('input', () => {
     clearTimeout(timer);
     timer = setTimeout(async () => {
-      if (!box.value.trim()) { status.textContent = 'not read'; status.className = 'status'; result.innerHTML = ''; save.disabled = readCount() === 0; return; }
       const r = await post('/check', { url: page.dataset.url, text: box.value });
       result.innerHTML = '';
+      if (!box.value.trim() && !r.error) { status.textContent = 'not read'; status.className = 'status'; save.disabled = readCount() === 0; return; }
       if (r.error || r.unusable) { status.textContent = 'not usable'; status.className = 'status warn'; result.textContent = r.error || r.unusable; save.disabled = readCount() === 0; return; }
       const found = r.results.filter((q) => q.found).length;
       status.textContent = found + ' of ' + r.results.length + ' quotes found';
@@ -209,7 +217,7 @@ for (const page of document.querySelectorAll('.page')) {
 }
 save.onclick = async () => {
   save.disabled = true;
-  document.getElementById('saved').textContent = 'Saving: rebuilding and running the tests…';
+  document.getElementById('saved').textContent = ${JSON.stringify(localOnly ? 'Saving a local review draft…' : 'Saving: rebuilding and running the tests…')};
   const r = await post('/save');
   document.getElementById('saved').textContent = r.error ? 'Not saved: ' + r.error : r.message;
   if (r.error && r.error !== CLOSED) save.disabled = false;
@@ -251,7 +259,9 @@ async function main(): Promise<number> {
     else log(`nothing to read by hand (${unreachable.length} page(s) the last run could not read, all read by hand in the last ${MANUAL_EVERY_DAYS} days)`);
     return 0;
   }
-  const urls = due.length ? due : unreachable;
+  const urls = opts.all ? unreachable : due.length ? due : unreachable;
+  const oldest = (url: string): string => cells.filter(c => c.evidence_url === url && c.quote.trim()).map(c => c.verified_at || '').sort()[0] ?? '';
+  urls.sort((a, b) => oldest(a).localeCompare(oldest(b)) || a.localeCompare(b));
   if (urls.length === 0) {
     log(reportDate ? 'nothing to read: the last residential run read every page' : 'nothing to read: no residential run has been recorded yet');
     return 0;
@@ -270,6 +280,16 @@ async function main(): Promise<number> {
   const save = async (): Promise<string> => {
     const usable = [...checks.entries()].filter(([, c]) => !c.unusable);
     if (usable.length === 0) throw new Error('no page has been read yet');
+    // This path deliberately returns before every Git operation, including status/fetch/reset.
+    // It is safe in a dirty checkout and never changes the installed task or its reading clock.
+    if (opts.localOnly) {
+      const at = new Date().toISOString();
+      const draft = readingDraft(cells, checks, at);
+      mkdirSync(state, { recursive: true });
+      const file = path.resolve(state, `manual-draft-${at.replace(/[:.]/g, '-')}.json`);
+      writeFileSync(file, JSON.stringify(draft, null, 2) + '\n', { encoding: 'utf8', flag: 'wx' });
+      return `Local draft saved: ${draft.changes.length} matched quote(s), ${draft.unmatched.length} unmatched. Review file: ${file}. No project data, commits or remote state changed.`;
+    }
     const found = usable.flatMap(([, c]) => c.results.filter((r) => r.found));
     const readUrls = usable.map(([u]) => u);
     let skipped = 0;
@@ -282,7 +302,7 @@ async function main(): Promise<number> {
     };
     // Short limits, so that a save made when the time is up finishes within residential.ts's SAVE_MARGIN_MINUTES.
     const buildAndTest = async (): Promise<void> => {
-      for (const cmd of ['npm run build', 'npm test']) {
+      for (const cmd of ['npm run build', opts.dryRun ? 'npm run test:no-git' : 'npm test']) {
         log(`$ ${cmd}`);
         const r = await runCommand(cmd, 180_000);
         if (r.timedOut || r.code !== 0) throw new Error(`${cmd} failed`);
@@ -309,7 +329,14 @@ async function main(): Promise<number> {
     let base = fromMain();
     let dated = 0;
     let pushed = false;
+    let reviewUrl: string | null = null;
     let ok = false;
+    const publish = async (): Promise<void> => {
+      const result = await publishCurrentCommit('bot/manual-readings', `matrix: ${dated} quotes read by a maintainer`,
+        `Quotes matched text pasted locally by the maintainer on ${today()}. Pages read:\n\n${readUrls.map(u => `- ${u}`).join('\n')}`);
+      pushed = result.kind === 'main';
+      if (result.kind === 'pr') reviewUrl = result.url;
+    };
     try {
       dated = apply();
       await buildAndTest();
@@ -321,8 +348,7 @@ async function main(): Promise<number> {
       identity = await commitIdentityArgs();
       if (commit(dated)) {
         try {
-          git('push', '--quiet', 'origin', 'HEAD:main');
-          pushed = true;
+          await publish();
         } catch (err) {
           const stderr = String((err as { stderr?: unknown }).stderr ?? (err as Error).message);
           const mine = git('rev-parse', 'HEAD');
@@ -338,12 +364,12 @@ async function main(): Promise<number> {
             dated = apply();
             await buildAndTest();
             if (commit(dated)) {
-              git('push', '--quiet', 'origin', 'HEAD:main');
-              pushed = true;
+              await publish();
             }
           }
         }
       }
+      if (reviewUrl) git('reset', '--quiet', '--hard', base);
       ok = true;
     } finally {
       // Leave the checkout as it started: generated files as committed in a dry run, and in a real
@@ -356,7 +382,7 @@ async function main(): Promise<number> {
     const newReads = { ...reads };
     for (const u of readUrls) newReads[u] = today();
     writeFileSync(readsFile, JSON.stringify(newReads, null, 2) + '\n', 'utf8');
-    return pushed ? `Saved and pushed: ${what}. You can close this tab.` : `Nothing to push: the dates on main were already current (${what}). You can close this tab.`;
+    return reviewUrl ? `Saved in a pull request; review and merge it to update main: ${reviewUrl}. ${what}.` : pushed ? `Saved and pushed: ${what}. You can close this tab.` : `Nothing to push: the dates on main were already current (${what}). You can close this tab.`;
   };
 
   const finish = async (why: string): Promise<void> => {
@@ -417,7 +443,7 @@ async function main(): Promise<number> {
       if (req.headers.host !== `127.0.0.1:${port}`) return send(res, 403, 'forbidden', 'text/plain');
       if (req.method === 'GET' && url.pathname === '/') {
         if (url.searchParams.get('t') !== token) return send(res, 403, 'Open the address the reading page printed.', 'text/plain');
-        return send(res, 200, renderPage(pages, appName, token, opts.minutes, nonce, reportDate), 'text/html');
+        return send(res, 200, renderPage(pages, appName, token, opts.minutes, nonce, reportDate, opts.localOnly), 'text/html');
       }
       if (req.method !== 'POST') return send(res, 404, { error: 'not found' });
       // Only this page may use the endpoints: the token is in its address, and a browser tab on
@@ -433,6 +459,7 @@ async function main(): Promise<number> {
         if (typeof page !== 'string' || !allowed.has(page) || typeof text !== 'string') return send(res, 400, { error: 'unknown page' });
         const result = checkPastedPage(cells, page, text);
         checks.set(page, result);
+        if (opts.localOnly) saved = false;
         return send(res, 200, result);
       }
       if (url.pathname === '/save') {
@@ -443,7 +470,7 @@ async function main(): Promise<number> {
           saved = true;
           log(message);
           send(res, 200, { message });
-          setTimeout(() => void finish('saved'), 3000);
+          if (!opts.localOnly) setTimeout(() => void finish('saved'), 3000);
         } catch (err) {
           send(res, 200, { error: (err as Error).message });
         } finally {

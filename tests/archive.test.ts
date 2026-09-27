@@ -81,22 +81,22 @@ const available204 = { archived_snapshots: { closest: { available: true, timesta
 
 test('latestCapture asks the CDX API first and falls back to the availability API only when it cannot', async () => {
   await withArchive((u) => (u.includes('/cdx/') ? json([['timestamp', 'statuscode'], ['20260923015253', '200']]) : json(available204)), async (asked) => {
-    assert.deepEqual(await latestCapture(URL_), { timestamp: '20260923015253', rawUrl: archiveRawUrl('20260923015253', URL_) });
+    assert.deepEqual(await latestCapture(URL_, 20_000, 60_000, { retries: 0 }), { timestamp: '20260923015253', rawUrl: archiveRawUrl('20260923015253', URL_) });
     assert.deepEqual(asked, ['cdx'], 'a CDX answer is final');
   });
   await withArchive((u) => (u.includes('/cdx/') ? json([]) : json(available200)), async (asked) => {
-    assert.equal(await latestCapture(URL_), null, 'the CDX API saying "none" is an answer, not a failure');
+    assert.equal(await latestCapture(URL_, 20_000, 60_000, { retries: 0 }), null, 'the CDX API saying "none" is an answer, not a failure');
     assert.deepEqual(asked, ['cdx']);
   });
   await withArchive((u) => (u.includes('/cdx/') ? new Response('Temporarily Offline', { status: 503 }) : json(available200)), async (asked) => {
-    assert.equal((await latestCapture(URL_))?.hasOwnProperty('timestamp'), true);
+    assert.equal((await latestCapture(URL_, 20_000, 60_000, { retries: 0 }))?.hasOwnProperty('timestamp'), true);
     assert.deepEqual(asked, ['cdx', 'available']);
   });
   await withArchive((u) => (u.includes('/cdx/') ? new Response('<html>Temporarily Offline</html>', { status: 200 }) : json(available204)), async () => {
-    const r = await latestCapture(URL_);
+    const r = await latestCapture(URL_, 20_000, 60_000, { retries: 0 });
     assert.match((r as { error: string }).error, /CDX API: .*closest capture is not a 200/, 'without the CDX answer, a non-200 closest capture is a failed lookup, not "no capture"');
   });
   await withArchive(() => new Response('down', { status: 502 }), async () => {
-    assert.match(((await latestCapture(URL_)) as { error: string }).error, /CDX API: archive.org answered HTTP 502; availability API: archive.org answered HTTP 502/);
+    assert.match(((await latestCapture(URL_, 20_000, 60_000, { retries: 0 })) as { error: string }).error, /CDX API: archive.org answered HTTP 502; availability API: archive.org answered HTTP 502/);
   });
 });

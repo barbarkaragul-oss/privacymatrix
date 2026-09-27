@@ -80,7 +80,7 @@ For an app that the base already marks `blocked_from_cloud`, a maintainer can vo
 
 A flag added in the same pull request does not count, and both lists also appear in the job summary. Two limits: a maintainer who runs `attest` without reading the page is trusted, which is why the `ATTESTED` line names whose word it is; and a pull request that changes `.github/` or `src/` can change the gate itself, so such changes are reviewed as code, not as data. A local run accepts a reading from whoever runs it.
 
-Pull requests opened by the weekly workflow do not run CI (see below), so this check does not cover them; they are reviewed by hand.
+Pull requests opened or updated by the weekly workflow can require approval before CI starts. Review the diff, select **Approve workflows to run** on the pull request, and check the `test` and `quotes` results for its current head before merging.
 
 ## The weekly run
 
@@ -92,7 +92,25 @@ If the repository has an `ANTHROPIC_API_KEY` secret, the same workflow re-derive
 
 Two repository settings make this work, both under Settings → Actions → General → Workflow permissions: choose **Read and write permissions** and enable **Allow GitHub Actions to create and approve pull requests**. Without the second one the first run that finds a change fails with "GitHub Actions is not permitted to create or approve pull requests". If `main` is protected so that direct pushes are rejected, the workflow falls back to a pull request for the date refresh as well.
 
-Pull requests opened by the workflow do not trigger the CI workflow (GitHub does not run workflows for changes made with the default token), which is why the weekly workflow runs the typecheck, tests and build itself before opening one.
+Since [11 June 2026](https://github.blog/changelog/2026-06-11-bot-created-pull-requests-can-run-workflows-if-approved/), `GITHUB_TOKEN`-created or updated pull requests can run CI with approval from someone with write access. This is workflow-execution approval, not permission to skip required checks. The weekly workflow also typechecks, tests and builds before publishing. Source outages may still prevent the PR's `quotes` check from confirming changed evidence.
+
+The weekly job closes an old `needs-recheck` issue only after a full free-mode run has no value changes, missing flags, re-quotes or unreadable cells. A partial app run or an unreadable source never closes it as resolved.
+
+## Evidence age and local operation
+
+The site marks evidence at least 14 days old as freshness unconfirmed and at least 28 days old as stale; these are visibility thresholds, not automatic changes to the yes/partial/no claim. The JSON export adds `freshness_policy` and per-cell `freshness`, evaluated at the matrix's `generated_at`; consumers such as MCP connectors should recalculate age from `verified_at` at request time. The browser does that on load. Re-reading an old archive capture does not give it today's date.
+
+Node 22.19+ (22.x) or 24.6+ is required. The network commands use Node's system certificate store in addition to its bundled roots, so an authorised certificate installed in Windows is recognised without disabling TLS checks. A certificate error includes its code; do not set `NODE_TLS_REJECT_UNAUTHORIZED=0`.
+
+Use `npm run dev` for the local site. `npm run check` reports against real sources without changing the matrix. `npm run test:no-git` omits the one integration test that creates temporary Git commits. A residential `--dry-run` uses that test command and does not publish anything.
+
+For manual reading without any Git operation or project-data edit, use `npm run manual -- --state <folder> --local-only --all`. The folder needs `last-report.json` from a residential check. The page shows every unreadable source, oldest evidence first. Save writes a timestamped `manual-draft-*.json` in that folder with proposed cells and their original fingerprints; the full pasted page text is not saved. Review the draft and verify its original fingerprints still match before applying it. The expiry timer saves the same local draft. This mode works with uncommitted changes and does not change the installed task's reading clock. Without `--local-only`, Save retains its normal GitHub publication behavior.
+
+The residential task schedules each source separately in its local `source-state.json`: a completed read is due after six days, an unreadable source the next UTC day, and changed evidence immediately. Missing quotes accompany every run until resolved, so a partial run cannot overwrite an earlier pending demotion. Publication failure leaves a retry marker so a successful fetch cannot hide an unpublished result. Existing successful source readings do not defer failed sources. A partial run cannot close an earlier issue or demotion PR. The reading page's saved report retains the latest result for each cell.
+
+If main rejects a residential or manual update because it is protected, the update is pushed to a branch named by its commit and a PR is opened for review. No automatic merge occurs. Separate branches preserve earlier pending readings when later runs check different sources; review pending reading PRs regularly. Normal network errors and non-fast-forward races are not disguised as protection failures.
+
+Archive lookup retries transient 429/502/503/504 responses or connection failures at most twice within a shared timeout, respecting Retry-After. Previously read capture addresses are cached; a cached capture is fetched and checked again before use. No quote text is trusted from the cache and no archive miss demotes a cell.
 
 ## Scope
 

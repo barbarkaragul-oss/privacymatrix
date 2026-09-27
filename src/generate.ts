@@ -6,6 +6,7 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { FRESHNESS_POLICY, freshness } from './freshness.js';
 import { DOCS_DIR, ROOT, cellKey, isHttpUrl, loadApps, loadQuestions, loadChanges, loadMatrix, mdUrl, type App, type Question, type Cell, type Value, type ChangesFile } from './types.js';
 
 const ICON: Record<Value, string> = { yes: '✅', partial: '🟡', no: '❌', unknown: '❔' };
@@ -176,11 +177,15 @@ export function generateAll(): void {
     questions: qs.questions,
     values: qs.values,
     conventions: qs.conventions ?? [],
+    freshness_policy: FRESHNESS_POLICY,
     cells: matrix.cells,
     changes: changes ?? null,
   };
   writeFileSync(path.join(DOCS_DIR, 'index.html'), embedData(template, payload, repoUrl), 'utf8');
-  writeFileSync(path.join(DOCS_DIR, 'matrix.json'), JSON.stringify({ ...matrix, apps, questions: qs.questions }, null, 2) + '\n', 'utf8');
+  writeFileSync(path.join(DOCS_DIR, 'matrix.json'), JSON.stringify({ ...matrix, apps, questions: qs.questions,
+    freshness_policy: FRESHNESS_POLICY,
+    cells: matrix.cells.map(c => ({ ...c, freshness: freshness(c, matrix.generated_at) })),
+  }, null, 2) + '\n', 'utf8');
   writeFileSync(path.join(DOCS_DIR, 'changes.json'), JSON.stringify(changes ?? { run_at: '', model: '', changes: [], stats: null }, null, 2) + '\n', 'utf8');
   writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '', 'utf8');
   console.log(`Generated README.md tables and docs/ site (${matrix.cells.length} cells, ${apps.length} apps, ${qs.questions.length} questions)`);

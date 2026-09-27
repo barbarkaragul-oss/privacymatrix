@@ -55,6 +55,13 @@ jobs:
           cache: npm
       - run: npm ci
 
+      - name: Restore previously read archive capture addresses
+        uses: actions/cache@v6
+        with:
+          path: .cache/archive-captures.json
+          key: archive-captures-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: archive-captures-
+
       - name: Decide mode
         id: mode
         run: |
@@ -106,15 +113,19 @@ jobs:
             let summary = c.changes.length + ' value changes';
             let pending = 0;
             let requote = 0;
+            let unreachable = 0;
+            const flagged = require('./data/matrix.json').cells.filter(c => c.quote_missing_since).length;
             if (fs.existsSync('./data/check-report.json')) {
               const r = require('./data/check-report.json');
               pending = (r.pending || []).length;
               // errors also counts quotes that matched only with punctuation ignored (requote): their pages were read.
               requote = r.requote || 0;
+              unreachable = r.errors - requote;
               summary += ', ' + r.ok + ' quotes present, ' + pending + ' quotes newly missing, ' + (r.errors - requote) + ' cells on unreachable pages' + (requote ? ', ' + requote + ' to re-quote' : '');
             }
             const title = 'Policy text changed: ' + c.changes.length + ' cell(s) demoted, ' + pending + ' quote(s) newly missing' + (requote ? ', ' + requote + ' quote(s) to re-quote' : '');
             fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'pending=' + pending + '\n' + 'requote=' + requote + '\n' + 'summary=' + summary + '\n' + 'issue_title=' + title + '\n');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, 'unreachable=' + unreachable + '\nflagged=' + flagged + '\n');
             console.log(summary);
           "
 
@@ -173,3 +184,13 @@ jobs:
           title: ${{ steps.changes.outputs.issue_title }}
           content-filepath: data/changes.md
           labels: needs-recheck, good first issue
+
+      - name: Close an obsolete recheck issue only after a complete clean reading
+        if: steps.mode.outputs.mode == 'free' && env.APP_INPUT == '' && steps.changes.outputs.count == '0' && steps.changes.outputs.pending == '0' && steps.changes.outputs.flagged == '0' && steps.changes.outputs.requote == '0' && steps.changes.outputs.unreachable == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NUMBER=$(gh issue list --label needs-recheck --state open --limit 1 --json number --jq '.[0].number // ""')
+          if [ -n "$NUMBER" ]; then
+            gh issue close "$NUMBER" --reason completed
+          fi
