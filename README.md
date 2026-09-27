@@ -1,6 +1,6 @@
 <h1 align="center">PrivacyMatrix</h1>
 
-<p align="center"><b>Does this AI app train on your chats? Can you opt out? When is a deleted chat really gone?</b><br>28 AI assistant apps, 14 privacy questions. Every cell quotes the vendor's own privacy policy or help pages, and every quote is re-checked against its source weekly.</p>
+<p align="center"><b>Does this AI app train on your chats? Can you opt out? When is a deleted chat really gone?</b><br>28 AI assistant apps, 14 privacy questions. Every cell quotes the vendor's own privacy policy or help pages, and quotes are checked against their sources weekly where the source can be read.</p>
 
 <p align="center">
   <a href="https://barbarkaragul-oss.github.io/privacymatrix/">Interactive matrix</a> ·

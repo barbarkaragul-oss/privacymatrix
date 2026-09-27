@@ -376,3 +376,11 @@ test('parseArgs: --changed-since takes a ref and refuses --fix', () => {
   assert.equal(parseArgs([]).changedSince, null);
   assert.throws(() => parseArgs(['--fix', '--changed-since', 'origin/main']), (err: unknown) => err instanceof UsageError && /cannot be combined with --fix/.test(err.message));
 });
+
+test('parseArgs: --changed-since without a ref is refused, so the gate cannot be switched off by a dropped argument', () => {
+  const needsRef = (err: unknown) => err instanceof UsageError && /needs a git ref/.test(err.message);
+  assert.throws(() => parseArgs(['--changed-since']), needsRef);
+  assert.throws(() => parseArgs(['--changed-since', '']), needsRef);
+  assert.throws(() => parseArgs(['--changed-since', '--soft']), needsRef, 'the next flag is not a ref');
+  assert.throws(() => parseArgs(['--fix', '--changed-since', '']), (err: unknown) => err instanceof UsageError);
+});
