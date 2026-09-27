@@ -628,7 +628,7 @@
       "app": "perplexity",
       "question": "no_training_default",
       "value": "no",
-      "quote": "If you choose to downgrade to a Free or non-Enterprise plan, your data would then follow the standard consumer data policy, where AI data retention is enabled by default.",
+      "quote": "We invented this privacy guarantee to test the pull-request gate.",
       "evidence_url": "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity",
       "notes": "The same article states that for Free, Perplexity Pro and Perplexity Max users the 'AI Data Retention' setting is enabled by default and 'Some data may be used to train AI models and improve search quality, unless you opt out through Account Settings'. The Privacy Notice lists 'Improve or create services and products, including our AI models' as a use of data. Only Enterprise data is excluded without action.",
       "confidence": "high",
