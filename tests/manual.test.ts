@@ -18,6 +18,8 @@ test('unreachablePages lists the pages of blocked apps whose cells the run could
       { app: 'blocked', evidence_url: A, status: 'error' },
       { app: 'blocked', evidence_url: 'https://help.example/read', status: 'ok' },
       { app: 'open', evidence_url: 'https://open.example/x', status: 'error' },
+      // read, but the quote matched only without punctuation: re-quote it, no reading by hand
+      { app: 'blocked', evidence_url: 'https://help.example/requote', status: 'error', method: 'compact' },
     ],
   };
   assert.deepEqual(unreachablePages(report, new Set(['blocked'])), [A, B]);
@@ -73,4 +75,15 @@ test('applyReadings dates only the cells whose quotes were found, as read by han
   assert.equal(out[1]?.quote_missing_since, undefined, 'the quote is on the live page, so the missing flag goes');
   assert.equal(out[1]?.verified_via, 'manual');
   assert.deepEqual(out[2], cells[2], 'a quote not found leaves its cell as it was');
+});
+
+test('checkPastedPage: a quote that matches only without punctuation is not found, and says why', () => {
+  const c = cell('blocked', 'x', A, { quote: 'We never share your data.' });
+  const r = checkPastedPage([c], A, 'We never share your data, except with advertising partners when you consent. ' + 'More text of the page. '.repeat(3));
+  assert.equal(r.results[0]!.found, false);
+  assert.equal(r.results[0]!.method, 'compact');
+  assert.match(r.results[0]!.note ?? '', /re-quote it exactly/);
+  const exact = checkPastedPage([c], A, 'Intro. We never share your data. ' + 'More text of the page. '.repeat(3));
+  assert.equal(exact.results[0]!.found, true);
+  assert.equal(exact.results[0]!.note, undefined);
 });

@@ -83,8 +83,9 @@ export function decide(o: RunOutcome): Plan {
   };
 }
 
-export function summarize(report: { ok: number; errors: number }, o: RunOutcome): string {
-  return `${o.valueChanges} value change${o.valueChanges === 1 ? '' : 's'}, ${report.ok} quotes present, ${o.pending} newly missing, ${report.errors} cells on unreachable pages`;
+export function summarize(report: { ok: number; requote?: number }, o: RunOutcome): string {
+  const requote = report.requote ? `, ${report.requote} to re-quote` : '';
+  return `${o.valueChanges} value change${o.valueChanges === 1 ? '' : 's'}, ${report.ok} quotes present, ${o.pending} newly missing, ${o.unreachable} cells on unreachable pages${requote}`;
 }
 
 /** owner/repo from an https or ssh GitHub remote URL. */
@@ -366,7 +367,7 @@ export async function run(opts: Options): Promise<number> {
     // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
     // the checkout's own report is removed by the next run's clean.
     if (stateDir && !opts.dryRun) copyFileSync('data/check-report.json', path.join(stateDir, 'last-report.json'));
-    const report = readJson<{ ok: number; errors: number }>('data/check-report.json');
+    const report = readJson<{ ok: number; errors: number; requote?: number }>('data/check-report.json');
     if (report.ok === 0) throw new Error('every page failed to load; not publishing a run that verified nothing');
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
     const changesMd = readFileSync('data/changes.md', 'utf8');
@@ -383,7 +384,8 @@ export async function run(opts: Options): Promise<number> {
       valueChanges: changes.changes.length,
       pending: changes.pending.length,
       flagged: result.cells.filter((c) => blocked.has(c.app) && c.quote_missing_since).length,
-      unreachable: report.errors,
+      // A quote that matches only without punctuation is reported as an error too, but its page was read.
+      unreachable: report.errors - (report.requote ?? 0),
       dirty: git('status', '--porcelain', '--', ...DATA_PATHS) !== '',
     };
     const plan = decide(outcome);

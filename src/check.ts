@@ -20,6 +20,10 @@
  *                                 per page after that, until it answers one. A host that answers
  *                                 with a bot challenge is not asked again in that run.
  *   npm run check -- --only-blocked  limit to apps marked blocked_from_cloud in data/apps.json
+ *   npm run check -- --changed-since <ref>   the pull-request gate: exit 1 unless every cell whose
+ *                                 evidence differs from <ref> is confirmed in this run (or, for an
+ *                                 app <ref> marks blocked_from_cloud, was read by a maintainer in the
+ *                                 last ATTEST_DAYS days); see unverifiedChanges. Not with --fix.
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
  * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
@@ -31,14 +35,16 @@
  * can confirm a quote, and dates the cell to the capture when that is newer than its last
  * verification; it can never demote a cell or touch the missing-quote clock (see src/archive.ts).
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { captureDate, fetchCapture, latestCapture } from './archive.js';
+import { captureDate, fetchCapture, landedCapture, latestCapture } from './archive.js';
 import { diffMatrices, renderChangesMarkdown, type PendingQuote } from './diff.js';
 import { Fetcher, type FetchResult } from './fetch.js';
 import { findQuote, prepareText, quoteProblems, type MatchMethod, type PreparedText } from './quotes.js';
 import {
   DATA_DIR,
+  ROOT,
   cellKey,
   loadApps,
   loadQuestions,
@@ -114,10 +120,15 @@ export interface CheckOptions {
   residential: boolean;
   /** Only check apps marked blocked_from_cloud. */
   onlyBlocked: boolean;
+  /**
+   * A git ref (the pull request's base): every cell whose evidence differs from that ref must be
+   * confirmed in this run, or the check fails (see unverifiedChanges). Never with fix.
+   */
+  changedSince: string | null;
 }
 
-function parseArgs(argv: string[]): CheckOptions {
-  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [], residential: false, onlyBlocked: false };
+export function parseArgs(argv: string[]): CheckOptions {
+  const out: CheckOptions = { soft: false, fix: false, app: null, dump: null, extraUrls: [], residential: false, onlyBlocked: false, changedSince: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--soft') out.soft = true;
@@ -127,14 +138,20 @@ function parseArgs(argv: string[]): CheckOptions {
     else if (a === '--url') out.extraUrls.push(argv[++i] ?? '');
     else if (a === '--residential') out.residential = true;
     else if (a === '--only-blocked') out.onlyBlocked = true;
+    else if (a === '--changed-since') out.changedSince = argv[++i] || null;
     else if (a === '--help' || a === '-h') {
-      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked]');
+      console.log('usage: check [--soft] [--fix] [--app <id>] [--dump <dir>] [--url <url>]... [--residential] [--only-blocked] [--changed-since <git-ref>]');
       process.exit(0);
     }
   }
   out.extraUrls = out.extraUrls.filter(Boolean);
+  // --fix rewrites the cells it checks (a live read drops verified_via 'manual'), which would erase
+  // the very evidence the gate is asked to judge.
+  if (out.fix && out.changedSince) throw new UsageError('--changed-since cannot be combined with --fix');
   return out;
 }
+
+export class UsageError extends Error {}
 
 /** Writes the text the checker saw for one URL, so a failure on another network can be inspected. */
 function dumpPage(dir: string, url: string, res: FetchResult): void {
@@ -214,35 +231,42 @@ export function classifyCell(cell: Cell, page: PageResult | undefined, opts: { c
     if (!m.found) {
       return { ...base, status: 'error', method: 'none', problems: [`quote not found in Internet Archive capture ${page.archiveTimestamp}, which cannot show the live page lacks it`] };
     }
-    // The compact pass ignores punctuation, so it also matches a quote that was cut where the vendor
-    // later added a qualifier. Acceptable against the live page, where a real rewrite breaks the
-    // match soon enough; not as the only confirmation a capture gives.
-    if (m.method === 'compact') {
-      return { ...base, status: 'error', method: m.method, problems: [`quote only matches Internet Archive capture ${page.archiveTimestamp} when punctuation is ignored, which is too weak to confirm it from a capture`] };
-    }
+    if (m.method === 'compact') return { ...base, status: 'error', method: m.method, problems: [requoteProblem(`Internet Archive capture ${page.archiveTimestamp}`)] };
     return { ...base, status: 'ok', method: m.method, problems, via: 'archive', archive_timestamp: page.archiveTimestamp };
   }
   // A malformed quote is a data error whatever network read the page, so it still fails.
   if (!m.found && opts.confirmOnly && problems.length === 0) {
     return { ...base, status: 'error', method: 'none', problems: [...problems, 'quote not found on the page the cloud run received; this vendor refuses cloud IP ranges or serves them a page without its text, so only the residential re-check can show the quote is gone'] };
   }
+  if (m.found && m.method === 'compact' && problems.length === 0) return { ...base, status: 'error', method: m.method, problems: [requoteProblem('the page')] };
   if (!m.found) problems.push('quote not found on page');
   return { ...base, status: problems.length ? 'fail' : 'ok', method: m.method, problems };
 }
 
 /**
+ * The compact pass ignores punctuation, so it also matches a quote that was cut where the vendor
+ * later added a qualifier ("We never share your data." against "We never share your data, except
+ * with advertising partners"). Such a match neither confirms the cell nor shows the quote is gone:
+ * the cell is left as it is and reported, until someone copies the quote from the page again.
+ */
+function requoteProblem(where: string): string {
+  return `quote matches ${where} only when punctuation is ignored, which can hide an added exception; re-quote it exactly from the page`;
+}
+
+/** A compact-only match: reported with the fetch errors, but it is the quote that needs work, not the page. */
+export function needsRequote(r: CellReport): boolean {
+  return r.status === 'error' && r.method === 'compact';
+}
+
+/**
  * Classifies every cell. For a cell the cloud cannot be trusted on (distrusted(cell): the cloud run,
- * an app marked blocked_from_cloud), a missing quote is only an unreadable page when no quote cited
- * on the same page was found in this read: that is what a page without its text looks like (Amazon
- * sent the runner only its frame, on which none of six quotes matched). When some quote on the page
- * was found, the vendor served the real text, and a quote missing from it is a failure as usual.
+ * an app marked blocked_from_cloud), a missing quote is never evidence, even when other quotes on the
+ * same page were found: one paragraph that arrived does not show the rest of the page did. Such a
+ * miss is an unreadable page, and only the residential re-check can flag it. New or changed quotes
+ * that the cloud cannot confirm are caught separately, by the pull-request gate (--changed-since).
  */
 export function classifyAll(targets: Cell[], pages: Map<string, PageResult>, distrusted: (cell: Cell) => boolean): CellReport[] {
-  const plain = targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url)));
-  const pagesWithAMatch = new Set(plain.filter((r) => r.method !== 'none').map((r) => r.evidence_url));
-  return targets.map((cell, i) =>
-    distrusted(cell) && !pagesWithAMatch.has(cell.evidence_url) ? classifyCell(cell, pages.get(cell.evidence_url), { confirmOnly: true }) : (plain[i] as CellReport),
-  );
+  return targets.map((cell) => classifyCell(cell, pages.get(cell.evidence_url), { confirmOnly: distrusted(cell) }));
 }
 
 export function structuralProblems(cells: Cell[], apps: App[], questions: Question[]): { problems: string[]; missing: string[] } {
@@ -265,6 +289,86 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
   const missing: string[] = [];
   for (const a of apps) for (const c of questions) if (!seen.has(cellKey(a.id, c.id))) missing.push(cellKey(a.id, c.id));
   return { problems, missing };
+}
+
+/**
+ * The fields that make up a cell's evidence: what it claims, the quote and page it rests on, and
+ * the confirmation shown on the site. A pull request that changes any of them is making a new claim.
+ */
+const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via'] as const;
+
+/** Keys of the quoted cells in head whose evidence is new or differs from base (a notes-only edit is not a change). */
+export function changedCells(base: Cell[], head: Cell[]): Set<string> {
+  const before = new Map(base.map((c) => [cellKey(c.app, c.question), c]));
+  const out = new Set<string>();
+  for (const c of head) {
+    if (c.value === 'unknown' || !c.quote.trim()) continue;
+    const key = cellKey(c.app, c.question);
+    const old = before.get(key);
+    if (!old || EVIDENCE_FIELDS.some((f) => old[f] !== c[f])) out.add(key);
+  }
+  return out;
+}
+
+/** How long a maintainer's reading of a blocked page stands in for the check on a pull request. */
+export const ATTEST_DAYS = 14;
+
+function unverifiedReason(r: CellReport | undefined): string {
+  if (!r) return 'not checked in this run';
+  const text = r.problems.join('; ');
+  if (needsRequote(r)) return `quote not confirmed: ${text}`;
+  if (r.status === 'fail' || /quote not found/.test(text)) return `quote not found on the page (${text})`;
+  return `page not readable (${text})`;
+}
+
+/**
+ * The pull-request gate. Every changed cell (changedCells) must be confirmed in this run, live or
+ * from an Internet Archive capture. The one exception is a maintainer's reading: an app that the base
+ * already marks blocked_from_cloud, a cell verified with verified_via 'manual' at most ATTEST_DAYS
+ * ago. That is the maintainer vouching for the page, and it is listed as ATTESTED for the reviewer.
+ * An app marked blocked_from_cloud in the same change does not qualify: the flag is reviewed first.
+ */
+export function unverifiedChanges(
+  reports: CellReport[],
+  changed: Set<string>,
+  cells: Map<string, Cell>,
+  baseBlocked: Set<string>,
+  headBlocked: Set<string>,
+  today: string,
+): { unverified: string[]; attested: string[]; confirmed: number } {
+  const byKey = new Map(reports.map((r) => [cellKey(r.app, r.question), r]));
+  const unverified: string[] = [];
+  const attested: string[] = [];
+  let confirmed = 0;
+  for (const key of [...changed].sort()) {
+    const r = byKey.get(key);
+    if (r?.status === 'ok') {
+      confirmed++;
+      continue;
+    }
+    const cell = cells.get(key);
+    const label = key.replace('|', '/');
+    const manual = cell?.verified === true && cell.verified_via === 'manual';
+    const age = cell ? daysBetween(cell.verified_at, today) : Number.POSITIVE_INFINITY;
+    if (cell && manual && baseBlocked.has(cell.app) && age >= 0 && age <= ATTEST_DAYS) {
+      attested.push(`ATTESTED ${label} (manual, ${cell.verified_at}): ${unverifiedReason(r)}`);
+      continue;
+    }
+    let why = unverifiedReason(r);
+    if (cell && manual && !baseBlocked.has(cell.app) && headBlocked.has(cell.app)) why += ' (app marked blocked_from_cloud in this change; review the flag first)';
+    else if (cell && manual && baseBlocked.has(cell.app)) why += ` (manual reading of ${cell.verified_at || 'no date'} is not within ${ATTEST_DAYS} days)`;
+    unverified.push(`UNVERIFIED ${label}: ${why}`);
+  }
+  return { unverified, attested, confirmed };
+}
+
+/** A file as it is at a git ref, for the pull-request gate's base. */
+function readAtRef(ref: string, file: string): unknown {
+  try {
+    return JSON.parse(execFileSync('git', ['show', `${ref}:${file}`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] }));
+  } catch (err) {
+    throw new UsageError(`--changed-since: ${file} at ${ref} could not be read (${err instanceof Error ? err.message.split('\n')[0] : String(err)})`);
+  }
 }
 
 function withoutFlag(cell: Cell): Cell {
@@ -361,6 +465,17 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const blockedApps = new Set(apps.filter((a) => a.blocked_from_cloud).map((a) => a.id));
   const inScope = (c: Cell): boolean => (!opts.app || c.app === opts.app) && (!opts.onlyBlocked || blockedApps.has(c.app));
   const targets = matrix.cells.filter(inScope);
+  // Read before any page is fetched, so a bad ref fails at once.
+  let base: { changed: Set<string>; blocked: Set<string> } | null = null;
+  if (opts.changedSince) {
+    const baseCells = (readAtRef(opts.changedSince, 'data/matrix.json') as { cells?: unknown }).cells;
+    const baseApps = (readAtRef(opts.changedSince, 'data/apps.json') as { apps?: unknown }).apps;
+    if (!Array.isArray(baseCells) || !Array.isArray(baseApps)) throw new UsageError(`--changed-since: data/matrix.json or data/apps.json at ${opts.changedSince} has no cells or apps`);
+    base = {
+      changed: changedCells(baseCells as Cell[], targets),
+      blocked: new Set((baseApps as App[]).filter((a) => a.blocked_from_cloud).map((a) => a.id)),
+    };
+  }
   // From a residential connection: one request at a time, at least 1.2 s apart (help.openai.com's
   // robots.txt asks for Crawl-delay: 1), and a 403 is retried, because there it comes and goes.
   const fetcher = opts.residential ? new Fetcher({ retryForbidden: true, retryBaseMs: 1200 }, 1, 1200) : new Fetcher({}, 4);
@@ -418,8 +533,17 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       console.log(`  FETCH ERROR ${url} (${error})`);
       return;
     }
-    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: capture.timestamp });
-    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(capture.timestamp)})`);
+    // The cell is dated to the capture that was read, which is not always the one asked for.
+    const landed = landedCapture(res.finalUrl, url);
+    if ('error' in landed) {
+      const error = `${reason}; Internet Archive ${landed.error}`;
+      pages.set(url, { error });
+      console.log(`  FETCH ERROR ${url} (${error})`);
+      return;
+    }
+    pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: landed.timestamp });
+    const moved = landed.timestamp !== capture.timestamp ? `, redirected from the capture of ${capture.timestamp}` : '';
+    console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(landed.timestamp)}, ${landed.timestamp}${moved})`);
   });
 
   if (opts.dump && opts.extraUrls.length) {
@@ -435,9 +559,11 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const reports = classifyAll(targets, pages, (cell) => !opts.residential && blockedApps.has(cell.app));
   const failures = reports.filter((r) => r.status === 'fail');
   const errors = reports.filter((r) => r.status === 'error');
+  const requote = errors.filter(needsRequote);
   const okCount = reports.filter((r) => r.status === 'ok').length;
   const skipped = reports.filter((r) => r.status === 'skipped').length;
   for (const f of failures) console.log(`  FAIL ${f.app}/${f.question} [${f.value}] ${f.problems.join('; ')} <${f.evidence_url}>`);
+  for (const r of requote) console.log(`  REQUOTE ${r.app}/${r.question} <${r.evidence_url}>: ${r.problems.join('; ')}`);
   for (const s of structural) console.log(`  STRUCTURE ${s}`);
   if (missing.length) console.log(`  MISSING ${missing.length} cells (app x question pairs without an entry)`);
 
@@ -445,14 +571,34 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   for (const r of reports) if (r.status === 'ok') byMethod[r.method] = (byMethod[r.method] ?? 0) + 1;
   const okViaArchive = reports.filter((r) => r.status === 'ok' && r.via === 'archive');
   const archiveNote = okViaArchive.length ? ` (${okViaArchive.length} of them confirmed from Internet Archive captures)` : '';
-  console.log(`Result: ${okCount} ok${archiveNote}, ${failures.length} failed, ${errors.length} fetch errors (cells untouched), ${skipped} skipped, ${structural.length} structural problems, ${missing.length} missing. Match methods: ${JSON.stringify(byMethod)}`);
+  console.log(
+    `Result: ${okCount} ok${archiveNote}, ${failures.length} failed, ${errors.length - requote.length} fetch errors and ${requote.length} to re-quote (cells untouched), ${skipped} skipped, ${structural.length} structural problems, ${missing.length} missing. Match methods: ${JSON.stringify(byMethod)}`,
+  );
+
+  let unverified: string[] = [];
+  if (opts.changedSince && base) {
+    const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso());
+    unverified = gate.unverified;
+    for (const line of [...gate.attested, ...gate.unverified]) console.log(`  ${line}`);
+    const tally = `Changed since ${opts.changedSince}: ${base.changed.size} quoted cell${base.changed.size === 1 ? '' : 's'}, ${gate.confirmed} confirmed, ${gate.attested.length} attested by a maintainer, ${gate.unverified.length} unverified`;
+    console.log(tally);
+    if (gate.unverified.length) console.log(`${gate.unverified.length} changed cell${gate.unverified.length === 1 ? '' : 's'} could not be verified; see CONTRIBUTING.md, "Evidence the checker cannot read"`);
+    // Shown on the pull request's checks page, so the reviewer sees what was vouched for rather than checked.
+    const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+    if (summaryFile) {
+      const lines = [...gate.attested, ...gate.unverified].map((l) => `- ${l}`);
+      appendFileSync(summaryFile, [`### Changed evidence`, '', tally, '', ...lines, ''].join('\n'), 'utf8');
+    }
+  }
 
   const report = {
     run_at: new Date().toISOString(),
     ok: okCount,
     ok_via_archive: okViaArchive.length,
     failed: failures.length,
+    /** Every error, including the requote ones; errors - requote is the number of cells on pages that could not be read. */
     errors: errors.length,
+    requote: requote.length,
     skipped,
     structural,
     missing,
@@ -503,18 +649,19 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   }
   saveJson(path.join(DATA_DIR, 'check-report.json'), report);
 
-  const bad = failures.length + structural.length + (opts.fix ? 0 : missing.length);
+  const bad = failures.length + structural.length + (opts.fix ? 0 : missing.length) + unverified.length;
   return bad > 0 && !opts.soft ? 1 : 0;
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]).endsWith(path.join('src', 'check.ts'));
 if (isMain) {
-  runCheck(parseArgs(process.argv.slice(2)))
+  Promise.resolve()
+    .then(() => runCheck(parseArgs(process.argv.slice(2))))
     .then((code) => {
       process.exitCode = code;
     })
     .catch((err) => {
-      console.error(err);
+      console.error(err instanceof UsageError ? err.message : err);
       process.exitCode = 2;
     });
 }

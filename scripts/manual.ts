@@ -174,7 +174,7 @@ for (const page of document.querySelectorAll('.page')) {
       const missing = r.results.filter((q) => !q.found);
       if (missing.length) {
         const ul = document.createElement('ul');
-        for (const q of missing) { const li = document.createElement('li'); li.textContent = 'Not found (' + q.app + ' / ' + q.question + '): ' + q.quote; ul.appendChild(li); }
+        for (const q of missing) { const li = document.createElement('li'); li.textContent = 'Not found (' + q.app + ' / ' + q.question + '): ' + q.quote + (q.note ? ' (' + q.note + ')' : ''); ul.appendChild(li); }
         const note = document.createElement('div'); note.textContent = 'Search the page for these with Ctrl+F. Save records the quotes that were found and leaves these cells as they are. If a quote is really gone, open an issue or give the cell a new quote in data/matrix.json.';
         result.appendChild(ul); result.appendChild(note);
       }

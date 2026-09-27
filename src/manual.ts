@@ -22,12 +22,16 @@ export interface ReportCell {
   app: string;
   evidence_url: string;
   status: string;
+  method?: string;
 }
 
-/** The pages of blocked apps on which the residential run could not read a quote, sorted. */
+/**
+ * The pages of blocked apps on which the residential run could not read a quote, sorted. A quote
+ * that matched only without punctuation was read: it needs re-quoting, not a reading by hand.
+ */
 export function unreachablePages(report: { cells?: ReportCell[] }, blocked: Set<string>): string[] {
   const urls = new Set<string>();
-  for (const c of report.cells ?? []) if (blocked.has(c.app) && c.status === 'error' && c.evidence_url) urls.add(c.evidence_url);
+  for (const c of report.cells ?? []) if (blocked.has(c.app) && c.status === 'error' && c.method !== 'compact' && c.evidence_url) urls.add(c.evidence_url);
   return [...urls].sort();
 }
 
@@ -62,7 +66,12 @@ export interface QuoteResult {
   quote: string;
   found: boolean;
   method: MatchMethod;
+  /** Why a quote that is on the page in some form does not count as found. */
+  note?: string;
 }
+
+/** Shown when a quote matches the pasted page only without punctuation (see requoteProblem in src/check.ts). */
+export const REQUOTE_NOTE = 'matches only when punctuation is ignored, which can hide an added exception; re-quote it exactly from the page';
 
 export interface PageCheck {
   /** Why the pasted text is not the page (too short, a bot challenge); null when it can be used. */
@@ -83,6 +92,7 @@ export function checkPastedPage(cells: Cell[], url: string, text: string): PageC
     unusable: null,
     results: onPage.map((c) => {
       const m = findQuote(prepared, c.quote);
+      if (m.method === 'compact') return { app: c.app, question: c.question, quote: c.quote, found: false, method: m.method, note: REQUOTE_NOTE };
       return { app: c.app, question: c.question, quote: c.quote, found: m.found, method: m.method };
     }),
   };
