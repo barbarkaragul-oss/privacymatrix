@@ -1959,9 +1959,9 @@
       "app": "you-com",
       "question": "no_ads_use",
       "value": "no",
-      "quote": "The ads that you see may also be selected based on other information learned about you over time using demographic data, location data, and chat queries.",
+      "quote": "We may use data we collect, such as de-identified chat data, to select and deliver some of the ads you see on our Services.",
       "evidence_url": "https://you.com/privacy",
-      "notes": "Users without a paid subscription, which is the default consumer experience, see ads that may be selected using chat queries and de-identified chat data; the policy states that Enterprise Customers and Paid Subscribers are not subject to these advertisements. Email, documents, photos and personal files are not used for ad targeting. Because conversation content is used to select ads on the default tier, the cell is no; the paid-tier exemption is recorded here rather than in the value.",
+      "notes": "You.com may show ads to users without a paid subscription, which is the default consumer plan, and the Privacy Policy says de-identified chat data may be used to select and deliver some of those ads. \"Enterprise or paid users are not served advertising.\" The only content the policy excludes from ad targeting is what users say in email, documents, photos or other personal files. Residents of certain US states can opt out of targeted advertising and of sale or sharing, including via Global Privacy Control, but the documents do not say this stops de-identified chat data being used to select ads. A nearby sentence lists \"chat queries\" among the signals used to choose ads; it now reads \"chat queries with our customer services support group\", while a January 2026 capture ended at \"chat queries.\", so it is no longer the evidence quote.",
       "confidence": "high",
       "verified": true,
       "verified_at": "2026-09-21"
