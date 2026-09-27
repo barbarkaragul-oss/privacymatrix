@@ -50,8 +50,9 @@ export function dueSources(signatures: Map<string, string>, state: SourceState, 
     const s = state.sources[url];
     const next = s ? Date.parse(s.next_attempt_at) : NaN;
     // An unresolved missing quote must accompany every partial run: otherwise a new demotion
-    // could replace the bot PR while silently dropping its older, still valid demotions.
-    return !s || s.status === 'quote_missing' || s.evidence !== signature || !Number.isFinite(next) || !Number.isFinite(now) || next <= now;
+    // could replace the bot PR while silently dropping its older, still valid demotions. A quote to
+    // re-quote is re-read every run too, so the issue that counts it can also name it.
+    return !s || s.status === 'quote_missing' || s.status === 'requote' || s.evidence !== signature || !Number.isFinite(next) || !Number.isFinite(now) || next <= now;
   }).map(([url]) => url));
 }
 

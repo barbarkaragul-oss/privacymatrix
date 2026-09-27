@@ -152,6 +152,16 @@ export function embedData(template: string, payload: unknown, repoUrl: string): 
   return template.replace('/*__PRIVACYMATRIX_DATA__*/', () => `window.PRIVACYMATRIX = ${json};`).replace('__REPO_URL__', () => safeRepo);
 }
 
+/**
+ * The day the exported freshness is measured at: the matrix's last check run, or the newest
+ * verification date if a reading by hand came after it (the reading page does not touch
+ * generated_at). Taken from the data, not the clock, so a rebuild on another day gives the same file.
+ */
+export function freshnessAsOf(matrix: { generated_at: string; cells: Array<{ verified_at: string }> }): string {
+  const days = [matrix.generated_at.slice(0, 10), ...matrix.cells.map((c) => c.verified_at).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))];
+  return days.sort().at(-1) as string;
+}
+
 export function generateAll(): void {
   const apps = loadApps();
   const qs = loadQuestions();
@@ -184,7 +194,7 @@ export function generateAll(): void {
   writeFileSync(path.join(DOCS_DIR, 'index.html'), embedData(template, payload, repoUrl), 'utf8');
   writeFileSync(path.join(DOCS_DIR, 'matrix.json'), JSON.stringify({ ...matrix, apps, questions: qs.questions,
     freshness_policy: FRESHNESS_POLICY,
-    cells: matrix.cells.map(c => ({ ...c, freshness: freshness(c, matrix.generated_at) })),
+    cells: matrix.cells.map(c => ({ ...c, freshness: freshness(c, freshnessAsOf(matrix)) })),
   }, null, 2) + '\n', 'utf8');
   writeFileSync(path.join(DOCS_DIR, 'changes.json'), JSON.stringify(changes ?? { run_at: '', model: '', changes: [], stats: null }, null, 2) + '\n', 'utf8');
   writeFileSync(path.join(DOCS_DIR, '.nojekyll'), '', 'utf8');

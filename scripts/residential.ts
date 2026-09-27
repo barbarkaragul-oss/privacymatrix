@@ -74,7 +74,7 @@ export interface RunOutcome {
    * was read, the cell left as it is, and someone has to copy the quote again.
    */
   requote: number;
-  /** Sources left for a later run: a partial check must not close an earlier issue or PR. */
+  /** Sources not due this run (for the summary; their state is counted in unreachable and requote). */
   deferred?: number;
   /** Whether the check and build changed any tracked file. */
   dirty: boolean;
@@ -98,13 +98,24 @@ export interface Plan {
 export function decide(o: RunOutcome): Plan {
   return {
     commit: !o.dirty ? 'none' : o.valueChanges > 0 ? 'main+pr' : 'main',
-    issue: o.valueChanges > 0 || o.flagged > 0 || o.requote > 0 ? 'open' : o.unreachable > 0 || (o.deferred ?? 0) > 0 ? 'keep' : 'close',
+    // Sources not due this run do not keep the issue or PR by themselves: their state already counts
+    // in unreachable and requote (from source-state), and a missing quote is due on every run.
+    issue: o.valueChanges > 0 || o.flagged > 0 || o.requote > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
     // A re-quote does not keep a demotion pull request: when every page was read and nothing was
     // demoted, each cell the PR demotes was found again or matches without punctuation, so its
     // demotion for a missing quote is out of date either way; a quote still missing would have been
     // demoted again.
-    pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 || (o.deferred ?? 0) > 0 ? 'keep' : 'close',
+    pr: o.valueChanges > 0 ? 'open' : o.unreachable > 0 ? 'keep' : 'close',
   };
+}
+
+/**
+ * Whether a check read nothing at all: no quote found, none missing, none to re-quote, but pages that
+ * failed. From every page, that is a dead connection; from pages that were unreadable last time too,
+ * it is the usual state of a vendor that blocks automated readers.
+ */
+export function readNothing(report: { ok: number; failed?: number; errors: number; requote?: number }): boolean {
+  return report.ok === 0 && (report.failed ?? 0) === 0 && (report.requote ?? 0) === 0 && report.errors > 0;
 }
 
 export function summarize(report: { ok: number }, o: RunOutcome): string {
@@ -395,6 +406,9 @@ export async function run(opts: Options): Promise<number> {
   const stateDir = process.env.RESIDENTIAL_STATE_DIR;
   const publicationPending = stateDir ? path.join(stateDir, 'publication-pending') : null;
   const retryPublication = !!publicationPending && existsSync(publicationPending);
+  // True when every source due in this run was unreadable last time too: then a run that reads none
+  // of them is the usual state of those vendors' pages, not a dead connection.
+  let allDueUnreadable = false;
   if (!opts.dryRun) {
     if (!stateDir) {
       log("refused: a real run happens only in the task's own checkout (see scripts/install-residential-task.ps1); use --dry-run here");
@@ -408,10 +422,13 @@ export async function run(opts: Options): Promise<number> {
         const apps = readJson<{ apps: Array<{ id: string; blocked_from_cloud?: boolean }> }>('data/apps.json');
         const blocked = new Set(apps.apps.filter(a => a.blocked_from_cloud).map(a => a.id));
         const cells = readJson<{ cells: Parameters<typeof sourceSignatures>[0] }>('data/matrix.json').cells.filter(c => blocked.has(c.app));
-        if (dueSources(sourceSignatures(cells), loadSourceState(sourceFile), new Date().toISOString()).size === 0) {
+        const state = loadSourceState(sourceFile);
+        const due = dueSources(sourceSignatures(cells), state, new Date().toISOString());
+        if (due.size === 0) {
           log('skipped: no source is due; completed sources wait six days, unreadable sources one day');
           return 0;
         }
+        allDueUnreadable = [...due].every((url) => state.sources[url]?.status === 'unreachable');
       } else {
         // Migrate the old global clock: a partial success must not postpone failed pages six days.
         const reportFile = path.join(stateDir, 'last-report.json');
@@ -448,21 +465,37 @@ export async function run(opts: Options): Promise<number> {
 
   let pushedMain = false;
   try {
-    if (publicationPending && !opts.dryRun) writeFileSync(publicationPending, `${today()}\n`, 'utf8');
     const scheduleArgs = stateDir && !opts.dryRun ? ['--source-state', `"${path.join(stateDir, 'source-state.json')}"`, ...(opts.force || retryPublication ? [] : ['--due-only'])] : [];
     await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked', ...scheduleArgs);
-    const report = readJson<{ run_at: string; ok: number; errors: number; requote?: number }>('data/check-report.json');
-    if (report.ok === 0 && report.errors > (report.requote ?? 0)) throw new Error('no quote confirmed and pages were unreachable; not publishing this run');
+    const report = readJson<{ run_at: string; ok: number; failed?: number; errors: number; requote?: number }>('data/check-report.json');
     // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
-    // the checkout's own report is removed by the next run's clean. A run that read nothing (the
-    // connection was down) is not copied: it would list every page, including those normally read.
-    if (stateDir && !opts.dryRun) {
+    // the checkout's own report is removed by the next run's clean.
+    const keepReport = (): void => {
+      if (!stateDir || opts.dryRun) return;
       const lastFile = path.join(stateDir, 'last-report.json');
       const current = readJson<{ cells: Array<{ app: string; question: string; evidence_url: string }> }>('data/check-report.json');
       const old = existsSync(lastFile) ? readJson<typeof current>(lastFile) : { cells: [] };
       const cells = new Map(old.cells.map(c => [`${c.app}|${c.question}`, c]));
       for (const c of current.cells) cells.set(`${c.app}|${c.question}`, c);
       writeJson(lastFile, { ...current, cells: [...cells.values()] });
+    };
+    if (readNothing(report)) {
+      if (allDueUnreadable) {
+        keepReport();
+        restore();
+        log(`nothing to publish: every page due today is still unreadable (${report.errors} cells); they are tried again tomorrow`);
+        return 0;
+      }
+      // A run that read nothing (the connection was down) is not copied for the reading page either:
+      // it would list every page, including those normally read.
+      throw new Error('no page could be read; not publishing a run that verified nothing');
+    }
+    keepReport();
+    // From here on there is something to publish. If publishing fails, the next run reads every source
+    // again instead of only the due ones, since the dates this run found are not on main.
+    const onMain = JSON.parse(git('show', 'HEAD:data/matrix.json')) as MatrixFile;
+    if (publicationPending && !opts.dryRun && JSON.stringify(onMain.cells) !== JSON.stringify(readJson<MatrixFile>('data/matrix.json').cells)) {
+      writeFileSync(publicationPending, `${today()}\n`, 'utf8');
     }
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
     const changesMd = readFileSync('data/changes.md', 'utf8');

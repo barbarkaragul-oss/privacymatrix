@@ -141,7 +141,8 @@ These vendors answer automated requests from cloud IP ranges (GitHub's runners a
       matches only with punctuation ignored, the cell is kept as it was, not re-dated
    5. the result is diffed against the previous matrix; in the weekly Action, value changes are
       opened as a pull request for review; unchanged values are pushed directly when allowed,
-      or opened as a pull request when main is protected
+      or opened as a pull request (bot/weekly-dates) when main is protected, and then the week
+      of grace before a demotion counts from when that pull request is merged
 ```
 
 If the repository has an `ANTHROPIC_API_KEY` secret, the weekly Action runs the second loop instead of the first. Without one, it runs the free loop only. The second loop differs from the first in three ways: it does not read Internet Archive captures, a quote it cannot find demotes the cell at once rather than after six days, and on GitHub's runners it skips the apps marked `blocked_from_cloud`. When the page a previously verified cell rests on cannot be read at all, that cell is kept as it is. Either way the Action needs the repository setting that lets GitHub Actions open pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#the-weekly-run)).
