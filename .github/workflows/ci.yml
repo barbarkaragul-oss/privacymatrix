@@ -70,6 +70,16 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # The weekly run can confirm a quote from a capture it read before (src/archive-cache.ts). The
+      # gate restores the same list of capture addresses, read-only, or the weekly pull request would
+      # fail a check its evidence passed. Only timestamps are cached; each capture is fetched again
+      # and checked like any other.
+      - name: Restore previously read archive capture addresses
+        uses: actions/cache/restore@v6
+        with:
+          path: .cache/archive-captures.json
+          key: archive-captures-none
+          restore-keys: archive-captures-
       - run: npm run check -- --changed-since HEAD^1
         env:
           # Who may vouch for a maintainer's reading (a cell verified_via manual): only a pull

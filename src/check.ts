@@ -603,7 +603,8 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const archive = new ArchiveReader(path.join(ROOT, '.cache', 'archive-captures.json'));
   toArchive.sort((a, b) => a.url.localeCompare(b.url));
   await eachLimited(toArchive, 2, async ({ url, reason }) => {
-    const found = await archive.read(url, unusablePage);
+    // --dump keeps every capture fetched, the unusable ones most of all.
+    const found = await archive.read(url, unusablePage, opts.dump ? { onResponse: (capture, res) => dumpPage(opts.dump as string, capture.rawUrl, res) } : {});
     if ('error' in found) {
       const error = `${reason}; ${found.error}`;
       pages.set(url, { error });
@@ -611,7 +612,6 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
       return;
     }
     const { response: res, capture } = found;
-    if (opts.dump) dumpPage(opts.dump, capture.rawUrl, res);
     pages.set(url, { ...prepareText(res.text), via: 'archive', archiveTimestamp: capture.timestamp });
     console.log(`  ARCHIVE ${url} (${reason}; capture of ${captureDate(capture.timestamp)}, ${capture.timestamp}${found.cached ? ', previously read capture' : ''})`);
   });

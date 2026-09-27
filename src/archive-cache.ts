@@ -18,20 +18,22 @@ export class ArchiveReader {
   }
 
   async read(url: string, usable: (text: string, truncated: boolean) => string | null,
-    deps: { lookup?: typeof latestCapture; fetch?: typeof fetchCapture } = {},
+    deps: { lookup?: typeof latestCapture; fetch?: typeof fetchCapture; onResponse?: (capture: Capture, response: FetchResult) => void } = {},
   ): Promise<{ response: FetchResult; capture: Capture; cached: boolean } | { error: string }> {
     const latest = await (deps.lookup ?? latestCapture)(url);
     if (latest === null) return { error: 'no Internet Archive capture' };
     const known = this.captures[url];
     const candidates: Capture[] = 'error' in latest ? [] : [latest];
     if (known && !candidates.some(c => c.timestamp === known)) candidates.push({ timestamp: known, rawUrl: archiveRawUrl(known, url) });
-    let error = 'error' in latest ? `Internet Archive lookup failed: ${latest.error}` : '';
+    // Every step's reason is kept: the last one alone would hide a failed lookup behind a later miss.
+    const errors: string[] = 'error' in latest ? [`Internet Archive lookup failed: ${latest.error}`] : [];
     for (const candidate of candidates) {
       const response = await (deps.fetch ?? fetchCapture)(candidate);
+      deps.onResponse?.(candidate, response);
       const problem = !response.ok ? (response.error ?? `HTTP ${response.status}`) : usable(response.text, response.truncated);
-      if (problem) { error = `Internet Archive capture ${candidate.timestamp} unusable: ${problem}`; continue; }
+      if (problem) { errors.push(`Internet Archive capture ${candidate.timestamp} unusable: ${problem}`); continue; }
       const landed = landedCapture(response.finalUrl, url);
-      if ('error' in landed) { error = landed.error; continue; }
+      if ('error' in landed) { errors.push(landed.error); continue; }
       this.captures[url] = landed.timestamp;
       try {
         mkdirSync(path.dirname(this.file), { recursive: true });
@@ -39,6 +41,6 @@ export class ArchiveReader {
       } catch { /* Cache persistence must not invalidate a successful read. */ }
       return { response, capture: { timestamp: landed.timestamp, rawUrl: archiveRawUrl(landed.timestamp, url) }, cached: 'error' in latest || candidate.timestamp !== latest.timestamp };
     }
-    return { error };
+    return { error: errors.join('; ') || 'no usable Internet Archive capture' };
   }
 }

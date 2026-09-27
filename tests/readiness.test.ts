@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { freshness } from '../src/freshness.js';
 import { dueSources, EMPTY_SOURCE_STATE, sourceSignatures, updateSourceState } from '../src/source-state.js';
+import { readNothing } from '../scripts/residential.js';
 import { ArchiveReader } from '../src/archive-cache.js';
 import { archiveRawUrl, getArchiveJson } from '../src/archive.js';
 import { decide, protectedPush, publishCurrentCommit } from '../scripts/residential.js';
@@ -12,6 +13,7 @@ import { parseArgs } from '../src/check.js';
 import { loadSources, reconcile } from '../src/verify.js';
 import { networkError } from '../src/network-error.js';
 import type { App, Cell, Question } from '../src/types.js';
+import { freshnessAsOf } from '../src/generate.js';
 
 test('freshness ages evidence without changing its claim, rejects invalid or future dates', () => {
   const cell = { verified: true, verified_at: '2026-09-11' };
@@ -142,9 +144,82 @@ test('partial scheduling cannot suppress missing evidence or close a previous is
   ], '2026-09-27T17:00:00Z');
   assert.equal(state.sources['https://example.test/p']!.status, 'quote_missing');
   assert.equal(dueSources(signatures, state, '2026-09-27T18:00:00Z').size, 1);
+  // Sources merely not due do not keep the issue or PR open for ever; what they hold is counted from
+  // their state: unreadable pages in unreachable, quotes to re-quote in requote.
   const outcome = { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, requote: 0, dirty: true, deferred: 2 };
-  assert.deepEqual(decide(outcome), { commit: 'main', issue: 'keep', pr: 'keep' });
+  assert.deepEqual(decide(outcome), { commit: 'main', issue: 'close', pr: 'close' });
+  assert.deepEqual(decide({ ...outcome, unreachable: 1 }), { commit: 'main', issue: 'keep', pr: 'keep' });
+  assert.deepEqual(decide({ ...outcome, requote: 1 }), { commit: 'main', issue: 'open', pr: 'close' });
   assert.deepEqual(decide({ ...outcome, valueChanges: 1 }), { commit: 'main+pr', issue: 'open', pr: 'open' });
   assert.throws(() => parseArgs(['--source-state', 'state.json', '--due-only']), /residential/);
   assert.throws(() => parseArgs(['--residential', '--source-state', 'state.json', '--changed-since', 'HEAD']), /PR gate/);
+});
+
+test('a run whose due pages are all still unreadable is the usual state, not a failure; a dead connection still is', () => {
+  // Six days of the real schedule: 9 sources read, 14 unreadable (Perplexity, OpenAI's help centre).
+  const url = (i: number) => `https://vendor.example/page-${i}`;
+  const cells = Array.from({ length: 23 }, (_, i) => ({ app: 'v', question: `q${i}`, value: 'yes', quote: `A sentence number ${i}.`, evidence_url: url(i) }));
+  const signatures = sourceSignatures(cells);
+  const readable = (i: number) => i < 9;
+  const readAll = (at: string, due: Set<string>, state: ReturnType<typeof EMPTY_SOURCE_STATE>) =>
+    updateSourceState(state, signatures, cells.filter((c) => due.has(c.evidence_url)).map((c, i) => {
+      const n = Number(c.question.slice(1));
+      return readable(n) ? { evidence_url: c.evidence_url, status: 'ok', method: 'exact', problems: [] } : { evidence_url: c.evidence_url, status: 'error', method: 'none', problems: ['HTTP 403'] };
+    }), at);
+  let state = readAll('2026-09-28T17:00:00Z', new Set(signatures.keys()), EMPTY_SOURCE_STATE());
+  for (const day of ['2026-09-29', '2026-09-30', '2026-10-01', '2026-10-02', '2026-10-03']) {
+    const due = dueSources(signatures, state, `${day}T17:00:00Z`);
+    assert.equal(due.size, 14, `${day}: only the unreadable pages are due, not everything`);
+    assert.ok([...due].every((u) => state.sources[u]!.status === 'unreachable'));
+    state = readAll(`${day}T17:00:00Z`, due, state);
+  }
+  // Six days after the full read, the readable pages are due again, with the unreadable ones.
+  assert.equal(dueSources(signatures, state, '2026-10-04T17:00:00Z').size, 23);
+  // Such a run reads nothing; that alone does not say the connection was down.
+  assert.equal(readNothing({ ok: 0, failed: 0, errors: 19, requote: 0 }), true);
+  assert.equal(readNothing({ ok: 0, failed: 1, errors: 19 }), false, 'a quote found missing means a page was read');
+  assert.equal(readNothing({ ok: 0, errors: 3, requote: 3 }), false, 'a re-quote means the page was read');
+  assert.equal(readNothing({ ok: 5, errors: 19 }), false);
+});
+
+test('a quote to re-quote is re-read on every run, so the issue that counts it can name it', () => {
+  const signatures = new Map([['https://example.test/r', 'evidence']]);
+  const state = updateSourceState(EMPTY_SOURCE_STATE(), signatures, [{ evidence_url: 'https://example.test/r', status: 'error', method: 'compact', problems: ['re-quote'] }], '2026-09-28T17:00:00Z');
+  assert.equal(state.sources['https://example.test/r']!.status, 'requote');
+  assert.equal(dueSources(signatures, state, '2026-09-29T17:00:00Z').size, 1);
+});
+
+test('the exported freshness is measured at the newest evidence, from the data alone', () => {
+  const cells = [{ verified_at: '2026-09-20' }, { verified_at: '2026-09-30' }, { verified_at: '' }];
+  // A reading by hand on 30 September, after the last check run on the 27th, is not 'in the future'.
+  assert.equal(freshnessAsOf({ generated_at: '2026-09-27T17:31:20.726Z', cells }), '2026-09-30');
+  assert.equal(freshnessAsOf({ generated_at: '2026-10-02T08:00:00Z', cells }), '2026-10-02');
+  assert.equal(freshness({ verified: true, verified_at: '2026-09-30' }, freshnessAsOf({ generated_at: '2026-09-27T17:31:20.726Z', cells })).status, 'recent');
+});
+
+test('an archive read keeps every step\'s reason and shows every capture it fetched', async () => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'pm-archive-reasons-'));
+  try {
+    const url = 'https://vendor.example/p';
+    const file = path.join(dir, 'captures.json');
+    writeFileSync(file, JSON.stringify({ [url]: '20260101000000' }));
+    const fetched: string[] = [];
+    const found = await new ArchiveReader(file).read(url, () => 'bot challenge', {
+      lookup: async () => ({ error: 'CDX API: archive.org answered HTTP 503' }),
+      fetch: async (c) => ({ url: c.rawUrl, fetchUrl: c.rawUrl, finalUrl: c.rawUrl, status: 200, ok: true, contentType: 'text/html', text: 'Just a moment', truncated: false }),
+      onResponse: (c) => fetched.push(c.timestamp),
+    });
+    assert.ok('error' in found);
+    assert.match((found as { error: string }).error, /^Internet Archive lookup failed: CDX API: archive.org answered HTTP 503; Internet Archive capture 20260101000000 unusable: bot challenge$/);
+    assert.deepEqual(fetched, ['20260101000000'], 'the unusable capture was offered for --dump');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('a certificate the system store cannot fix is reported without the NODE_USE_SYSTEM_CA advice', () => {
+  const expired = networkError(new Error('fetch failed', { cause: { code: 'CERT_HAS_EXPIRED' } }));
+  assert.equal(expired, 'TLS certificate verification failed (CERT_HAS_EXPIRED)');
+  assert.doesNotMatch(networkError(new Error('fetch failed', { cause: { code: 'ERR_TLS_CERT_ALTNAME_INVALID' } })), /NODE_USE_SYSTEM_CA/);
+  assert.match(networkError(new Error('fetch failed', { cause: { code: 'SELF_SIGNED_CERT_IN_CHAIN' } })), /NODE_USE_SYSTEM_CA=1/);
 });

@@ -13,7 +13,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.writeHead(405, { Allow: 'GET, HEAD' }).end(); return;
   }
-  const requested = new URL(req.url, 'http://127.0.0.1').pathname;
+  let requested;
+  try { requested = new URL(req.url, 'http://127.0.0.1').pathname; } catch { res.writeHead(400).end('Bad request'); return; }
   const resource = requested === '/' ? '/index.html' : requested;
   if (!types.has(resource)) { res.writeHead(404).end('Not found'); return; }
   try {

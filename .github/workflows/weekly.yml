@@ -2,7 +2,9 @@ name: Weekly verification
 
 # Free mode (default): re-fetch every source page and re-check every quote. A quote that is not
 # found is reported in an issue and its cell is kept; if it is still missing a week later the cell
-# is demoted to "unknown" and a pull request is opened for a human.
+# is demoted to "unknown" and a pull request is opened for a human. With main protected, the dates
+# and first-miss flags themselves arrive through a pull request (bot/weekly-dates), and the week of
+# grace counts from when that flag reaches main.
 # Claude mode: only when the ANTHROPIC_API_KEY secret is set (or mode=claude is chosen), every
 # cell is re-derived from the documentation with the Claude API, then verified the same way.
 #
@@ -147,8 +149,29 @@ jobs:
             git push
           fi
 
-      - name: Open pull request (value changes, or the direct push was rejected)
-        if: steps.changes.outputs.count != '0' || steps.commit.outcome == 'failure'
+      # Main is protected, so the direct push above is refused and the dates and first-miss flags go to
+      # a pull request. It has a branch of its own: on the demotion branch, a week without value
+      # changes (a page that timed out, say) would rewrite an open demotion pull request into a
+      # dates-only one, and the demotion would drop out of review.
+      - name: Open pull request (dates and flags, the direct push was rejected)
+        if: steps.changes.outputs.count == '0' && steps.commit.outcome == 'failure'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: bot/weekly-dates
+          delete-branch: true
+          commit-message: 'matrix: weekly dates and flags (${{ steps.mode.outputs.mode }} mode): ${{ steps.changes.outputs.summary }}'
+          title: 'matrix: weekly dates and flags (${{ steps.changes.outputs.summary }})'
+          body-path: data/changes.md
+          labels: weekly-verification
+          add-paths: |
+            data/matrix.json
+            data/changes.json
+            data/changes.md
+            README.md
+            docs/
+
+      - name: Open pull request (value changes)
+        if: steps.changes.outputs.count != '0'
         uses: peter-evans/create-pull-request@v8
         with:
           branch: bot/weekly-verification
