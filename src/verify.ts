@@ -11,7 +11,8 @@
  *   2. one Claude request with all of it in context, constrained to a JSON schema
  *   3. every returned quote is searched for in the fetched text; not found -> "unknown"
  *   4. cells that became unknown fall back to the previous verified cell if its quote is still
- *      present at its source (so a flaky answer does not erase good data)
+ *      present at its source (so a flaky answer does not erase good data), or if its source cannot
+ *      be read this run (an unreadable page says nothing about the quote)
  * Then the whole matrix is diffed against the previous one and written with a change log.
  */
 import Anthropic from '@anthropic-ai/sdk';
@@ -19,8 +20,9 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import path from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { z } from 'zod';
+import { unusablePage } from './check.js';
 import { diffMatrices, renderChangesMarkdown } from './diff.js';
-import { Fetcher, toFetchableUrl } from './fetch.js';
+import { Fetcher, toFetchableUrl, type FetchResult } from './fetch.js';
 import { buildSystemPrompt, buildUserPrompt, type SourceText } from './prompt.js';
 import { findQuote, prepareText, quoteProblems, type PreparedText } from './quotes.js';
 import {
@@ -152,14 +154,27 @@ export function allocateBudget(lengths: number[], perSourceMax: number, total: n
   return allowed;
 }
 
+/**
+ * Why a fetched page cannot serve as a source, or null when it can: the checker's own rule (a bot
+ * challenge, a consent wall, a page cut off at the download limit are not the page) plus a minimum
+ * amount of text. Used for the app's sources and for evidence pages alike, so that an unreadable
+ * page is reported as unavailable, never as a page without the quote.
+ */
+export function sourceProblem(r: Pick<FetchResult, 'ok' | 'status' | 'error' | 'text' | 'truncated'>): string | null {
+  if (!r.ok) return r.error ?? `HTTP ${r.status}`;
+  if (r.text.length < MIN_SOURCE_CHARS) return 'too little text';
+  return unusablePage(r.text, r.truncated);
+}
+
 async function loadSources(app: App, fetcher: Fetcher): Promise<{ sources: SourceText[]; prepared: Map<string, PreparedText>; failures: string[] }> {
   const results = await Promise.all(app.sources.map((u) => fetcher.get(u)));
   const sources: SourceText[] = [];
   const prepared = new Map<string, PreparedText>();
   const failures: string[] = [];
   const usable = results.filter((r) => {
-    if (r.ok && r.text.length >= MIN_SOURCE_CHARS) return true;
-    failures.push(`${r.url} (${r.error ?? `HTTP ${r.status}`}${r.ok ? ', too little text' : ''})`);
+    const problem = sourceProblem(r);
+    if (!problem) return true;
+    failures.push(`${r.url} (${problem})`);
     return false;
   });
   const allowed = allocateBudget(usable.map((r) => r.text.length), MAX_SOURCE_CHARS, MAX_TOTAL_CHARS);
@@ -253,8 +268,8 @@ async function verifyApp(
     const hit = prepared.get(toFetchableUrl(url));
     return hit ? Promise.resolve(hit) : fetchExtra(url, fetcher);
   };
-  const { cells, verifiedCount, demoted, restored } = await reconcile(app.id, questions, output.cells, previous, lookup, todayIso());
-  console.log(`[${app.id}] ${verifiedCount} verified, ${demoted} demoted to unknown, ${restored} restored from previous, ${cells.filter((c) => c.value === 'unknown').length} unknown`);
+  const { cells, verifiedCount, demoted, restored, kept } = await reconcile(app.id, questions, output.cells, previous, lookup, todayIso());
+  console.log(`[${app.id}] ${verifiedCount} verified, ${demoted} demoted to unknown, ${restored} restored from previous, ${kept} kept because their source could not be read, ${cells.filter((c) => c.value === 'unknown').length} unknown`);
   return { app: app.id, cells, failed: null, usage };
 }
 
@@ -265,6 +280,8 @@ export interface ReconcileResult {
   verifiedCount: number;
   demoted: number;
   restored: number;
+  /** Previous verified cells kept as they were because their page could not be read this run. */
+  kept: number;
 }
 
 /**
@@ -275,6 +292,8 @@ export interface ReconcileResult {
  * - Anything else becomes "unknown" with an UNVERIFIED note that keeps the model's proposal.
  * - If the result is "unknown" but the previous run had a verified cell whose quote is still on
  *   its page, the previous cell is kept (re-dated), so one flaky answer never erases good data.
+ *   If that page cannot be read at all (lookup returns null), the previous cell is kept as it was,
+ *   not re-dated: an unavailable page is not a page without the quote.
  */
 export async function reconcile(
   appId: string,
@@ -289,6 +308,7 @@ export async function reconcile(
   let verifiedCount = 0;
   let demoted = 0;
   let restored = 0;
+  let kept = 0;
   for (const cap of questions) {
     const key = cellKey(appId, cap.id);
     const m = byCap.get(cap.id);
@@ -319,11 +339,14 @@ export async function reconcile(
         const { verified_via: _via, archive_timestamp: _ts, quote_missing_since: _since, ...rest } = prev;
         cell = { ...rest, verified: true, verified_at: today };
         restored++;
+      } else if (page === null && prev.verified) {
+        cell = prev;
+        kept++;
       }
     }
     cells.push(cell);
   }
-  return { cells, verifiedCount, demoted, restored };
+  return { cells, verifiedCount, demoted, restored, kept };
 }
 
 const extraCache = new Map<string, Promise<PreparedText | null>>();
@@ -332,7 +355,7 @@ function fetchExtra(url: string, fetcher: Fetcher): Promise<PreparedText | null>
   const key = toFetchableUrl(url);
   let p = extraCache.get(key);
   if (!p) {
-    p = fetcher.get(url).then((r) => (r.ok && r.text.length >= MIN_SOURCE_CHARS ? prepareText(r.text) : null));
+    p = fetcher.get(url).then((r) => (sourceProblem(r) ? null : prepareText(r.text)));
     extraCache.set(key, p);
   }
   return p;
