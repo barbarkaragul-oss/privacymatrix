@@ -4,6 +4,7 @@ title: "PrivacyMatrix: a cited comparison of how AI assistant apps handle user d
 type: dataset
 authors:
   - name: "PrivacyMatrix contributors"
+  - name: "Codex GPT-6 Astra"
 repository-code: "https://github.com/barbarkaragul-oss/privacymatrix"
 url: "https://barbarkaragul-oss.github.io/privacymatrix/"
 license: MIT

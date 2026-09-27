@@ -238,6 +238,11 @@ Apps that belong in the matrix and are not in it yet: Doubao (ByteDance), Yuanba
 
 **How do I cite this?** Cite the repository and the verification date shown at the top; a [CITATION.cff](CITATION.cff) is included, so the "Cite this repository" button on GitHub works. The raw data is in [`docs/matrix.json`](docs/matrix.json).
 
+## Authors and contributors
+
+- **PrivacyMatrix contributors** — project authors and maintainers.
+- **Codex GPT-6 Astra** — AI assistance with development, code review, testing and documentation.
+
 ## License
 
 MIT. Policy quotes belong to their respective vendors and are reproduced as short excerpts for the purpose of citation.
