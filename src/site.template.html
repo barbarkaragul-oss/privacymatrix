@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PrivacyMatrix — does this AI app train on your chats?</title>
-<meta name="description" content="28 AI assistant apps, 14 privacy questions. Every cell quotes the vendor's own privacy policy or help pages, and every quote is re-checked against its source weekly. Yes means better for your privacy.">
+<meta name="description" content="28 AI assistant apps, 14 privacy questions. Every cell quotes the vendor's own privacy policy or help pages; quotes are checked against their sources weekly where the source can be read, and each cell shows when its quote was last confirmed. Yes means better for your privacy.">
 <meta name="repo" content="__REPO_URL__">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23111827'/%3E%3Crect x='6' y='6' width='8' height='8' rx='2' fill='%237fdba6'/%3E%3Crect x='18' y='6' width='8' height='8' rx='2' fill='%23f2c66b'/%3E%3Crect x='6' y='18' width='8' height='8' rx='2' fill='%23f39a9a'/%3E%3Crect x='18' y='18' width='8' height='8' rx='2' fill='%237fdba6'/%3E%3C/svg%3E">
 <style>
@@ -97,7 +97,7 @@
   <header>
     <div>
       <h1>PrivacyMatrix</h1>
-      <p class="tagline">Does this AI app train on your chats? Can you opt out? When is a deleted chat really gone? Every cell quotes the vendor's own privacy policy or help pages, and every quote is re-checked against its source weekly. Yes means better for your privacy. Not legal advice; consumer plan, default settings.</p>
+      <p class="tagline">Does this AI app train on your chats? Can you opt out? When is a deleted chat really gone? Every cell quotes the vendor's own privacy policy or help pages, and quotes are checked against their sources weekly where the source can be read. Yes means better for your privacy. Not legal advice; consumer plan, default settings.</p>
       <div class="stats" id="stats"></div>
     </div>
     <div class="actions">
@@ -150,10 +150,10 @@
   const GLYPH = { yes: '✓', partial: '◐', no: '✕', unknown: '?' };
   // How a cell was verified when it was not a live read by the checker (absent = live).
   const VIA = {
-    manual: { mark: '✎', text: 'read by a maintainer from a residential connection' },
+    manual: { mark: '✎', text: 'checked by a maintainer against the page in their browser' },
     archive: { mark: '◷', text: 'confirmed from an Internet Archive capture' },
   };
-  const BLOCKED_NOTE = "This vendor answers requests from cloud IP ranges with HTTP 403 or with a page that lacks its text, although its robots.txt permits them. Its pages can only be relied on when read from a residential connection; from the cloud, a quote can be confirmed but never found missing. Open a cell to see how and when it was verified.";
+  const BLOCKED_NOTE = "This vendor answers automated requests from cloud IP ranges with HTTP 403, a bot challenge or a page that lacks its text. From the cloud a quote can be confirmed, but a quote that is not found is not evidence that it was removed; some of its pages block the residential re-check too. Open a cell to see how and when it was last confirmed.";
   const byKey = new Map(D.cells.map((c) => [c.app + '|' + c.question, c]));
   const appById = new Map(D.apps.map((a) => [a.id, a]));
   const questionById = new Map(D.questions.map((c) => [c.id, c]));
@@ -270,7 +270,7 @@
     if (cell.verified && cell.verified_via === 'archive') {
       verifiedText = "quote confirmed in the Internet Archive's capture of the source from " + esc(cell.verified_at) + ". The vendor's site refused the checker's request from a cloud server, so the capture stands in for the live page; it can confirm a quote, never remove one.";
     } else if (cell.verified && cell.verified_via === 'manual') {
-      verifiedText = 'quote found at source on ' + esc(cell.verified_at) + " by a maintainer, from a residential connection. The vendor's site blocks automated checks from cloud servers.";
+      verifiedText = 'quote found at source on ' + esc(cell.verified_at) + " by a maintainer, against the page as their browser showed it (the maintainer vouches for the page). The vendor's site blocks automated checks.";
     } else if (cell.verified) {
       verifiedText = 'quote found at source on ' + esc(cell.verified_at);
     }
