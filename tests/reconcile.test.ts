@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { allocateBudget, reconcile, type ModelCell } from '../src/verify.js';
+import { allocateBudget, reconcile, sourceProblem, type ModelCell } from '../src/verify.js';
 
 test('allocateBudget keeps small sources whole and truncates large ones evenly', () => {
   assert.deepEqual(allocateBudget([10, 20, 30], 100, 1000), [10, 20, 30]);
@@ -106,4 +106,26 @@ test('reconcile rejects malformed quotes even when the words appear on the page'
   const plan = r.cells.find((c) => c.question === 'plan_mode')!;
   assert.equal(plan.value, 'unknown');
   assert.match(plan.notes, /shorter than/);
+});
+
+test('reconcile keeps the previous cell as it was when its source cannot be read (Codex probe 5)', async () => {
+  const prev = prevCell('hooks', 'yes', 'Hooks run shell commands at lifecycle events', 'https://docs.example/unreachable');
+  const unknownAnswer = model('hooks', 'unknown', '', '');
+  const r = await reconcile('a', [qs[0]!], [unknownAnswer], new Map([[cellKey('a', 'hooks'), prev]]), async () => null, '2026-09-27');
+  assert.deepEqual(r.cells[0], prev, 'kept exactly: not re-dated, since nothing was read');
+  assert.equal(r.kept, 1);
+  assert.equal(r.restored, 0);
+  // A page that was read and no longer has the quote is a different matter: the cell becomes unknown.
+  const readable = await reconcile('a', [qs[0]!], [unknownAnswer], new Map([[cellKey('a', 'hooks'), prev]]), async () => prepareText('A page about something else entirely, long enough to count.'), '2026-09-27');
+  assert.equal(readable.cells[0]!.value, 'unknown');
+  assert.equal(readable.kept, 0);
+});
+
+test('sourceProblem: a bot challenge, a truncated page or too little text is not a source', () => {
+  const page = (text: string, extra: Partial<{ ok: boolean; status: number; truncated: boolean; error: string }> = {}) => ({ ok: true, status: 200, truncated: false, text, ...extra });
+  assert.equal(sourceProblem(page('Real documentation about the product. '.repeat(10))), null);
+  assert.match(sourceProblem(page('Just a moment... Checking your browser before accessing the site. ' + 'x'.repeat(300))) ?? '', /bot challenge/);
+  assert.match(sourceProblem(page('Real documentation. '.repeat(20), { truncated: true })) ?? '', /download limit/);
+  assert.equal(sourceProblem(page('short')), 'too little text');
+  assert.equal(sourceProblem(page('', { ok: false, status: 403 })), 'HTTP 403');
 });
