@@ -14,7 +14,9 @@ What it sets up, all under -StateDir (default %LOCALAPPDATA%\PrivacyMatrix), out
   - checkout\, a clone the task alone uses, created on the first run and reset to origin/main before
     every run, so the task never touches the checkout you work in and only runs code merged to main;
   - residential.log, last-success and installed-lock, written by the runs; run-lock, a folder that
-    exists while a run is going, and refused.log, which notes a run that found it and stopped.
+    exists while a run is going (a run killed part way leaves it for up to three hours from its
+    start, then a later run removes it; it can also be deleted by hand), and refused.log, which
+    notes a run that found it and stopped.
 
 The task runs as you, only while you are logged on, so it needs no stored password and no
 administrator rights. It starts the batch launcher from the state folder in a console without a

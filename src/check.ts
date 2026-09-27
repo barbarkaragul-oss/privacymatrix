@@ -300,7 +300,7 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
  * The fields that make up a cell's evidence: what it claims, the quote and page it rests on, and
  * the confirmation shown on the site. A pull request that changes any of them is making a new claim.
  */
-const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via'] as const;
+const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via', 'archive_timestamp'] as const;
 
 /** Keys of the quoted cells in head whose evidence is new or differs from base (a notes-only edit is not a change). */
 export function changedCells(base: Cell[], head: Cell[]): Set<string> {
@@ -318,11 +318,23 @@ export function changedCells(base: Cell[], head: Cell[]): Set<string> {
 /** How long a maintainer's reading of a blocked page stands in for the check on a pull request. */
 export const ATTEST_DAYS = 14;
 
+/** The quoteProblems() messages: a quote that is too short, too long or garbled, wherever it was read. */
+const MALFORMED = /^quote (shorter|longer) than|replacement character/;
+
+function isMalformed(r: CellReport): boolean {
+  return r.problems.some((p) => MALFORMED.test(p));
+}
+
 function unverifiedReason(r: CellReport | undefined): string {
   if (!r) return 'not checked in this run';
   const text = r.problems.join('; ');
+  if (r.status === 'skipped') return 'nothing to check: the cell has no quote or no evidence URL';
+  // First: a malformed quote is malformed however it was read (a quote too short to be searched for
+  // is also reported as not found, and a garbled one can still match a capture without punctuation).
+  if (isMalformed(r)) return `quote malformed (${text})`;
   if (needsRequote(r)) return `quote not confirmed: ${text}`;
-  if (r.status === 'fail' || /quote not found/.test(text)) return `quote not found on the page (${text})`;
+  if (/quote not found on (the )?page/.test(text)) return `quote not found on the page (${text})`;
+  if (/quote not found in Internet Archive capture/.test(text)) return `quote not found in the capture the run could read (${text})`;
   return `page not readable (${text})`;
 }
 
@@ -330,8 +342,10 @@ function unverifiedReason(r: CellReport | undefined): string {
  * The pull-request gate. Every changed cell (changedCells) must be confirmed in this run, live or
  * from an Internet Archive capture. The one exception is a maintainer's reading: an app that the base
  * already marks blocked_from_cloud, a cell verified with verified_via 'manual' at most ATTEST_DAYS
- * ago. That is the maintainer vouching for the page, and it is listed as ATTESTED for the reviewer.
- * An app marked blocked_from_cloud in the same change does not qualify: the flag is reviewed first.
+ * ago (UTC dates), whose page this run could not read. That is the maintainer vouching for the page,
+ * and it is listed as ATTESTED for the reviewer. It does not cover a quote the run found malformed
+ * or matching only with punctuation ignored. An app marked blocked_from_cloud in the same change does
+ * not qualify: the flag is reviewed first.
  */
 export function unverifiedChanges(
   reports: CellReport[],
@@ -355,13 +369,22 @@ export function unverifiedChanges(
     const label = key.replace('|', '/');
     const manual = cell?.verified === true && cell.verified_via === 'manual';
     const age = cell ? daysBetween(cell.verified_at, today) : Number.POSITIVE_INFINITY;
-    if (cell && manual && baseBlocked.has(cell.app) && age >= 0 && age <= ATTEST_DAYS) {
+    // A reading by hand stands in for a page the checker could not read, not for a quote it found
+    // malformed, missing on a trusted read, or matching only with punctuation ignored.
+    // The status alone is not enough: a malformed quote on a page that failed to load, or read from
+    // an archive capture, is status 'error' too.
+    const unreadable = r?.status === 'error' && !needsRequote(r) && !isMalformed(r);
+    if (cell && manual && baseBlocked.has(cell.app) && unreadable && age >= 0 && age <= ATTEST_DAYS) {
       attested.push(`ATTESTED ${label} (manual, ${cell.verified_at}): ${unverifiedReason(r)}`);
       continue;
     }
     let why = unverifiedReason(r);
     if (cell && manual && !baseBlocked.has(cell.app) && headBlocked.has(cell.app)) why += ' (app marked blocked_from_cloud in this change; review the flag first)';
-    else if (cell && manual && baseBlocked.has(cell.app)) why += ` (manual reading of ${cell.verified_at || 'no date'} is not within ${ATTEST_DAYS} days)`;
+    else if (cell && manual && baseBlocked.has(cell.app)) {
+      if (!unreadable) why += " (a maintainer's reading stands in only for a page the checker could not read)";
+      else if (age < 0) why += ` (manual reading of ${cell.verified_at} is dated after today, UTC)`;
+      else why += ` (manual reading of ${cell.verified_at || 'no date'} is not within ${ATTEST_DAYS} days)`;
+    }
     unverified.push(`UNVERIFIED ${label}: ${why}`);
   }
   return { unverified, attested, confirmed };
@@ -372,7 +395,10 @@ function readAtRef(ref: string, file: string): unknown {
   try {
     return JSON.parse(execFileSync('git', ['show', `${ref}:${file}`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] }));
   } catch (err) {
-    throw new UsageError(`--changed-since: ${file} at ${ref} could not be read (${err instanceof Error ? err.message.split('\n')[0] : String(err)})`);
+    // execFileSync puts git's own reason (a "fatal:" line) after its "Command failed" line.
+    const lines = err instanceof Error ? err.message.split('\n') : [String(err)];
+    const reason = lines.find((l) => l.startsWith('fatal:')) ?? lines[0];
+    throw new UsageError(`--changed-since: ${file} at ${ref} could not be read (${reason})`);
   }
 }
 
@@ -585,7 +611,9 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso());
     unverified = gate.unverified;
     for (const line of [...gate.attested, ...gate.unverified]) console.log(`  ${line}`);
-    const tally = `Changed since ${opts.changedSince}: ${base.changed.size} quoted cell${base.changed.size === 1 ? '' : 's'}, ${gate.confirmed} confirmed, ${gate.attested.length} attested by a maintainer, ${gate.unverified.length} unverified`;
+    const scoped = [opts.app ? `--app ${opts.app}` : '', opts.onlyBlocked ? '--only-blocked' : ''].filter(Boolean).join(' ');
+    const scopeNote = scoped ? ` (only cells within ${scoped}; changes outside it are not gated)` : '';
+    const tally = `Changed since ${opts.changedSince}: ${base.changed.size} quoted cell${base.changed.size === 1 ? '' : 's'}, ${gate.confirmed} confirmed, ${gate.attested.length} attested by a maintainer, ${gate.unverified.length} unverified${scopeNote}`;
     console.log(tally);
     if (gate.unverified.length) console.log(`${gate.unverified.length} changed cell${gate.unverified.length === 1 ? '' : 's'} could not be verified; see CONTRIBUTING.md, "Evidence the checker cannot read"`);
     // Shown on the pull request's checks page, so the reviewer sees what was vouched for rather than checked.

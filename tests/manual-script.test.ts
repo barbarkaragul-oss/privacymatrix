@@ -8,9 +8,16 @@ import { openInBrowser, retryBaseReset } from '../scripts/manual.js';
 
 test('openInBrowser hands the address to the protocol handler as one argument, with no shell (Codex HTTP audit)', () => {
   const calls: Array<{ command: string; args: string[]; options: Record<string, unknown> }> = [];
+  const errorListeners: Array<(err: Error) => void> = [];
   const spawn = (command: string, args: string[], options: object) => {
     calls.push({ command, args, options: options as Record<string, unknown> });
-    return { unref() {} };
+    return {
+      unref() {},
+      on(_event: 'error', listener: (err: Error) => void) {
+        errorListeners.push(listener);
+        return this;
+      },
+    };
   };
   // cmd's start expanded %VARIABLE% inside the address; nothing here goes through a shell.
   openInBrowser('https://help.example/page?q=%PM_AUDIT_MARKER%&t=1', { spawn, platform: 'win32' });
@@ -23,10 +30,13 @@ test('openInBrowser hands the address to the protocol handler as one argument, w
   openInBrowser('https://help.example/a b"c', { spawn, platform: 'win32' });
   assert.equal(calls[1]!.args[1], 'https://help.example/a%20b%22c');
   // Only web addresses: no file paths, other protocols, or plain http to another host.
-  for (const bad of ['file:///C:/Windows/System32/calc.exe', 'C:\Windows\notepad.exe', 'javascript:alert(1)', 'http://example.com/']) openInBrowser(bad, { spawn, platform: 'win32' });
+  for (const bad of ['file:///C:/Windows/System32/calc.exe', String.raw`C:\Windows\notepad.exe`, 'javascript:alert(1)', 'http://example.com/']) openInBrowser(bad, { spawn, platform: 'win32' });
   assert.equal(calls.length, 2);
   openInBrowser('http://127.0.0.1:47813/?t=abc', { spawn, platform: 'linux' });
   assert.deepEqual([calls[2]!.command, calls[2]!.args], ['xdg-open', ['http://127.0.0.1:47813/?t=abc']]);
+  // Every opener gets an error listener, so one that cannot start is logged instead of ending the process.
+  assert.equal(errorListeners.length, 3);
+  assert.doesNotThrow(() => errorListeners[2]!(new Error('spawn xdg-open ENOENT')));
 });
 
 test('retryBaseReset drops this save\'s own commit and moves to the new main (Codex probe 7)', () => {

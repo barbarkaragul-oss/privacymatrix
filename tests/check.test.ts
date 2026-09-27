@@ -326,6 +326,12 @@ test('changedCells: new cells and changed evidence count, notes-only edits and u
     cell('a', 'unk', 'unknown', '', ''),
   ];
   assert.deepEqual([...changedCells(base, head)].sort(), ['a|d', 'a|new', 'a|x', 'a|y']);
+  // Removing a field counts as much as adding one, and the capture a cell links to is evidence too.
+  const withVia: Cell = { ...cell('a', 'v', 'yes'), verified_via: 'manual' };
+  const withTs: Cell = { ...cell('a', 't', 'yes'), verified_via: 'archive', archive_timestamp: '20260921065036' };
+  const noVia = { ...withVia };
+  delete noVia.verified_via;
+  assert.deepEqual([...changedCells([withVia, withTs], [noVia, { ...withTs, archive_timestamp: '20260101000000' }])].sort(), ['a|t', 'a|v']);
 });
 
 test('unverifiedChanges: an invented quote the cloud cannot confirm fails the pull request (Codex probe 1)', () => {
@@ -369,6 +375,54 @@ test('unverifiedChanges: a recent maintainer reading of an app the base marks bl
   assert.equal(run({ ...cell('b', 'x', 'yes'), verified_at: '2026-09-21' }, ['b']).unverified.length, 1, 'not a manual reading');
   // Marking the app blocked in the same pull request does not open the exception.
   assert.match(run(manual(TODAY), [], ['b']).unverified[0]!, /marked blocked_from_cloud in this change; review the flag first/);
+  // The window's edges: day 14 is in, day 15 is out; an empty date and a future date are out, each saying why.
+  assert.equal(run(manual('2026-09-14'), ['b']).attested.length, 1, 'day 14');
+  assert.match(run(manual('2026-09-13'), ['b']).unverified[0]!, /not within 14 days/, 'day 15');
+  assert.match(run(manual(''), ['b']).unverified[0]!, /manual reading of no date is not within 14 days/);
+  assert.match(run(manual('2026-10-05'), ['b']).unverified[0]!, /dated after today, UTC/);
+});
+
+test('unverifiedChanges: a maintainer reading does not cover a quote the run found malformed or matching only without punctuation', () => {
+  const reading: Cell = { ...cell('b', 'x', 'yes', 'too short'), verified_via: 'manual', verified_at: '2026-09-27' };
+  // A malformed quote fails outright, even for a blocked app; the summary must say so, not ATTESTED.
+  const malformed = classifyCell(reading, prepareText('A page with text on it that is long enough to count.'), { confirmOnly: true });
+  assert.equal(malformed.status, 'fail');
+  const g1 = unverifiedChanges([malformed], new Set(['b|x']), byKey([reading]), new Set(['b']), new Set(['b']), TODAY);
+  assert.deepEqual(g1.attested, []);
+  assert.match(g1.unverified[0]!, /quote malformed \(quote shorter than 12 characters.*stands in only for a page the checker could not read/);
+  // The usual path for a blocked app in CI: the page refuses the runner (status error), or only a
+  // capture is read (status error too). A malformed quote is still not vouched for.
+  for (const page of [{ error: 'HTTP 403' }, archivedPage('A capture of the page, with enough text on it to count as a page.')]) {
+    const r = classifyCell(reading, page, { confirmOnly: true });
+    assert.equal(r.status, 'error');
+    const g = unverifiedChanges([r], new Set(['b|x']), byKey([reading]), new Set(['b']), new Set(['b']), TODAY);
+    assert.deepEqual(g.attested, []);
+    assert.match(g.unverified[0]!, /^UNVERIFIED b\/x: quote malformed \(quote shorter than 12 characters/);
+  }
+  // A punctuation-only match: the page was read, so the quote needs copying again, not vouching for.
+  const cut: Cell = { ...reading, quote: 'We never share your data.' };
+  const requote = classifyCell(cut, prepareText('We never share your data, except with advertising partners.'), { confirmOnly: true });
+  const g2 = unverifiedChanges([requote], new Set(['b|x']), byKey([cut]), new Set(['b']), new Set(['b']), TODAY);
+  assert.deepEqual(g2.attested, []);
+  assert.match(g2.unverified[0]!, /^UNVERIFIED b\/x: quote not confirmed/);
+});
+
+test('unverifiedChanges: reasons name what was wrong: a malformed quote, a capture that lacks it, a page not read', () => {
+  const c = cell('a', 'x', 'yes', `A quote that is far too long ${'x'.repeat(400)}`);
+  const onPage = classifyCell(c, prepareText(`Intro. ${c.quote} Outro.`));
+  assert.equal(onPage.status, 'fail');
+  assert.match(unverifiedChanges([onPage], new Set(['a|x']), byKey([c]), new Set(), new Set(), TODAY).unverified[0]!, /: quote malformed \(quote longer than 400 characters\)/);
+  const plain = cell('a', 'x', 'yes');
+  const captureMiss = classifyCell(plain, archivedPage('A capture of a page that says something else entirely.'));
+  assert.match(unverifiedChanges([captureMiss], new Set(['a|x']), byKey([plain]), new Set(), new Set(), TODAY).unverified[0]!, /: quote not found in the capture the run could read \(/);
+  const down = classifyCell(plain, { error: 'HTTP 503' });
+  assert.match(unverifiedChanges([down], new Set(['a|x']), byKey([plain]), new Set(), new Set(), TODAY).unverified[0]!, /: page not readable \(fetch failed: HTTP 503\)/);
+  // A malformed quote that a capture matches only without punctuation is reported as malformed, not
+  // as a re-quote: shortening it is the fix, whatever the page says.
+  const long: Cell = { ...cell('a', 'x', 'yes'), quote: `We never share your data ${'and more words '.repeat(30)}.` };
+  const loose = classifyCell(long, archivedPage(`Intro. ${long.quote.replace(/ \.$/, ',')} except with partners. Outro.`));
+  assert.equal(loose.method, 'compact');
+  assert.match(unverifiedChanges([loose], new Set(['a|x']), byKey([long]), new Set(), new Set(), TODAY).unverified[0]!, /: quote malformed \(quote longer than 400 characters/);
 });
 
 test('parseArgs: --changed-since takes a ref and refuses --fix', () => {

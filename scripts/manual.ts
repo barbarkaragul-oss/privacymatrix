@@ -42,12 +42,12 @@ interface Options {
 }
 
 function parseArgs(argv: string[]): Options {
-  const opts: Options = { state: null, check: false, minutes: 40, dryRun: false, noOpen: false };
+  const opts: Options = { state: null, check: false, minutes: 120, dryRun: false, noOpen: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--state') opts.state = argv[++i] ?? null;
     else if (a === '--check') opts.check = true;
-    else if (a === '--minutes') opts.minutes = Math.max(1, Number(argv[++i]) || 40);
+    else if (a === '--minutes') opts.minutes = Math.max(1, Number(argv[++i]) || 120);
     else if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--no-open') opts.noOpen = true;
   }
@@ -80,7 +80,7 @@ function isWebAddress(url: string): boolean {
   }
 }
 
-type Spawn = (command: string, args: string[], options: SpawnOptions) => { unref(): void };
+type Spawn = (command: string, args: string[], options: SpawnOptions) => { unref(): void; on(event: 'error', listener: (err: Error) => void): unknown };
 
 /**
  * Hands a web address to the default browser, without a shell. On Windows that is the URL protocol
@@ -94,8 +94,14 @@ export function openInBrowser(url: string, deps: { spawn?: Spawn; platform?: Nod
   const href = new URL(url).href;
   const run: Spawn = deps.spawn ?? spawn;
   const platform = deps.platform ?? process.platform;
-  if (platform === 'win32') run('rundll32.exe', ['url.dll,FileProtocolHandler', href], { stdio: 'ignore', detached: true, windowsHide: true }).unref();
-  else run(platform === 'darwin' ? 'open' : 'xdg-open', [href], { stdio: 'ignore', detached: true }).unref();
+  const child =
+    platform === 'win32'
+      ? run('rundll32.exe', ['url.dll,FileProtocolHandler', href], { stdio: 'ignore', detached: true, windowsHide: true })
+      : run(platform === 'darwin' ? 'open' : 'xdg-open', [href], { stdio: 'ignore', detached: true });
+  // Without a listener, an opener that cannot start (no xdg-open) would end the reading page and
+  // lose the readings not yet saved.
+  child.on('error', (err) => log(`could not open the browser: ${err.message}`));
+  child.unref();
 }
 
 /**
@@ -240,12 +246,14 @@ async function main(): Promise<number> {
   const due = duePages(unreachable, reads, cells, today());
   if (opts.check) {
     if (due.length) log(`${due.length} page(s) could be read by hand: residential-launch.cmd --read (${unreachable.length - due.length} more read by hand in the last ${MANUAL_EVERY_DAYS} days)`);
+    else if (!reportDate) log('nothing to read by hand: no residential run has been recorded yet');
+    else if (unreachable.length === 0) log('nothing to read by hand: the last run read every page');
     else log(`nothing to read by hand (${unreachable.length} page(s) the last run could not read, all read by hand in the last ${MANUAL_EVERY_DAYS} days)`);
     return 0;
   }
   const urls = due.length ? due : unreachable;
   if (urls.length === 0) {
-    log('nothing to read: the last residential run read every page');
+    log(reportDate ? 'nothing to read: the last residential run read every page' : 'nothing to read: no residential run has been recorded yet');
     return 0;
   }
   const pages: PageInfo[] = urls.map((url) => {
@@ -272,7 +280,7 @@ async function main(): Promise<number> {
       writeFileSync('data/matrix.json', JSON.stringify({ ...file, cells: result.cells }, null, 2) + '\n', 'utf8');
       return result.dated;
     };
-    // Short limits, so that a save started at the end of the reading time still fits in the task's hour.
+    // Short limits, so that a save made when the time is up finishes within residential.ts's SAVE_MARGIN_MINUTES.
     const buildAndTest = async (): Promise<void> => {
       for (const cmd of ['npm run build', 'npm test']) {
         log(`$ ${cmd}`);

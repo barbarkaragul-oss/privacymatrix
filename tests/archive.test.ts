@@ -20,6 +20,10 @@ test('landedCapture takes the timestamp from the capture actually read, not the 
   // Somewhere that is not a capture at all.
   assert.match((landedCapture('https://archive.org/errors/blocked', URL_) as { error: string }).error, /not a Wayback capture/);
   assert.match((landedCapture('https://web.archive.org.evil.example/web/20260921065036id_/https://openai.com/policies/privacy-policy/', URL_) as { error: string }).error, /not a Wayback capture/);
+  // The query string is part of the page: 28 cells cite an address with one (Amazon's b/?node=...).
+  const amazon = 'https://www.amazon.com/b/?node=23608614011';
+  assert.deepEqual(landedCapture(`https://web.archive.org/web/20260216130420id_/${amazon}`, amazon), { timestamp: '20260216130420' });
+  assert.match((landedCapture('https://web.archive.org/web/20260216130420id_/https://www.amazon.com/b/?node=999', amazon) as { error: string }).error, /capture of another page/);
 });
 
 test('captureDate reads a 14-digit Wayback timestamp and rejects anything else', () => {
