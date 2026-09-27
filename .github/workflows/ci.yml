@@ -46,8 +46,9 @@ jobs:
         with:
           # The checkout is GitHub's merge of the pull request into its base; its first parent is
           # that base, which is what the pull request's changes are measured against. Not
-          # origin/<base>: the residential task commits dates to main daily, and a main that moved
-          # after the merge was made would count those dates as changes.
+          # origin/<base>: the residential task, the reading page and the weekly run commit dates to
+          # main between pull requests, and a main that moved after the merge was made would count
+          # those dates as changes.
           fetch-depth: 2
       - uses: actions/setup-node@v7
         with:

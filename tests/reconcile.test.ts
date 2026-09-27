@@ -119,6 +119,10 @@ test('reconcile keeps the previous cell as it was when its source cannot be read
   const readable = await reconcile('a', [qs[0]!], [unknownAnswer], new Map([[cellKey('a', 'hooks'), prev]]), async () => prepareText('A page about something else entirely, long enough to count.'), '2026-09-27');
   assert.equal(readable.cells[0]!.value, 'unknown');
   assert.equal(readable.kept, 0);
+  // Only a previously verified cell is kept: an unverified one had nothing confirmed to keep.
+  const unverified = await reconcile('a', [qs[0]!], [unknownAnswer], new Map([[cellKey('a', 'hooks'), { ...prev, verified: false }]]), async () => null, '2026-09-27');
+  assert.equal(unverified.cells[0]!.value, 'unknown');
+  assert.equal(unverified.kept, 0);
 });
 
 test('sourceProblem: a bot challenge, a truncated page or too little text is not a source', () => {

@@ -8,8 +8,9 @@
  * fetch, and a quote found there dates its cell verified_via 'manual'. Nothing here fetches a
  * vendor's page: the pages are opened in the person's browser and read by the person.
  *
- * The residential run records which blocked pages it could not read (unreachable.json in its state
- * folder); the reading page shows those that have not been read by hand for MANUAL_EVERY_DAYS.
+ * The residential run keeps a copy of its check report in its state folder (last-report.json), from
+ * which unreachablePages() derives the blocked pages it could not read; the reading page shows those
+ * that have not been read by hand for MANUAL_EVERY_DAYS.
  */
 import { BOT_CHALLENGE, unusablePage } from './check.js';
 import { findQuote, prepareText, type MatchMethod } from './quotes.js';

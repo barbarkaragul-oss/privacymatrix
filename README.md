@@ -109,6 +109,8 @@ Two loops, one free and one that costs API credits.
                          if that is newer than its last verification (a match that only works with
                          punctuation ignored does not count); not found → cell untouched, since a
                          capture cannot show a sentence is gone
+      quote found only with punctuation ignored → cell untouched, reported as REQUOTE and listed
+                         in an issue: the quote has to be copied from the page again
       page unreachable → cell untouched, reported
    4. no value changed → the refreshed dates are committed
       values changed   → a pull request and an issue list the affected cells for a human
@@ -139,7 +141,7 @@ These vendors answer automated requests from cloud IP ranges (GitHub's runners a
       opened as a pull request for review and unchanged values are committed directly
 ```
 
-If the repository has an `ANTHROPIC_API_KEY` secret, the weekly Action runs the second loop instead of the first. Without one, it runs the free loop only. The second loop differs from the first in three ways: it does not read Internet Archive captures, a quote it cannot find demotes the cell at once rather than after six days, and on GitHub's runners it skips the apps marked `blocked_from_cloud`. When the page a previous cell rests on cannot be read at all, that cell is kept as it is. Either way the Action needs the repository setting that lets GitHub Actions open pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#the-weekly-run)).
+If the repository has an `ANTHROPIC_API_KEY` secret, the weekly Action runs the second loop instead of the first. Without one, it runs the free loop only. The second loop differs from the first in three ways: it does not read Internet Archive captures, a quote it cannot find demotes the cell at once rather than after six days, and on GitHub's runners it skips the apps marked `blocked_from_cloud`. When the page a previously verified cell rests on cannot be read at all, that cell is kept as it is. Either way the Action needs the repository setting that lets GitHub Actions open pull requests (see [CONTRIBUTING.md](CONTRIBUTING.md#the-weekly-run)).
 
 Design choices worth knowing:
 
@@ -176,7 +178,7 @@ npm run verify                   # all apps, then: npm run build
 The apps whose sources refuse cloud IP ranges or serve them a page without its text (listed under [How it works](#how-it-works)) are re-checked from a machine the vendors do not block. It reads only those apps live, one request at a time and at least 1.2 seconds apart, as `help.openai.com` asks. A site that answers with a bot challenge, which needs a browser to pass, is not asked again in that run. Then it rebuilds, runs the tests, and does what the weekly workflow does:
 
 - refreshed dates and first misses are committed to `main`;
-- a demotion goes to a pull request from `bot/residential-verification`, a branch the bot rebuilds on every run, so do not push to it;
+- a demotion goes to a pull request from `bot/residential-verification`, a branch the bot force-pushes whenever a run demotes a cell, so do not push to it;
 - quotes flagged missing are listed in an issue labelled `residential-recheck`, which is closed once every page has been read and nothing is flagged.
 
 It leaves `data/changes.json` to the weekly run, because it checks only the blocked apps and that file describes all of them.
@@ -189,7 +191,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install-residential-task.ps1
 
 The task works in a clone of its own under `%LOCALAPPDATA%\PrivacyMatrix`, never in the checkout you work in. It resets that clone to `origin/main` before every run, so the only code it runs is code already merged to `main`: nothing from a pull request or a fork reaches the machine through it. The launcher it starts is a plain batch file of `git` and `node` commands, copied outside the repository, so a later pull cannot change it either; it runs in a console with no window, and no PowerShell runs during the task.
 
-The task runs as you, only while you are logged on, every day at 13:00 unless the installer's `-At` sets another time. A time missed while the machine is asleep or off is made up after it wakes, but possibly hours later. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`. One run at a time: a run started while another is going (the daily run while the reading page is open, say) stops at once with exit code 3 and a line in `refused.log` next to the log, instead of resetting the clone under the first. Task Scheduler shows the task's last run result as 0 even when the launcher failed, because the windowless console the launcher runs in returns 0; the last line of the log, `launcher finished with exit code N`, gives the real result.
+The task runs as you, only while you are logged on, every day at 13:00 unless the installer's `-At` sets another time. A time missed while the machine is asleep or off is made up after it wakes, but possibly hours later. It does the work only when the last successful run is six or more days old. It needs no administrator rights and no stored password, and it fails rather than waits if git asks for credentials. Its log is `%LOCALAPPDATA%\PrivacyMatrix\residential.log`. One run at a time: a run started while another is going (the daily run while the reading page is open, say) stops at once with exit code 3 and a line in `refused.log` next to the log, instead of resetting the clone under the first. A run that was killed part way leaves the lock (the folder `run-lock`) for up to three hours from its start; a later run removes it, or you can delete the folder yourself. Task Scheduler shows the task's last run result as 0 even when the launcher failed, because the windowless console the launcher runs in returns 0; the last line of the log, `launcher finished with exit code N`, gives the real result.
 
 To see what a run would do without committing anything, from any clean checkout:
 

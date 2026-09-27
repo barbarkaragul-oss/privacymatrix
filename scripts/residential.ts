@@ -261,7 +261,7 @@ export async function commitIdentityArgs(): Promise<string[]> {
 }
 
 const NOTE =
-  "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts) and can only be re-quoted from a residential connection.";
+  "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts). A changed quote is confirmed by the residential re-check, an Internet Archive capture, or a maintainer's reading of the page (CONTRIBUTING.md, Evidence the checker cannot read).";
 
 export async function syncPullRequest(token: string, slug: string, action: Plan['pr'], title: string, body: string, call: typeof api = api): Promise<void> {
   if (action === 'keep') {
@@ -288,7 +288,10 @@ export async function syncPullRequest(token: string, slug: string, action: Plan[
 }
 
 async function syncIssue(token: string, slug: string, action: 'open' | 'close' | 'keep', title: string, body: string): Promise<void> {
-  if (action === 'keep') return;
+  if (action === 'keep') {
+    log('issue left as it is: some pages could not be read this run');
+    return;
+  }
   const open = await api(token, 'GET', `/repos/${slug}/issues?state=open&labels=${ISSUE_LABEL}`);
   const existing = Array.isArray(open) ? open.find((i: { pull_request?: unknown }) => !i.pull_request) : undefined;
   if (action === 'open') {
@@ -374,11 +377,12 @@ export async function run(opts: Options): Promise<number> {
   let pushedMain = false;
   try {
     await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked');
-    // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
-    // the checkout's own report is removed by the next run's clean.
-    if (stateDir && !opts.dryRun) copyFileSync('data/check-report.json', path.join(stateDir, 'last-report.json'));
     const report = readJson<{ ok: number; errors: number; requote?: number }>('data/check-report.json');
     if (report.ok === 0) throw new Error('every page failed to load; not publishing a run that verified nothing');
+    // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
+    // the checkout's own report is removed by the next run's clean. A run that read nothing (the
+    // connection was down) is not copied: it would list every page, including those normally read.
+    if (stateDir && !opts.dryRun) copyFileSync('data/check-report.json', path.join(stateDir, 'last-report.json'));
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
     const changesMd = readFileSync('data/changes.md', 'utf8');
     // Keep the weekly cloud run's record of all apps; this run's report goes to the issue and PR.
@@ -465,7 +469,9 @@ export async function run(opts: Options): Promise<number> {
 
 /** How long the reading page stays open with --read, and what a save at the end of that time may need. */
 const READING_MINUTES = 120;
-const SAVE_MARGIN_MINUTES = 15;
+// A save can take about 25 minutes at worst: git, build and test each have 3-minute limits, and a
+// push rejected because main moved repeats fetch, build, test and push.
+const SAVE_MARGIN_MINUTES = 30;
 
 /** The reading page (scripts/manual.ts) of this checkout, through the tsx the checkout installed; null when it has none yet. */
 function manualCommand(stateDir: string, extra: string): string | null {
@@ -478,14 +484,16 @@ function manualCommand(stateDir: string, extra: string): string | null {
  * Opens the reading page (residential-launch.cmd --read) and waits for it to close. It is stopped
  * with its whole process tree when its time and the margin for its final save have passed.
  */
-async function readingPage(stateDir: string): Promise<void> {
+async function readingPage(stateDir: string): Promise<number> {
   const command = manualCommand(stateDir, `--minutes ${READING_MINUTES}`);
   if (!command) {
     log('reading page not opened: dependencies are not installed yet');
-    return;
+    return 1;
   }
-  const { timedOut } = await runCommand(command, (READING_MINUTES + SAVE_MARGIN_MINUTES) * 60_000);
+  const { timedOut, code } = await runCommand(command, (READING_MINUTES + SAVE_MARGIN_MINUTES) * 60_000);
   if (timedOut) log('reading page stopped: it outlasted its time and the margin for saving');
+  // So that the launcher's last log line shows a save that failed when the time was up.
+  return timedOut ? 1 : (code ?? 1);
 }
 
 /**
@@ -494,7 +502,10 @@ async function readingPage(stateDir: string): Promise<void> {
  */
 async function countReadingPages(stateDir: string): Promise<void> {
   const command = manualCommand(stateDir, '--check');
-  if (!command) return;
+  if (!command) {
+    log('pages due for a reading by hand not counted: dependencies are not installed yet');
+    return;
+  }
   const { timedOut, code } = await runCommand(command, 120_000);
   if (timedOut || code !== 0) log('could not count the pages due for a reading by hand');
 }
@@ -510,8 +521,7 @@ if (isMain) {
         return 0;
       }
       process.chdir(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'));
-      await readingPage(stateDir);
-      return 0;
+      return await readingPage(stateDir);
     }
     const code = await run({ force: args.has('--force'), dryRun: args.has('--dry-run') });
     // After every run of the task, the log says how many pages only a person can read are due,
