@@ -38,7 +38,7 @@
  * The GitHub token comes from git's credential helper and is never printed.
  */
 import { type ChildProcess, execFileSync, spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, unlinkSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dueSources, loadSourceState, sourceSignatures } from '../src/source-state.ts';
@@ -116,6 +116,19 @@ export function decide(o: RunOutcome): Plan {
  */
 export function readNothing(report: { ok: number; failed?: number; errors: number; requote?: number }): boolean {
   return report.ok === 0 && (report.failed ?? 0) === 0 && (report.requote ?? 0) === 0 && report.errors > 0;
+}
+
+/**
+ * What a run does once its check has finished: publish what it read; stop quietly when it read
+ * nothing but every source due was already unreadable (the usual state of some vendors' pages); or
+ * fail when it read nothing while readable sources were due, since this machine could not reach them.
+ */
+export function afterCheck(
+  report: { ok: number; failed?: number; errors: number; requote?: number },
+  allDueUnreadable: boolean,
+): 'publish' | 'nothing-to-publish' | 'read-nothing' {
+  if (!readNothing(report)) return 'publish';
+  return allDueUnreadable ? 'nothing-to-publish' : 'read-nothing';
 }
 
 export function summarize(report: { ok: number }, o: RunOutcome): string {
@@ -466,6 +479,12 @@ export async function run(opts: Options): Promise<number> {
   let pushedMain = false;
   try {
     const scheduleArgs = stateDir && !opts.dryRun ? ['--source-state', `"${path.join(stateDir, 'source-state.json')}"`, ...(opts.force || retryPublication ? [] : ['--due-only'])] : [];
+    // The check records every reading in source-state.json. A run that reads nothing because this
+    // machine cannot reach the vendors (a proxy, a certificate store, a blocked address) must not
+    // record that: the next day every source would look unreadable already, and the outage would pass
+    // for the usual state. So the state before the check is kept, to put back on that path.
+    const sourceStateFile = stateDir && !opts.dryRun ? path.join(stateDir, 'source-state.json') : null;
+    const stateBefore = sourceStateFile && existsSync(sourceStateFile) ? readFileSync(sourceStateFile, 'utf8') : null;
     await npm('run', 'check', '--', '--fix', '--soft', '--residential', '--only-blocked', ...scheduleArgs);
     const report = readJson<{ run_at: string; ok: number; failed?: number; errors: number; requote?: number }>('data/check-report.json');
     // The reading page (scripts/manual.ts) lists the pages this run could not read from this copy;
@@ -479,24 +498,27 @@ export async function run(opts: Options): Promise<number> {
       for (const c of current.cells) cells.set(`${c.app}|${c.question}`, c);
       writeJson(lastFile, { ...current, cells: [...cells.values()] });
     };
-    if (readNothing(report)) {
-      if (allDueUnreadable) {
-        keepReport();
-        restore();
-        log(`nothing to publish: every page due today is still unreadable (${report.errors} cells); they are tried again tomorrow`);
-        return 0;
+    const next = afterCheck(report, allDueUnreadable);
+    if (next === 'nothing-to-publish') {
+      keepReport();
+      restore();
+      log(`nothing to publish: every page due today is still unreadable (${report.errors} cells); they are tried again tomorrow`);
+      return 0;
+    }
+    if (next === 'read-nothing') {
+      // Not copied for the reading page either: it would list every page, including those normally read.
+      if (sourceStateFile) {
+        if (stateBefore === null) rmSync(sourceStateFile, { force: true });
+        else writeFileSync(sourceStateFile, stateBefore, 'utf8');
       }
-      // A run that read nothing (the connection was down) is not copied for the reading page either:
-      // it would list every page, including those normally read.
       throw new Error('no page could be read; not publishing a run that verified nothing');
     }
     keepReport();
     // From here on there is something to publish. If publishing fails, the next run reads every source
     // again instead of only the due ones, since the dates this run found are not on main.
     const onMain = JSON.parse(git('show', 'HEAD:data/matrix.json')) as MatrixFile;
-    if (publicationPending && !opts.dryRun && JSON.stringify(onMain.cells) !== JSON.stringify(readJson<MatrixFile>('data/matrix.json').cells)) {
-      writeFileSync(publicationPending, `${today()}\n`, 'utf8');
-    }
+    const cellsChanged = JSON.stringify(onMain.cells) !== JSON.stringify(readJson<MatrixFile>('data/matrix.json').cells);
+    if (publicationPending && !opts.dryRun && cellsChanged) writeFileSync(publicationPending, `${today()}\n`, 'utf8');
     const changes = readJson<{ changes: Array<{ app: string; question: string }>; pending: unknown[] }>('data/changes.json');
     const changesMd = readFileSync('data/changes.md', 'utf8');
     // Keep the weekly cloud run's record of all apps; this run's report goes to the issue and PR.
@@ -518,7 +540,9 @@ export async function run(opts: Options): Promise<number> {
       unreachable: Math.max(report.errors - (report.requote ?? 0), sourceStatuses.reduce((n, s) => n + (s.unreachable ?? 0), 0)),
       requote: Math.max(report.requote ?? 0, sourceStatuses.reduce((n, s) => n + (s.requote ?? 0), 0)),
       deferred: sourceStatuses.filter(s => s.last_attempt_at !== report.run_at).length,
-      dirty: git('status', '--porcelain', '--', ...DATA_PATHS) !== '',
+      // Only a change to the cells is worth a commit: a run that changed nothing still rewrites
+      // generated_at, and re-quotes, due on every run, would otherwise commit a timestamp each day.
+      dirty: cellsChanged,
     };
     const plan = decide(outcome);
     const summary = summarize(report, outcome);

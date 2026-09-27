@@ -3,8 +3,9 @@ name: Weekly verification
 # Free mode (default): re-fetch every source page and re-check every quote. A quote that is not
 # found is reported in an issue and its cell is kept; if it is still missing a week later the cell
 # is demoted to "unknown" and a pull request is opened for a human. With main protected, the dates
-# and first-miss flags themselves arrive through a pull request (bot/weekly-dates), and the week of
-# grace counts from when that flag reaches main.
+# and first-miss flags themselves arrive through a pull request (bot/weekly-dates; in a week with
+# value changes, the demotion pull request carries them). A flag carries the date of the run that set
+# it, and must reach main before the next weekly run, or that run sets it again from scratch.
 # Claude mode: only when the ANTHROPIC_API_KEY secret is set (or mode=claude is chosen), every
 # cell is re-derived from the documentation with the Claude API, then verified the same way.
 #
@@ -128,6 +129,9 @@ jobs:
             const title = 'Policy text changed: ' + c.changes.length + ' cell(s) demoted, ' + pending + ' quote(s) newly missing' + (requote ? ', ' + requote + ' quote(s) to re-quote' : '');
             fs.appendFileSync(process.env.GITHUB_OUTPUT, 'count=' + c.changes.length + '\n' + 'pending=' + pending + '\n' + 'requote=' + requote + '\n' + 'summary=' + summary + '\n' + 'issue_title=' + title + '\n');
             fs.appendFileSync(process.env.GITHUB_OUTPUT, 'unreachable=' + unreachable + '\nflagged=' + flagged + '\n');
+            // This run's report, kept aside: creating a pull request moves the run's changes to the PR
+            // branch and puts main's files back, so a later step reading data/changes.md would get main's.
+            fs.copyFileSync('./data/changes.md', require('path').join(process.env.RUNNER_TEMP, 'changes.md'));
             console.log(summary);
           "
 
@@ -159,9 +163,10 @@ jobs:
         with:
           branch: bot/weekly-dates
           delete-branch: true
-          commit-message: 'matrix: weekly dates and flags (${{ steps.mode.outputs.mode }} mode): ${{ steps.changes.outputs.summary }}'
+          # The commit on the branch is the one the push step made (it keeps that step's message).
+          commit-message: 'matrix: weekly re-verification (${{ steps.mode.outputs.mode }} mode): ${{ steps.changes.outputs.summary }}'
           title: 'matrix: weekly dates and flags (${{ steps.changes.outputs.summary }})'
-          body-path: data/changes.md
+          body-path: ${{ runner.temp }}/changes.md
           labels: weekly-verification
           add-paths: |
             data/matrix.json
@@ -178,7 +183,7 @@ jobs:
           delete-branch: true
           commit-message: 'matrix: weekly re-verification (${{ steps.mode.outputs.mode }} mode): ${{ steps.changes.outputs.summary }}'
           title: 'matrix: weekly re-verification (${{ steps.changes.outputs.summary }})'
-          body-path: data/changes.md
+          body-path: ${{ runner.temp }}/changes.md
           labels: weekly-verification
           add-paths: |
             data/matrix.json
@@ -186,6 +191,17 @@ jobs:
             data/changes.md
             README.md
             docs/
+
+      # A pull request with value changes carries this run's dates and flags too, so an older
+      # dates-only pull request is out of date: merging it would bring back flags this run cleared.
+      - name: Close the dates pull request the value-change pull request replaces
+        if: steps.changes.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh pr view bot/weekly-dates --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            gh pr close bot/weekly-dates --delete-branch --comment "Replaced by this week's pull request with value changes, which carries the same dates and flags."
+          fi
 
       # A quote to re-quote opens the issue too: its cell is left as it is and would otherwise age
       # with nothing pointing at it.
@@ -205,7 +221,7 @@ jobs:
         with:
           issue-number: ${{ steps.issue.outputs.number }}
           title: ${{ steps.changes.outputs.issue_title }}
-          content-filepath: data/changes.md
+          content-filepath: ${{ runner.temp }}/changes.md
           labels: needs-recheck, good first issue
 
       - name: Close an obsolete recheck issue only after a complete clean reading
@@ -216,4 +232,9 @@ jobs:
           NUMBER=$(gh issue list --label needs-recheck --state open --limit 1 --json number --jq '.[0].number // ""')
           if [ -n "$NUMBER" ]; then
             gh issue close "$NUMBER" --reason completed
+          fi
+          # Every page was read and nothing is missing or demoted: a demotion pull request from an
+          # earlier week is out of date (its quotes were found again), and merging it would be wrong.
+          if gh pr view bot/weekly-verification --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            gh pr close bot/weekly-verification --delete-branch --comment "A complete reading on $(date -u +%F) found every quote and demoted nothing, so this pull request is out of date."
           fi
