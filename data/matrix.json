@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-27T17:16:53.624Z",
+  "generated_at": "2026-09-27T17:31:20.726Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -677,7 +677,9 @@
       "notes": "The help article says uploaded files are used only to customise responses, but the Privacy Notice lists 'uploads' under User Content that it processes and lists improving 'our AI models' as a purpose, and the training opt-out article never says whether the toggle covers files. Documents are not fully consistent, so partial rather than yes. Files attached to sessions are retained 30 days (7 days for Enterprise Pro).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-09-27",
+      "verified_via": "manual",
+      "manual_fingerprint": "73b33d0344de7a607b97c71101b2a0b1"
     },
     {
       "app": "perplexity",
