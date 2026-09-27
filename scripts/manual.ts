@@ -2,14 +2,14 @@
  * The reading page: a local page on which the maintainer reads, in their own browser, the blocked
  * pages that the residential re-check could not read (see src/manual.ts).
  *
- *   npm run manual -- --state <folder> [--remind] [--minutes N] [--dry-run]
+ *   npm run manual -- --state <folder> [--check] [--minutes N] [--dry-run]
  *
- * The residential task runs it after every run with --remind: when pages are due, it opens the
- * reading page in the default browser and waits up to --minutes (residential.ts passes what is left
- * of the task's hour after the run and a margin for saving, at most 40); when none are due it exits
- * at once. `residential-launch.cmd --read` opens it
- * whenever the maintainer wants, with every page the last run could not read. The pages come from
- * the last run's check report, which the residential run copies into the state folder.
+ * The residential task runs it after every run with --check, which only counts the pages due for a
+ * reading by hand, writes that number to the task's log and exits: nothing opens on its own.
+ * `residential-launch.cmd --read` opens the reading page whenever the maintainer wants, in the
+ * default browser, with the pages due (or, when none is due, every page the last run could not
+ * read), for --minutes. The pages come from the last run's check report, which the residential run
+ * copies into the state folder.
  *
  * On the page, "Open all" opens the pages in the browser, the maintainer pastes each page's text
  * into its box, and the quotes are matched at once. "Save" dates the cells whose quotes were found
@@ -18,13 +18,13 @@
  * runs out are saved then. It never fetches a vendor's page itself, and it listens on 127.0.0.1 only,
  * answering requests that carry the token in the page's address.
  */
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync, spawn, type SpawnOptions } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyReadings, checkPastedPage, duePages, unreachablePages, type PageCheck, type ReportCell } from '../src/manual.js';
+import { applyReadings, checkPastedPage, duePages, MANUAL_EVERY_DAYS, unreachablePages, type PageCheck, type ReportCell } from '../src/manual.js';
 import type { Cell } from '../src/types.js';
 import { commitIdentityArgs, runCommand } from './residential.js';
 
@@ -33,7 +33,8 @@ const FIRST_PORT = 47813;
 
 interface Options {
   state: string | null;
-  remind: boolean;
+  /** Count the pages due, log the number and exit; no server, no browser. */
+  check: boolean;
   minutes: number;
   dryRun: boolean;
   /** Do not open the browser; print the page's full address instead (for testing). */
@@ -41,11 +42,11 @@ interface Options {
 }
 
 function parseArgs(argv: string[]): Options {
-  const opts: Options = { state: null, remind: false, minutes: 40, dryRun: false, noOpen: false };
+  const opts: Options = { state: null, check: false, minutes: 40, dryRun: false, noOpen: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--state') opts.state = argv[++i] ?? null;
-    else if (a === '--remind') opts.remind = true;
+    else if (a === '--check') opts.check = true;
     else if (a === '--minutes') opts.minutes = Math.max(1, Number(argv[++i]) || 40);
     else if (a === '--dry-run') opts.dryRun = true;
     else if (a === '--no-open') opts.noOpen = true;
@@ -79,18 +80,36 @@ function isWebAddress(url: string): boolean {
   }
 }
 
-function openInBrowser(url: string): void {
+type Spawn = (command: string, args: string[], options: SpawnOptions) => { unref(): void };
+
+/**
+ * Hands a web address to the default browser, without a shell. On Windows that is the URL protocol
+ * handler (rundll32 url.dll,FileProtocolHandler): explorer.exe opened the Documents folder instead,
+ * and cmd's start expands %VARIABLE% inside the address. The address goes in its normalised form,
+ * percent-encoded ASCII, as one argument that Node quotes. spawn and platform are parameters for
+ * the tests.
+ */
+export function openInBrowser(url: string, deps: { spawn?: Spawn; platform?: NodeJS.Platform } = {}): void {
   if (!isWebAddress(url)) return;
-  // The normalised form has no raw quotes or spaces (they are percent-encoded), so it can go
-  // inside the quotes below as it is.
   const href = new URL(url).href;
-  if (process.platform === 'win32') {
-    // start hands the address to the default browser. explorer.exe, tried first, opened the
-    // Documents folder instead. start's first quoted argument is the window title, left empty.
-    spawn('cmd.exe', ['/d', '/c', `start "" "${href}"`], { stdio: 'ignore', detached: true, windowsHide: true, windowsVerbatimArguments: true }).unref();
-  } else {
-    spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [href], { stdio: 'ignore', detached: true }).unref();
+  const run: Spawn = deps.spawn ?? spawn;
+  const platform = deps.platform ?? process.platform;
+  if (platform === 'win32') run('rundll32.exe', ['url.dll,FileProtocolHandler', href], { stdio: 'ignore', detached: true, windowsHide: true }).unref();
+  else run(platform === 'darwin' ? 'open' : 'xdg-open', [href], { stdio: 'ignore', detached: true }).unref();
+}
+
+/**
+ * After a push was rejected because main moved: drops this save's own commit and moves the checkout
+ * to the new main (FETCH_HEAD, just fetched), returning it as the new base. Only when the checkout
+ * is exactly the old base plus that one commit; anything else (commits of someone else's, a main
+ * that was rewritten) is left for a person.
+ */
+export function retryBaseReset(git: (...args: string[]) => string, base: string): string {
+  if (git('rev-parse', 'HEAD~1') !== base || git('rev-list', '--count', 'FETCH_HEAD..HEAD') !== '1') {
+    throw new Error('the checkout is not main plus this save\'s own commit; not starting again');
   }
+  git('reset', '--quiet', '--hard', 'FETCH_HEAD');
+  return git('rev-parse', 'HEAD');
 }
 
 function esc(s: string): string {
@@ -219,8 +238,9 @@ async function main(): Promise<number> {
   const reads = readJson<Record<string, string>>(readsFile, {});
 
   const due = duePages(unreachable, reads, cells, today());
-  if (opts.remind && due.length === 0) {
-    log(`nothing to read by hand (${unreachable.length} page(s) the last run could not read, all read by hand recently)`);
+  if (opts.check) {
+    if (due.length) log(`${due.length} page(s) could be read by hand: residential-launch.cmd --read (${unreachable.length - due.length} more read by hand in the last ${MANUAL_EVERY_DAYS} days)`);
+    else log(`nothing to read by hand (${unreachable.length} page(s) the last run could not read, all read by hand in the last ${MANUAL_EVERY_DAYS} days)`);
     return 0;
   }
   const urls = due.length ? due : unreachable;
@@ -244,11 +264,13 @@ async function main(): Promise<number> {
     if (usable.length === 0) throw new Error('no page has been read yet');
     const found = usable.flatMap(([, c]) => c.results.filter((r) => r.found));
     const readUrls = usable.map(([u]) => u);
+    let skipped = 0;
     const apply = (): number => {
       const file = readJson<{ cells: Cell[] }>('data/matrix.json', { cells: [] });
-      const { cells: out, dated } = applyReadings(file.cells, found, today());
-      writeFileSync('data/matrix.json', JSON.stringify({ ...file, cells: out }, null, 2) + '\n', 'utf8');
-      return dated;
+      const result = applyReadings(file.cells, found, today());
+      skipped = result.skipped;
+      writeFileSync('data/matrix.json', JSON.stringify({ ...file, cells: result.cells }, null, 2) + '\n', 'utf8');
+      return result.dated;
     };
     // Short limits, so that a save started at the end of the reading time still fits in the task's hour.
     const buildAndTest = async (): Promise<void> => {
@@ -304,7 +326,7 @@ async function main(): Promise<number> {
           } else {
             // main moved while the pages were being read: start again from it, once.
             log('push rejected because main moved; applying the readings to the new main');
-            base = fromMain();
+            base = retryBaseReset(git, base);
             dated = apply();
             await buildAndTest();
             if (commit(dated)) {
@@ -321,7 +343,8 @@ async function main(): Promise<number> {
       if (opts.dryRun) git('checkout', 'HEAD', '--', ...DATA_PATHS);
       else if (!ok) git('reset', '--quiet', '--hard', base);
     }
-    const what = `${dated} quote(s) present on ${readUrls.length} page(s)`;
+    const skippedNote = skipped ? `; ${skipped} reading(s) skipped: the cell changed on main since the page opened` : '';
+    const what = `${dated} quote(s) present on ${readUrls.length} page(s)${skippedNote}`;
     const newReads = { ...reads };
     for (const u of readUrls) newReads[u] = today();
     writeFileSync(readsFile, JSON.stringify(newReads, null, 2) + '\n', 'utf8');
@@ -446,12 +469,15 @@ async function main(): Promise<number> {
   return new Promise<number>(() => undefined);
 }
 
-main().then(
-  (code) => {
-    process.exitCode = code;
-  },
-  (err) => {
-    log(`crashed: ${(err as Error).stack ?? err}`);
-    process.exitCode = 2;
-  },
-);
+const isMain = process.argv[1] && path.resolve(process.argv[1]).endsWith(path.join('scripts', 'manual.ts'));
+if (isMain) {
+  main().then(
+    (code) => {
+      process.exitCode = code;
+    },
+    (err) => {
+      log(`crashed: ${(err as Error).stack ?? err}`);
+      process.exitCode = 2;
+    },
+  );
+}

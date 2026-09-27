@@ -63,7 +63,9 @@ export function duePages(unreachable: string[], reads: Record<string, string>, c
 export interface QuoteResult {
   app: string;
   question: string;
+  /** The quote and page that were matched: a reading dates the cell only while it still has both. */
   quote: string;
+  evidence_url: string;
   found: boolean;
   method: MatchMethod;
   /** Why a quote that is on the page in some form does not count as found. */
@@ -92,8 +94,9 @@ export function checkPastedPage(cells: Cell[], url: string, text: string): PageC
     unusable: null,
     results: onPage.map((c) => {
       const m = findQuote(prepared, c.quote);
-      if (m.method === 'compact') return { app: c.app, question: c.question, quote: c.quote, found: false, method: m.method, note: REQUOTE_NOTE };
-      return { app: c.app, question: c.question, quote: c.quote, found: m.found, method: m.method };
+      const read = { app: c.app, question: c.question, quote: c.quote, evidence_url: c.evidence_url };
+      if (m.method === 'compact') return { ...read, found: false, method: m.method, note: REQUOTE_NOTE };
+      return { ...read, found: m.found, method: m.method };
     }),
   };
 }
@@ -102,17 +105,29 @@ export function checkPastedPage(cells: Cell[], url: string, text: string): PageC
  * Dates the cells whose quotes a person found on the live page: verified today, verified_via
  * 'manual', any archive provenance and any missing-quote flag cleared (the quote is on the page).
  * Cells whose quotes were not found are left as they are: a reading by hand never demotes a cell.
+ * A reading counts only for the quote and page it matched: a cell whose quote or evidence_url
+ * changed on main while the page was open is skipped, not dated (it was not read).
  */
-export function applyReadings(cells: Cell[], found: Array<{ app: string; question: string }>, today: string): { cells: Cell[]; dated: number } {
-  const keys = new Set(found.map((f) => `${f.app}|${f.question}`));
+export function applyReadings(
+  cells: Cell[],
+  found: Array<{ app: string; question: string; quote: string; evidence_url: string }>,
+  today: string,
+): { cells: Cell[]; dated: number; skipped: number } {
+  const byKey = new Map(found.map((f) => [`${f.app}|${f.question}`, f]));
   let dated = 0;
+  let skipped = 0;
   const out = cells.map((c) => {
-    if (!keys.has(`${c.app}|${c.question}`)) return c;
+    const f = byKey.get(`${c.app}|${c.question}`);
+    if (!f) return c;
+    if (f.quote !== c.quote || f.evidence_url !== c.evidence_url) {
+      skipped++;
+      return c;
+    }
     dated++;
     const copy: Cell = { ...c, verified: true, verified_at: today, verified_via: 'manual' };
     delete copy.archive_timestamp;
     delete copy.quote_missing_since;
     return copy;
   });
-  return { cells: out, dated };
+  return { cells: out, dated, skipped };
 }

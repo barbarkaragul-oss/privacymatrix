@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { decide, isDue, MAX_AGE_DAYS, noreplyIdentity, repoSlug, runCommand, summarize, withoutDemotions } from '../scripts/residential.js';
+import { decide, isDue, MAX_AGE_DAYS, noreplyIdentity, repoSlug, runCommand, summarize, syncPullRequest, withoutDemotions } from '../scripts/residential.js';
 
 test('isDue: runs when there is no success yet, or the last one is MAX_AGE_DAYS or more old', () => {
   assert.equal(isDue(null, '2026-09-28', MAX_AGE_DAYS), true);
@@ -26,8 +26,23 @@ test('decide: flags and dates go to main, demotions go to a pull request, the is
   assert.deepEqual(decide({ ...base, flagged: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'close' });
   // A demotion: main gets the dates and flags, a pull request gets the demotion.
   assert.deepEqual(decide({ ...base, valueChanges: 1, flagged: 0, dirty: true }), { commit: 'main+pr', issue: 'open', pr: 'open' });
-  // A page could not be read: nobody can say every quote was found, so the issue is left alone.
-  assert.deepEqual(decide({ ...base, unreachable: 2, dirty: true }), { commit: 'main', issue: 'keep', pr: 'close' });
+  // A page could not be read: nobody can say every quote was found, so the issue and any demotion
+  // pull request from an earlier run are left alone.
+  assert.deepEqual(decide({ ...base, unreachable: 2, dirty: true }), { commit: 'main', issue: 'keep', pr: 'keep' });
+  // Codex probe 4: a flagged cell, nothing to demote, a page unreadable: the old demotion PR stays open.
+  assert.deepEqual(decide({ valueChanges: 0, pending: 0, flagged: 1, unreachable: 1, dirty: true }), { commit: 'main', issue: 'open', pr: 'keep' });
+});
+
+test('syncPullRequest: keep makes no API call; close closes the open demotion pull request', async () => {
+  const calls: string[] = [];
+  const stub = (async (_token: string, method: string, url: string) => {
+    calls.push(`${method} ${url}`);
+    return method === 'GET' ? [{ number: 7 }] : {};
+  }) as Parameters<typeof syncPullRequest>[5];
+  await syncPullRequest('t', 'o/r', 'keep', 'title', 'body', stub);
+  assert.equal(calls.length, 0, 'no API call');
+  await syncPullRequest('t', 'o/r', 'close', 'title', 'body', stub);
+  assert.deepEqual(calls.map((c) => c.split('?')[0]), ['GET /repos/o/r/pulls', 'POST /repos/o/r/issues/7/comments', 'PATCH /repos/o/r/pulls/7']);
 });
 
 test('withoutDemotions keeps every other change and puts the demoted cells back as they were', () => {
