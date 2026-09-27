@@ -133,10 +133,12 @@ These vendors answer automated requests from cloud IP ranges (GitHub's runners a
    1. fetch every source page listed for the app in data/apps.json
    2. Claude (claude-fable-5-1 by default) reads all of it in one request and returns one JSON
       entry per question: value, verbatim quote, source URL, notes, constrained by a schema
-   3. every returned quote is searched for in the fetched text; a quote that is not found demotes
-      the cell to "unknown" (a fabricated or paraphrased quote does not survive this step)
+   3. every returned quote is searched for in the fetched text; a quote that is not found, or found
+      only with punctuation ignored, demotes the cell to "unknown" (a fabricated or paraphrased
+      quote does not survive this step)
    4. if the new answer is "unknown" but the previous verified quote is still on its page,
-      the previous cell is kept, so one bad answer never erases good data
+      the previous cell is kept, so one bad answer never erases good data; if that quote now
+      matches only with punctuation ignored, the cell is kept as it was, not re-dated
    5. the result is diffed against the previous matrix; in the weekly Action, value changes are
       opened as a pull request for review and unchanged values are committed directly
 ```

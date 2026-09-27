@@ -13,6 +13,9 @@
  *   4. cells that became unknown fall back to the previous verified cell if its quote is still
  *      present at its source (so a flaky answer does not erase good data), or if its source cannot
  *      be read this run (an unreadable page says nothing about the quote)
+ *   A quote found only with punctuation ignored confirms nothing, as in the free check: a new
+ *   proposal is demoted, and a previous cell is kept as it was (not re-dated) and counted for
+ *   re-quoting.
  * Then the whole matrix is diffed against the previous one and written with a change log.
  */
 import Anthropic from '@anthropic-ai/sdk';
@@ -20,7 +23,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import path from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { z } from 'zod';
-import { unusablePage } from './check.js';
+import { requoteProblem, unusablePage } from './check.js';
 import { diffMatrices, renderChangesMarkdown } from './diff.js';
 import { Fetcher, toFetchableUrl, type FetchResult } from './fetch.js';
 import { buildSystemPrompt, buildUserPrompt, type SourceText } from './prompt.js';
@@ -268,8 +271,10 @@ async function verifyApp(
     const hit = prepared.get(toFetchableUrl(url));
     return hit ? Promise.resolve(hit) : fetchExtra(url, fetcher);
   };
-  const { cells, verifiedCount, demoted, restored, kept } = await reconcile(app.id, questions, output.cells, previous, lookup, todayIso());
-  console.log(`[${app.id}] ${verifiedCount} verified, ${demoted} demoted to unknown, ${restored} restored from previous, ${kept} kept because their source could not be read, ${cells.filter((c) => c.value === 'unknown').length} unknown`);
+  const { cells, verifiedCount, demoted, restored, kept, requote } = await reconcile(app.id, questions, output.cells, previous, lookup, todayIso());
+  console.log(
+    `[${app.id}] ${verifiedCount} verified, ${demoted} demoted to unknown, ${restored} restored from previous, ${kept} kept because their source could not be read, ${requote} kept for re-quoting (quote matches only with punctuation ignored), ${cells.filter((c) => c.value === 'unknown').length} unknown`,
+  );
   return { app: app.id, cells, failed: null, usage };
 }
 
@@ -282,6 +287,11 @@ export interface ReconcileResult {
   restored: number;
   /** Previous verified cells kept as they were because their page could not be read this run. */
   kept: number;
+  /**
+   * Previous verified cells kept as they were because their quote matches the page only with
+   * punctuation ignored (requoteProblem in check.ts): neither confirmed nor shown to be missing.
+   */
+  requote: number;
 }
 
 /**
@@ -294,6 +304,9 @@ export interface ReconcileResult {
  *   its page, the previous cell is kept (re-dated), so one flaky answer never erases good data.
  *   If that page cannot be read at all (lookup returns null), the previous cell is kept as it was,
  *   not re-dated: an unavailable page is not a page without the quote.
+ * - A quote that matches only when punctuation is ignored is never a confirmation (a cut at a comma
+ *   can hide an exception after it): a proposal is demoted with the re-quote reason; a previous cell
+ *   is kept as it was, like one on an unreadable page, and counted under `requote`.
  */
 export async function reconcile(
   appId: string,
@@ -309,6 +322,7 @@ export async function reconcile(
   let demoted = 0;
   let restored = 0;
   let kept = 0;
+  let requote = 0;
   for (const cap of questions) {
     const key = cellKey(appId, cap.id);
     const m = byCap.get(cap.id);
@@ -318,13 +332,15 @@ export async function reconcile(
       const url = m.evidence_url.trim();
       const page = isHttpUrl(url) ? await lookup(url) : null;
       const problems = quoteProblems(m.quote);
-      const found = page ? findQuote(page, m.quote).found : false;
-      if (problems.length === 0 && found) {
+      // A match with punctuation ignored is not a confirmation, as in check.ts and manual.ts.
+      const match = page ? findQuote(page, m.quote) : null;
+      const confirmed = match !== null && match.found && match.method !== 'compact';
+      if (problems.length === 0 && confirmed) {
         cell = { app: appId, question: cap.id, value: m.value, quote: m.quote.trim(), evidence_url: url, notes: m.notes.trim(), confidence: m.confidence, verified: true, verified_at: today };
         verifiedCount++;
       } else {
         demoted++;
-        const why = problems.length ? problems.join('; ') : page ? 'quote not found at source' : 'source not fetched';
+        const why = problems.length ? problems.join('; ') : !page ? 'source not fetched' : match?.method === 'compact' ? requoteProblem('the page') : 'quote not found at source';
         cell = { app: appId, question: cap.id, value: 'unknown', quote: '', evidence_url: '', notes: `UNVERIFIED (${why}); model proposed ${m.value}: ${m.notes.trim()}`, confidence: 'low', verified: false, verified_at: '' };
       }
     } else {
@@ -333,20 +349,27 @@ export async function reconcile(
 
     if (cell.value === 'unknown' && prev && prev.value !== 'unknown' && prev.quote && isHttpUrl(prev.evidence_url)) {
       const page = await lookup(prev.evidence_url);
-      if (page && findQuote(page, prev.quote).found) {
+      const match = page ? findQuote(page, prev.quote) : null;
+      if (match?.found && match.method !== 'compact') {
         // lookup() only reads live pages, so this is a live read: it supersedes any archive or
         // manual provenance, and a quote found again clears the missing-quote flag.
         const { verified_via: _via, archive_timestamp: _ts, quote_missing_since: _since, ...rest } = prev;
         cell = { ...rest, verified: true, verified_at: today };
         restored++;
-      } else if (page === null && prev.verified) {
+      } else if (prev.verified && (page === null || match?.method === 'compact')) {
+        // An unreadable page and a punctuation-only match alike neither confirm the cell nor show the
+        // quote is gone: the previous cell stays exactly as it was (check.ts: REQUOTE, cell untouched).
         cell = prev;
-        kept++;
+        if (page === null) kept++;
+        else {
+          requote++;
+          console.log(`[${appId}] REQUOTE ${cap.id} <${prev.evidence_url}>`);
+        }
       }
     }
     cells.push(cell);
   }
-  return { cells, verifiedCount, demoted, restored, kept };
+  return { cells, verifiedCount, demoted, restored, kept, requote };
 }
 
 const extraCache = new Map<string, Promise<PreparedText | null>>();
