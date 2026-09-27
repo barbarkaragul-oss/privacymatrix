@@ -237,6 +237,22 @@ async function api(token: string, method: string, url: string, body?: unknown, a
   return text ? JSON.parse(text) : null;
 }
 
+/**
+ * The GitHub noreply identity of an account. The bot's commits carry it, so the public history
+ * gets the pushing account's name and no address from the machine's own git configuration.
+ */
+export function noreplyIdentity(user: { id: number; login: string }): { name: string; email: string } {
+  return { name: user.login, email: `${user.id}+${user.login}@users.noreply.github.com` };
+}
+
+/** git -c arguments that make a commit carry the noreply identity of the account the token belongs to. */
+export async function commitIdentityArgs(): Promise<string[]> {
+  const user = (await api(githubToken(), 'GET', '/user')) as { id?: unknown; login?: unknown };
+  if (typeof user?.id !== 'number' || typeof user?.login !== 'string') throw new Error('GitHub did not say which account the token belongs to');
+  const who = noreplyIdentity({ id: user.id, login: user.login });
+  return ['-c', `user.name=${who.name}`, '-c', `user.email=${who.email}`];
+}
+
 const NOTE =
   "These apps' pages refuse requests from cloud IP ranges or serve them a page without its text, so this was checked by the residential re-check (scripts/residential.ts) and can only be re-quoted from a residential connection.";
 
@@ -377,6 +393,8 @@ export async function run(opts: Options): Promise<number> {
 
     let mainCommit = start;
     if (plan.commit !== 'none') {
+      // The commits carry the pushing account's GitHub noreply identity, never the machine's own.
+      const identity = await commitIdentityArgs();
       if (plan.commit === 'main+pr') {
         // main gets every date and flag; the demoted cells stay as they were until a human merges the PR.
         const before = JSON.parse(git('show', 'HEAD:data/matrix.json')) as MatrixFile;
@@ -387,7 +405,7 @@ export async function run(opts: Options): Promise<number> {
       if (git('status', '--porcelain', '--', ...DATA_PATHS)) {
         git('add', '--', ...DATA_PATHS);
         const what = plan.commit === 'main+pr' ? 'dates and flags; the demotions are in a pull request' : summary;
-        git('commit', '--quiet', '-m', `matrix: residential re-verification: ${what}`);
+        git(...identity, 'commit', '--quiet', '-m', `matrix: residential re-verification: ${what}`);
         try {
           git('push', '--quiet', 'origin', 'HEAD:main');
         } catch (err) {
@@ -402,7 +420,7 @@ export async function run(opts: Options): Promise<number> {
         writeJson('data/matrix.json', result);
         await npm('run', 'build');
         git('add', '--', ...DATA_PATHS);
-        git('commit', '--quiet', '-m', `matrix: residential re-verification demotes ${outcome.valueChanges} cell(s)`);
+        git(...identity, 'commit', '--quiet', '-m', `matrix: residential re-verification demotes ${outcome.valueChanges} cell(s)`);
         // The bot owns this branch: it is rebuilt from main on every run that demotes something.
         git('push', '--quiet', '--force', 'origin', `HEAD:refs/heads/${BOT_BRANCH}`);
         restore(mainCommit);
