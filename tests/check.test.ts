@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyAll, classifyCell, groupFetchErrors, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, UsageError, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
 
@@ -142,24 +142,43 @@ test('classifyCell with confirmOnly: a found quote counts, a missing one is an u
   assert.equal(classifyCell(cell('a', 'x', 'yes'), page).status, 'fail', 'without confirmOnly a missing quote is still a failure');
 });
 
-test('classifyAll: for a distrusted app, a page with no quote found is unreadable; a page with one found fails the rest', () => {
+test('classifyAll: for a distrusted app a missing quote is never a failure, even on a page where another quote was found', () => {
   const frame = 'https://shop.example/frame';
   const real = 'https://shop.example/real';
   const cells = [
     cell('a', 'x', 'yes', 'A documented sentence about the feature.', frame),
     cell('a', 'y', 'yes', 'Another sentence the vendor wrote down.', frame),
     cell('a', 'z', 'yes', 'A documented sentence about the feature.', real),
-    cell('a', 'w', 'yes', 'A sentence a pull request made up.', real),
+    cell('a', 'w', 'yes', 'A sentence the partial page left out.', real),
   ];
   const pages = new Map([
     // what Amazon sent the runner: the site's frame, matching no quote
     [frame, prepareText('Skip to Main content. Cart. Orders. Conditions of Use. Privacy Notice.')],
-    // the real page: one quote is there, so a missing one is a real miss
+    // one paragraph of the page arrived: it confirms z, and says nothing about w
     [real, prepareText('Intro. A documented sentence about the feature. Outro.')],
   ]);
   const byQuestion = (rs: CellReport[]) => Object.fromEntries(rs.map((r) => [r.question, r.status]));
-  assert.deepEqual(byQuestion(classifyAll(cells, pages, () => true)), { x: 'error', y: 'error', z: 'ok', w: 'fail' });
+  assert.deepEqual(byQuestion(classifyAll(cells, pages, () => true)), { x: 'error', y: 'error', z: 'ok', w: 'error' });
   assert.deepEqual(byQuestion(classifyAll(cells, pages, () => false)), { x: 'fail', y: 'fail', z: 'ok', w: 'fail' }, 'a trusted reader fails every miss');
+});
+
+test('classifyAll: a partial cloud page can no longer flag and then demote a blocked app\'s cell (Codex probe 2)', () => {
+  const url = 'https://example.invalid/privacy';
+  const anchor = cell('a', 'training', 'yes', 'Your privacy matters to our company.', url);
+  const absent = cell('a', 'deletion', 'yes', 'You can delete your history whenever you want.', url);
+  const partial = new Map([[url, prepareText('Your privacy matters to our company. Some other page text is missing.')]]);
+  const reports = classifyAll([anchor, absent], partial, () => true);
+  assert.deepEqual(reports.map((r) => r.status), ['ok', 'error']);
+  const first = applyFix([anchor, absent], reports, [], '2026-09-20');
+  const second = applyFix(first.cells, reports, [], '2026-09-27');
+  assert.equal(first.cells[1]!.quote_missing_since, undefined);
+  assert.equal(second.cells[1]!.value, 'yes');
+  assert.equal(second.cells[1]!.verified_at, '2026-09-01', 'an unreadable page leaves the cell exactly as it was');
+});
+
+test('classifyAll: a malformed quote still fails for a distrusted app', () => {
+  const r = classifyAll([cell('a', 'x', 'yes', 'too short')], new Map([['https://docs.example/page', prepareText('Some page text that is long enough to read.')]]), () => true);
+  assert.equal(r[0]!.status, 'fail');
 });
 
 // --- Internet Archive fallback -------------------------------------------------------------------
@@ -266,4 +285,94 @@ test('classifyCell will not confirm a quote from a capture on a punctuation-inse
   assert.equal(r.status, 'error');
   assert.equal(r.method, 'compact');
   assert.match(r.problems.join(' '), /punctuation is ignored/);
+});
+
+test('classifyCell will not confirm a quote from the live page on a punctuation-insensitive match either (Codex probe 6)', () => {
+  const quote = cell('a', 'x', 'yes', 'We never share your data.');
+  const live = classifyCell(quote, prepareText('We never share your data, except with advertising partners when you consent.'));
+  assert.equal(live.status, 'error');
+  assert.equal(live.method, 'compact');
+  assert.ok(needsRequote(live));
+  assert.match(live.problems.join(' '), /re-quote it exactly from the page/);
+  // ...and the cell is left exactly as it was: not re-dated, not flagged, not demoted.
+  const { cells: [kept], demoted, pending } = applyFix([quote], [live], [], '2026-09-28');
+  assert.deepEqual(kept, quote);
+  assert.equal(demoted, 0);
+  assert.equal(pending.length, 0);
+  // A malformed quote that only matches compactly is still a data error, and fails.
+  const malformed = classifyCell(cell('a', 'x', 'yes', `We never share your data${'!'.repeat(400)}`), prepareText('We never share your data, except when you consent.'));
+  assert.equal(malformed.status, 'fail');
+  // Exact and normalized matches are unchanged.
+  assert.equal(classifyCell(quote, prepareText('Intro. We never share your data. Outro.')).status, 'ok');
+  assert.equal(classifyCell(quote, prepareText('Intro. WE NEVER SHARE YOUR DATA. Outro.')).method, 'normalized');
+  assert.equal(needsRequote(classifyCell(quote, { error: 'HTTP 503' })), false);
+});
+
+// --- Pull-request gate (--changed-since) ---------------------------------------------------------
+
+const TODAY = '2026-09-28';
+const okReport = (c: Cell): CellReport => ({ app: c.app, question: c.question, value: c.value, status: 'ok', method: 'exact', evidence_url: c.evidence_url, problems: [] });
+const byKey = (cells: Cell[]) => new Map(cells.map((c) => [`${c.app}|${c.question}`, c]));
+
+test('changedCells: new cells and changed evidence count, notes-only edits and unknown cells do not', () => {
+  const base = [cell('a', 'x', 'yes'), cell('a', 'y', 'yes'), cell('a', 'z', 'yes'), cell('a', 'n', 'yes'), cell('a', 'd', 'yes')];
+  const head = [
+    { ...cell('a', 'x', 'yes'), quote: 'A different sentence someone typed in.' },
+    { ...cell('a', 'y', 'yes'), verified_at: '2026-09-27' },
+    cell('a', 'z', 'yes'),
+    { ...cell('a', 'n', 'yes'), notes: 'reworded note' },
+    { ...cell('a', 'd', 'yes'), verified_via: 'manual' as const },
+    cell('a', 'new', 'partial'),
+    cell('a', 'unk', 'unknown', '', ''),
+  ];
+  assert.deepEqual([...changedCells(base, head)].sort(), ['a|d', 'a|new', 'a|x', 'a|y']);
+});
+
+test('unverifiedChanges: an invented quote the cloud cannot confirm fails the pull request (Codex probe 1)', () => {
+  const invented = cell('example', 'training', 'yes', 'We invented this privacy guarantee for the audit.', 'https://example.invalid/privacy');
+  const reports = classifyAll([invented], new Map([['https://example.invalid/privacy', prepareText('This is an ordinary accessible policy page with some unrelated text.')]]), () => true);
+  assert.equal(reports[0]!.status, 'error', 'still not a failure of the cell itself');
+  const gate = unverifiedChanges(reports, new Set(['example|training']), byKey([invented]), new Set(), new Set(['example']), TODAY);
+  assert.equal(gate.unverified.length, 1);
+  assert.match(gate.unverified[0]!, /^UNVERIFIED example\/training: quote not found on the page/);
+  // A fetch error is reported as an unreadable page.
+  const down = unverifiedChanges([classifyCell(invented, { error: 'HTTP 503' })], new Set(['example|training']), byKey([invented]), new Set(), new Set(), TODAY);
+  assert.match(down.unverified[0]!, /page not readable \(fetch failed: HTTP 503\)/);
+});
+
+test('unverifiedChanges: unchanged cells on an unreadable page do not block the pull request', () => {
+  const c = cell('a', 'x', 'yes');
+  const gate = unverifiedChanges([classifyCell(c, { error: 'HTTP 503' })], new Set(), byKey([c]), new Set(), new Set(), TODAY);
+  assert.deepEqual(gate, { unverified: [], attested: [], confirmed: 0 });
+});
+
+test('unverifiedChanges: a confirmation from the live page or an archive capture passes', () => {
+  const live = cell('a', 'x', 'yes');
+  const archived = cell('a', 'y', 'yes');
+  const gate = unverifiedChanges([okReport(live), archiveOk('a', 'y', '20260921065036')], new Set(['a|x', 'a|y']), byKey([live, archived]), new Set(), new Set(), TODAY);
+  assert.deepEqual(gate, { unverified: [], attested: [], confirmed: 2 });
+});
+
+test('unverifiedChanges: a recent maintainer reading of an app the base marks blocked is attested, nothing else is', () => {
+  const miss = (c: Cell): CellReport => classifyCell(c, prepareText('A page from which the quote is absent, long enough to count.'), { confirmOnly: true });
+  const manual = (days: string, extra: Partial<Cell> = {}): Cell => ({ ...cell('b', 'x', 'yes'), verified_via: 'manual', verified_at: days, ...extra });
+  const run = (c: Cell, baseBlocked: string[], headBlocked = baseBlocked) => unverifiedChanges([miss(c)], new Set(['b|x']), byKey([c]), new Set(baseBlocked), new Set(headBlocked), TODAY);
+
+  const recent = run(manual('2026-09-21'), ['b']);
+  assert.deepEqual(recent.unverified, []);
+  assert.match(recent.attested[0]!, /^ATTESTED b\/x \(manual, 2026-09-21\)/);
+
+  assert.match(run(manual('2026-09-08'), ['b']).unverified[0]!, /not within 14 days/, '20 days old');
+  assert.equal(run(manual('2026-10-05'), ['b']).unverified.length, 1, 'a date in the future');
+  assert.equal(run(manual('2026-09-21'), []).unverified.length, 1, 'an app not marked blocked');
+  assert.equal(run(manual('2026-09-21', { verified: false }), ['b']).unverified.length, 1, 'verified: false');
+  assert.equal(run({ ...cell('b', 'x', 'yes'), verified_at: '2026-09-21' }, ['b']).unverified.length, 1, 'not a manual reading');
+  // Marking the app blocked in the same pull request does not open the exception.
+  assert.match(run(manual(TODAY), [], ['b']).unverified[0]!, /marked blocked_from_cloud in this change; review the flag first/);
+});
+
+test('parseArgs: --changed-since takes a ref and refuses --fix', () => {
+  assert.equal(parseArgs(['--changed-since', 'HEAD^1']).changedSince, 'HEAD^1');
+  assert.equal(parseArgs([]).changedSince, null);
+  assert.throws(() => parseArgs(['--fix', '--changed-since', 'origin/main']), (err: unknown) => err instanceof UsageError && /cannot be combined with --fix/.test(err.message));
 });

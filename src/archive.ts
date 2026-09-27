@@ -111,6 +111,34 @@ export async function latestCapture(url: string, timeoutMs = 20_000, cdxTimeoutM
   return parseAvailability(available, url) ?? { error: `CDX API: ${cdx.error}; the availability API's closest capture is not a 200` };
 }
 
+/** An address as the Wayback Machine may spell it back: any scheme, default port, case of the host, trailing slash, fragment. */
+function comparableAddress(address: string): string {
+  let s = address.replace(/#.*$/, '');
+  try {
+    s = decodeURI(s);
+  } catch {
+    // not percent-encoded consistently; compare as written
+  }
+  s = s.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+  const slash = s.indexOf('/');
+  const host = (slash < 0 ? s : s.slice(0, slash)).toLowerCase().replace(/:(80|443)$/, '');
+  return slash < 0 ? host : host + s.slice(slash);
+}
+
+/**
+ * Which capture a capture request actually read. The Wayback Machine answers a request for one
+ * timestamp by redirecting to the nearest capture it has, which can be days away, and follows the
+ * page's own redirects to captures of other addresses. The capture that was read is the one in the
+ * final address (finalUrl): its timestamp, when it is a capture of url, or the reason it is not.
+ */
+export function landedCapture(finalUrl: string, url: string): { timestamp: string } | { error: string } {
+  const m = /^https?:\/\/web\.archive\.org\/web\/(\d{14})(?:id_)?\/(.+)$/.exec(finalUrl);
+  if (!m) return { error: `capture redirected to an address that is not a Wayback capture (${finalUrl})` };
+  const [, timestamp, original] = m as unknown as [string, string, string];
+  if (comparableAddress(original) !== comparableAddress(url)) return { error: `capture redirected to a capture of another page (${original})` };
+  return { timestamp };
+}
+
 /** Fetches the raw capture as text, through the same HTML-to-text path as a live page. */
 export function fetchCapture(capture: Capture): Promise<FetchResult> {
   return fetchText(capture.rawUrl, { timeoutMs: 45_000, retries: 1 });

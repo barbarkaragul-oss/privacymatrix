@@ -1,12 +1,25 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { archiveRawUrl, archiveViewUrl, captureDate, latestCapture, parseAvailability, parseCdx } from '../src/archive.js';
+import { archiveRawUrl, archiveViewUrl, captureDate, landedCapture, latestCapture, parseAvailability, parseCdx } from '../src/archive.js';
 
 const URL_ = 'https://openai.com/policies/privacy-policy/';
 
 test('archiveRawUrl puts id_ right after the timestamp, so the capture comes back unmodified', () => {
   assert.equal(archiveRawUrl('20260921065036', URL_), 'https://web.archive.org/web/20260921065036id_/https://openai.com/policies/privacy-policy/');
   assert.equal(archiveViewUrl('20260921065036', URL_), 'https://web.archive.org/web/20260921065036/https://openai.com/policies/privacy-policy/');
+});
+
+test('landedCapture takes the timestamp from the capture actually read, not the one asked for', () => {
+  // The Wayback Machine redirects a request to the nearest capture it has.
+  assert.deepEqual(landedCapture('https://web.archive.org/web/20260917083000id_/https://openai.com/policies/privacy-policy/', URL_), { timestamp: '20260917083000' });
+  assert.deepEqual(landedCapture(archiveRawUrl('20260921065036', URL_), URL_), { timestamp: '20260921065036' });
+  // Spelled back with another scheme, a default port, no trailing slash: still the same page.
+  assert.deepEqual(landedCapture('http://web.archive.org/web/20260921065036id_/http://openai.com:80/policies/privacy-policy', URL_), { timestamp: '20260921065036' });
+  // A capture of the page's redirect target is not a capture of the cited page.
+  assert.match((landedCapture('https://web.archive.org/web/20260921065036id_/https://openai.com/', URL_) as { error: string }).error, /capture of another page/);
+  // Somewhere that is not a capture at all.
+  assert.match((landedCapture('https://archive.org/errors/blocked', URL_) as { error: string }).error, /not a Wayback capture/);
+  assert.match((landedCapture('https://web.archive.org.evil.example/web/20260921065036id_/https://openai.com/policies/privacy-policy/', URL_) as { error: string }).error, /not a Wayback capture/);
 });
 
 test('captureDate reads a 14-digit Wayback timestamp and rejects anything else', () => {

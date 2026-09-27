@@ -36,14 +36,22 @@ jobs:
 
   quotes:
     # Every quote in data/matrix.json must still be found at its source. Pages that cannot be
-    # fetched are reported, not failed, so a vendor outage does not block unrelated work.
+    # fetched are reported, not failed, so a vendor outage does not block unrelated work, except
+    # for cells whose evidence this pull request adds or changes: those must be confirmed (see
+    # "Evidence the checker cannot read" in CONTRIBUTING.md).
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          # The checkout is GitHub's merge of the pull request into its base; its first parent is
+          # that base, which is what the pull request's changes are measured against. Not
+          # origin/<base>: the residential task commits dates to main daily, and a main that moved
+          # after the merge was made would count those dates as changes.
+          fetch-depth: 2
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run check
+      - run: npm run check -- --changed-since HEAD^1

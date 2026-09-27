@@ -8,6 +8,8 @@
  *   1. exact substring
  *   2. normalized substring (unicode punctuation folded, markdown syntax removed, case-insensitive)
  *   3. compact substring (only letters and digits kept) — catches punctuation-only differences
+ * A compact-only match is not a confirmation: punctuation can carry meaning ("data." against "data,
+ * except with partners"), so the checker and the reading page report it for re-quoting instead.
  */
 
 export type MatchMethod = 'exact' | 'normalized' | 'compact' | 'none';

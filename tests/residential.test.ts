@@ -49,8 +49,10 @@ test('withoutDemotions keeps every other change and puts the demoted cells back 
 });
 
 test('summarize reads like the weekly run summary', () => {
-  assert.equal(summarize({ ok: 39, errors: 0 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: true }), '0 value changes, 39 quotes present, 0 newly missing, 0 cells on unreachable pages');
-  assert.equal(summarize({ ok: 38, errors: 1 }, { valueChanges: 1, pending: 1, flagged: 1, unreachable: 1, dirty: true }), '1 value change, 38 quotes present, 1 newly missing, 1 cells on unreachable pages');
+  assert.equal(summarize({ ok: 39 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: true }), '0 value changes, 39 quotes present, 0 newly missing, 0 cells on unreachable pages');
+  assert.equal(summarize({ ok: 38 }, { valueChanges: 1, pending: 1, flagged: 1, unreachable: 1, dirty: true }), '1 value change, 38 quotes present, 1 newly missing, 1 cells on unreachable pages');
+  // A quote to re-quote is not a cell on an unreachable page.
+  assert.equal(summarize({ ok: 38, requote: 1 }, { valueChanges: 0, pending: 0, flagged: 0, unreachable: 0, dirty: true }), '0 value changes, 38 quotes present, 0 newly missing, 0 cells on unreachable pages, 1 to re-quote');
 });
 
 test('repoSlug reads https and ssh GitHub remotes', () => {
