@@ -1,6 +1,6 @@
 {
-  "run_at": "2026-09-23T18:05:00.000Z",
-  "model": "none (ChatGPT sources re-read by hand on 2026-09-23 from a connection they do not block; six cells re-quoted, one cell’s notes corrected, no value changed)",
+  "run_at": "2026-09-28T16:50:46.360Z",
+  "model": "none (mechanical quote re-check)",
   "changes": [],
   "pending": [],
   "stats": {
@@ -9,6 +9,6 @@
     "cells_total": 392,
     "cells_verified": 314,
     "cells_unknown": 78,
-    "cells_verified_via_archive": 0
+    "cells_verified_via_archive": 8
   }
 }
