@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-10-07T13:45:30.816Z",
+  "generated_at": "2026-10-07T18:14:51.632Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -4121,13 +4121,12 @@
       "app": "genspark",
       "question": "business_no_training",
       "value": "yes",
-      "quote": "No. Both Team and Enterprise accounts are automatically opted out of model training. Per Genspark's Data Processing Agreement (DPA), your prompts and content are never used to train Genspark models.",
+      "quote": "Both plans are automatically opted out of model training; Genspark doesn't use your team's content to train models.",
       "evidence_url": "https://www.genspark.ai/helpcenter/team-enterprise-plans",
-      "notes": "Applies to Team and Enterprise plans by default; subprocessors (OpenAI, Anthropic, Google) are said to be bound by no-training agreements with Zero Data Retention where applicable. Caveat: the same article says a DPA is \"not currently available\" on Team (only Enterprise), so the Team guarantee rests on the help-center statement rather than a signed DPA; Genspark documents no public API offering.",
+      "notes": "Applies to Team and Enterprise plans by default. The article routes any team that needs a DPA to the Enterprise plan, so the Team guarantee rests on this help-center statement rather than a signed DPA; Genspark documents no public API offering.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-21",
-      "quote_missing_since": "2026-10-07"
+      "verified_at": "2026-10-07"
     },
     {
       "app": "genspark",
