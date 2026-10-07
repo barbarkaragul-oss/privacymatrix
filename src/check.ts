@@ -24,7 +24,10 @@
  *                                 evidence differs from <ref> is confirmed in this run (or, for an
  *                                 app <ref> marks blocked_from_cloud, rests on a maintainer's reading
  *                                 of exactly that evidence, in a pull request a maintainer opened);
- *                                 see unverifiedChanges. Not with --fix.
+ *                                 see unverifiedChanges. Removing or re-dating a quote_missing_since
+ *                                 flag counts as a change (see changedCells). A quote missing on a
+ *                                 cell the pull request did not change fails only if no run has
+ *                                 flagged it yet (see untouchedFailures). Not with --fix.
  *
  * A page that cannot be fetched (timeout, 5xx, bot block) is reported as an error and never
  * demotes a cell: only a successfully fetched page that no longer contains the quote does, and
@@ -304,6 +307,9 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
     // read live (unreachable, or read only from an archive capture) still fails a pull request.
     if (cell.value !== 'unknown' && cell.quote.trim()) for (const p of quoteProblems(cell.quote)) problems.push(`${key}: ${p}`);
     if (cell.value === 'unknown' && cell.verified) problems.push(`${key}: unknown cells cannot be verified`);
+    // The site would show it as a verbatim quote, yet the gate never checks an unknown cell's quote.
+    // A demotion moves the old quote into the notes.
+    if (cell.value === 'unknown' && cell.quote.trim()) problems.push(`${key}: unknown cells carry no quote (keep a former quote in the notes)`);
   }
   const missing: string[] = [];
   for (const a of apps) for (const c of questions) if (!seen.has(cellKey(a.id, c.id))) missing.push(cellKey(a.id, c.id));
@@ -316,17 +322,32 @@ export function structuralProblems(cells: Cell[], apps: App[], questions: Questi
  */
 const EVIDENCE_FIELDS = ['value', 'quote', 'evidence_url', 'verified', 'verified_at', 'verified_via', 'archive_timestamp', 'manual_fingerprint'] as const;
 
-/** Keys of the quoted cells in head whose evidence is new or differs from base (a notes-only edit is not a change). */
-export function changedCells(base: Cell[], head: Cell[]): Set<string> {
+/**
+ * Keys of the quoted cells in head whose evidence is new or differs from base (a notes-only edit is
+ * not a change). The missing-quote flag counts too, except in the one shape a run produces:
+ *   - removed: claims the quote is back, so the gate wants it confirmed;
+ *   - re-dated: moves the demotion clock (a run never re-dates a flag; applyFix keeps the first date);
+ *   - added, dated today or within GRACE_DAYS before: what the weekly run or the residential task
+ *     writes when it cannot find a quote, and its pull request must be able to carry it. Added with
+ *     any other date (a future one would put the demotion off for good) it is a change.
+ */
+export function changedCells(base: Cell[], head: Cell[], today: string = todayIso()): Set<string> {
   const before = new Map(base.map((c) => [cellKey(c.app, c.question), c]));
   const out = new Set<string>();
   for (const c of head) {
     if (c.value === 'unknown' || !c.quote.trim()) continue;
     const key = cellKey(c.app, c.question);
     const old = before.get(key);
-    if (!old || EVIDENCE_FIELDS.some((f) => old[f] !== c[f])) out.add(key);
+    if (!old || flagChanged(old.quote_missing_since, c.quote_missing_since, today) || EVIDENCE_FIELDS.some((f) => old[f] !== c[f])) out.add(key);
   }
   return out;
+}
+
+function flagChanged(was: string | undefined, now: string | undefined, today: string): boolean {
+  if (was === now) return false;
+  if (was) return true;
+  const age = daysBetween(now ?? '', today);
+  return !(age >= 0 && age <= GRACE_DAYS);
 }
 
 /** How long a maintainer's reading of a blocked page stands in for the check on a pull request. */
@@ -364,6 +385,9 @@ function unverifiedReason(r: CellReport | undefined): string {
  *   - this run could not read the page, and the quote is neither malformed nor a punctuation-only
  *     match (a reading stands in for an unreadable page, not for a quote that needs fixing);
  *   - the pull request was opened by a maintainer (authority; see authorityFromEnv).
+ * A pull request that removes a missing-quote flag (unflaggedSince: cell key -> the base flag's date)
+ * claims the quote came back after that date, so neither an archive capture nor a reading from
+ * before it confirms the cell.
  */
 export function unverifiedChanges(
   reports: CellReport[],
@@ -373,6 +397,7 @@ export function unverifiedChanges(
   headBlocked: Set<string>,
   today: string,
   authority: Authority = LOCAL_AUTHORITY,
+  unflaggedSince: Map<string, string> = new Map(),
 ): { unverified: string[]; attested: string[]; confirmed: number } {
   const byKey = new Map(reports.map((r) => [cellKey(r.app, r.question), r]));
   const unverified: string[] = [];
@@ -380,6 +405,12 @@ export function unverifiedChanges(
   let confirmed = 0;
   for (const key of [...changed].sort()) {
     const r = byKey.get(key);
+    const flaggedSince = unflaggedSince.get(key);
+    const captured = r?.via === 'archive' ? captureDate(r.archive_timestamp ?? '') : null;
+    if (r?.status === 'ok' && flaggedSince && r.via === 'archive' && !(captured && captured > flaggedSince)) {
+      unverified.push(`UNVERIFIED ${key.replace('|', '/')}: the pull request removes the missing-quote flag of ${flaggedSince}, and the only confirmation is Internet Archive capture ${r.archive_timestamp ?? '?'}, which is not later than the flag and cannot show the quote came back`);
+      continue;
+    }
     if (r?.status === 'ok') {
       confirmed++;
       continue;
@@ -396,7 +427,9 @@ export function unverifiedChanges(
     // The reading must be for this very evidence: the fingerprint covers value, quote, URL and date,
     // so any later change of them, in this pull request or another, needs a new reading.
     const bound = !!cell?.manual_fingerprint && cell.manual_fingerprint === fingerprint(cell);
-    if (cell && manual && baseBlocked.has(cell.app) && authority.allowed && unreadable && bound && age >= 0 && age <= ATTEST_DAYS) {
+    // Removing a flag needs a reading taken after the quote went missing.
+    const afterFlag = !flaggedSince || (!!cell?.verified_at && cell.verified_at > flaggedSince);
+    if (cell && manual && baseBlocked.has(cell.app) && authority.allowed && unreadable && bound && afterFlag && age >= 0 && age <= ATTEST_DAYS) {
       attested.push(`ATTESTED ${label} (manual, ${cell.verified_at}, fp ${cell.manual_fingerprint?.slice(0, 8)}; vouched for by ${authority.by}): ${unverifiedReason(r)}`);
       continue;
     }
@@ -407,6 +440,7 @@ export function unverifiedChanges(
       else if (!unreadable) why += " (a maintainer's reading stands in only for a page the checker could not read)";
       else if (!cell.manual_fingerprint) why += ' (no record of which quote the reading covers; read the page again and run npm run attest)';
       else if (!bound) why += " (the reading covers a different value, quote, URL or date; read the page again and run npm run attest)";
+      else if (!afterFlag) why += ` (the pull request removes the missing-quote flag of ${flaggedSince}, and the reading of ${cell.verified_at || 'no date'} is not later than it; read the page again and run npm run attest)`;
       else if (age < 0) why += ` (manual reading of ${cell.verified_at} is dated after today, UTC)`;
       else why += ` (manual reading of ${cell.verified_at || 'no date'} is not within ${ATTEST_DAYS} days)`;
     }
@@ -551,14 +585,21 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   const inScope = (c: Cell): boolean => requested(c) && (!due || due.has(c.evidence_url));
   const targets = matrix.cells.filter(inScope);
   // Read before any page is fetched, so a bad ref fails at once.
-  let base: { changed: Set<string>; blocked: Set<string> } | null = null;
+  let base: { changed: Set<string>; blocked: Set<string>; unflaggedSince: Map<string, string> } | null = null;
   if (opts.changedSince) {
     const baseCells = (readAtRef(opts.changedSince, 'data/matrix.json') as { cells?: unknown }).cells;
     const baseApps = (readAtRef(opts.changedSince, 'data/apps.json') as { apps?: unknown }).apps;
     if (!Array.isArray(baseCells) || !Array.isArray(baseApps)) throw new UsageError(`--changed-since: data/matrix.json or data/apps.json at ${opts.changedSince} has no cells or apps`);
+    const headByKey = new Map(targets.map((c) => [cellKey(c.app, c.question), c]));
+    const unflaggedSince = new Map<string, string>();
+    for (const old of baseCells as Cell[]) {
+      const now = headByKey.get(cellKey(old.app, old.question));
+      if (old.quote_missing_since && now && !now.quote_missing_since) unflaggedSince.set(cellKey(old.app, old.question), old.quote_missing_since);
+    }
     base = {
       changed: changedCells(baseCells as Cell[], targets),
       blocked: new Set((baseApps as App[]).filter((a) => a.blocked_from_cloud).map((a) => a.id)),
+      unflaggedSince,
     };
   }
   // From a residential connection: one request at a time, at least 1.2 s apart (help.openai.com's
@@ -646,10 +687,11 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   );
 
   let unverified: string[] = [];
+  let gatedFailures = failures.length;
   if (opts.changedSince && base) {
     const authority = authorityFromEnv(process.env);
     if (authority.allowed && process.env.GITHUB_ACTIONS !== 'true') console.log("  (a maintainer's reading is accepted here because this is a local run; CI accepts it only in a pull request opened by a maintainer)");
-    const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso(), authority);
+    const gate = unverifiedChanges(reports, base.changed, new Map(targets.map((c) => [cellKey(c.app, c.question), c])), base.blocked, blockedApps, todayIso(), authority, base.unflaggedSince);
     unverified = gate.unverified;
     for (const line of [...gate.attested, ...gate.unverified]) console.log(`  ${line}`);
     const scoped = [opts.app ? `--app ${opts.app}` : '', opts.onlyBlocked ? '--only-blocked' : ''].filter(Boolean).join(' ');
@@ -657,11 +699,41 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
     const tally = `Changed since ${opts.changedSince}: ${base.changed.size} quoted cell${base.changed.size === 1 ? '' : 's'}, ${gate.confirmed} confirmed, ${gate.attested.length} attested by a maintainer, ${gate.unverified.length} unverified${scopeNote}`;
     console.log(tally);
     if (gate.unverified.length) console.log(`${gate.unverified.length} changed cell${gate.unverified.length === 1 ? '' : 's'} could not be verified; see CONTRIBUTING.md, "Evidence the checker cannot read"`);
+    // A vendor that rewrites a page breaks a quote whatever pull request happens to be open. Once a
+    // run has flagged it (quote_missing_since, in this pull request or its base) it is reported, not
+    // failed: otherwise the weekly pull request that carries the flag would fail on the quote it
+    // reports. A miss no run has flagged still fails: it is either news (merge the pull request that
+    // flags it, then re-run this check) or this pull request's code broke quote matching.
+    const stray = untouchedFailures(failures, base.changed, new Set(targets.filter((c) => c.quote_missing_since).map((c) => cellKey(c.app, c.question))));
+    gatedFailures = stray.unflagged.length;
+    const list = (rs: CellReport[]) => rs.map((r) => `${r.app}/${r.question} <${r.evidence_url}>`).join(', ');
+    if (stray.flagged.length) {
+      console.log(`${stray.flagged.length} quote${stray.flagged.length === 1 ? '' : 's'} missing on unchanged cells that already carry the missing-quote flag (reported, not failed): ${list(stray.flagged)}`);
+    }
+    if (stray.unflagged.length) {
+      console.log(
+        `${stray.unflagged.length} quote${stray.unflagged.length === 1 ? '' : 's'} missing on unchanged cells that no run has flagged yet; this fails the check. Either the vendor changed the page (merge the pull request that flags it, then re-run) or a change here broke quote matching: ${list(stray.unflagged)}`,
+      );
+    }
     // Shown on the pull request's checks page, so the reviewer sees what was vouched for rather than checked.
     const summaryFile = process.env.GITHUB_STEP_SUMMARY;
     if (summaryFile) {
       const lines = [...gate.attested, ...gate.unverified].map((l) => `- ${l}`);
-      appendFileSync(summaryFile, [`### Changed evidence`, '', tally, '', ...lines, ''].join('\n'), 'utf8');
+      const section = (title: string, rs: CellReport[]) => (rs.length ? [`### ${title}`, '', ...rs.map((r) => `- ${r.app}/${r.question}: ${r.evidence_url}`), ''] : []);
+      appendFileSync(
+        summaryFile,
+        [
+          `### Changed evidence`,
+          '',
+          tally,
+          '',
+          ...lines,
+          '',
+          ...section('Failed quotes on unchanged cells no run has flagged (fail the check)', stray.unflagged),
+          ...section('Failed quotes on unchanged cells already flagged (reported only)', stray.flagged),
+        ].join('\n'),
+        'utf8',
+      );
     }
   }
 
@@ -733,8 +805,31 @@ export async function runCheck(opts: CheckOptions): Promise<number> {
   saveJson(path.join(DATA_DIR, 'check-report.json'), report);
   if (opts.sourceState && sourceState) saveSourceState(opts.sourceState, updateSourceState(sourceState, signatures, reports, report.run_at));
 
-  const bad = failures.length + structural.length + (opts.fix ? 0 : missing.length) + unverified.length;
-  return bad > 0 && !opts.soft ? 1 : 0;
+  return exitCode({ failed: gatedFailures, structural: structural.length, missing: missing.length, unverified: unverified.length }, { fix: Boolean(opts.fix), soft: Boolean(opts.soft) });
+}
+
+/**
+ * The failed cells (a quote missing from a page that was read, or malformed) that the pull request
+ * did not change, split by whether a run has already flagged them (quote_missing_since in head).
+ */
+export function untouchedFailures(failures: CellReport[], changed: Set<string>, flagged: Set<string>): { flagged: CellReport[]; unflagged: CellReport[] } {
+  const untouched = failures.filter((r) => !changed.has(cellKey(r.app, r.question)));
+  return {
+    flagged: untouched.filter((r) => flagged.has(cellKey(r.app, r.question))),
+    unflagged: untouched.filter((r) => !flagged.has(cellKey(r.app, r.question))),
+  };
+}
+
+/**
+ * The exit code. `failed` is every failed quote for a plain check; for the pull-request gate it is
+ * only the failed quotes on unchanged cells no run has flagged (see untouchedFailures), since a changed
+ * cell that fails is among the unverified. Structural problems fail every mode; missing cells fail
+ * unless --fix adds them; --soft never fails.
+ */
+export function exitCode(counts: { failed: number; structural: number; missing: number; unverified: number }, opts: { fix: boolean; soft: boolean }): 0 | 1 {
+  if (opts.soft) return 0;
+  const bad = counts.failed + counts.structural + (opts.fix ? 0 : counts.missing) + counts.unverified;
+  return bad > 0 ? 1 : 0;
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]).endsWith(path.join('src', 'check.ts'));
