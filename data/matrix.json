@@ -655,7 +655,9 @@
       "notes": "The same article states that for Free, Perplexity Pro and Perplexity Max users the 'AI Data Retention' setting is enabled by default and 'Some data may be used to train AI models and improve search quality, unless you opt out through Account Settings'. The Privacy Notice lists 'Improve or create services and products, including our AI models' as a use of data. Only Enterprise data is excluded without action.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "95186fdd9786582b02be0a3eeb4aff64"
     },
     {
       "app": "perplexity",
@@ -666,7 +668,9 @@
       "notes": "Free, Pro and Max users have a self-service 'AI data retention' toggle (Account settings > Preferences; the Memory article calls the same control Settings > Preferences > Artificial Intelligence) that stops their data being used for AI training. The article states that opt-outs apply only to data collected after the opt-out date and that previously collected training data cannot be deleted, which the revised rubric still counts as YES (prospective settings count; earlier conversations are not covered). Enterprise data is excluded without any action; Incognito mode is an additional per-session option.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "2cf7130d2c1fa2730880c9e81683f3af"
     },
     {
       "app": "perplexity",
@@ -831,7 +835,9 @@
       "notes": "Training is on unless the user turns off 'Improve the model' (Settings > Data Controls); the Europe addendum lists training under legitimate interests rather than consent, and the Terms say unauthenticated users 'grant us full rights' to use their data for training. Private Chat content and business/enterprise data are excluded.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "e608917ca9ad8b52897698d7bd9e87a0"
     },
     {
       "app": "grok",
@@ -842,7 +848,9 @@
       "notes": "A self-service 'Improve the model' toggle exists in the mobile app (Settings > Data Controls) and on grok.com (Settings > Data); the FAQ says it stops training on new conversations only, that Private Chat is an alternative, and that voluntarily submitted feedback may still be used. Caveats: unauthenticated users in some regions outside the EU/UK cannot opt out, and Grok on X uses X's own setting. Under the revised rubric a documented prospective setting counts as YES; the unauthenticated limitation keeps confidence at medium.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "93d441c3a562092dca480b425bd6794c"
     },
     {
       "app": "grok",
@@ -897,7 +905,9 @@
       "notes": "FAQ also states 'you can delete your account at any time' and gives in-product steps: hold a conversation > 'Delete Conversation', Settings > Data Controls > 'Delete All Conversations' and 'Delete Account' (app), or the trash button and Settings buttons on grok.com. Grok on X deletion goes through X.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "f7ba04bf44038df8c38cb6548abb1b45"
     },
     {
       "app": "grok",
@@ -952,7 +962,9 @@
       "notes": "Human review is disclosed and limited to 'authorized personnel', but the stated purposes include 'improving model performance' / 'improving product features' (Terms), which is broader than safety, abuse, legal or user-initiated support, so partial per the rubric.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27"
+      "verified_at": "2026-10-07",
+      "verified_via": "manual",
+      "manual_fingerprint": "aa590df17cd4769214d1e01d652b5e67"
     },
     {
       "app": "grok",
