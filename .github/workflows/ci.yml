@@ -50,10 +50,12 @@ jobs:
           fi
 
   quotes:
-    # Every quote in data/matrix.json must still be found at its source. Pages that cannot be
-    # fetched are reported, not failed, so a vendor outage does not block unrelated work, except
-    # for cells whose evidence this pull request adds or changes: those must be confirmed (see
-    # "Evidence the checker cannot read" in CONTRIBUTING.md).
+    # Every cell whose evidence this pull request adds or changes (removing or re-dating a
+    # missing-quote flag included) must be confirmed at its source (see "Evidence the checker cannot
+    # read" in CONTRIBUTING.md). On cells it does not change, a page that cannot be fetched is only
+    # reported, so a vendor outage does not block unrelated work, and so is a missing quote a run has
+    # already flagged, so the weekly pull request that carries the flag can pass. A missing quote no
+    # run has flagged, structural problems and missing cells still fail.
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:

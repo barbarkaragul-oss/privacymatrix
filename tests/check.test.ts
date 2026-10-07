@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, authorityFromEnv, UsageError, structuralProblems, unusablePage, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, authorityFromEnv, UsageError, structuralProblems, unusablePage, exitCode, untouchedFailures, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
 import { fingerprint } from '../src/fingerprint.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
@@ -333,6 +333,81 @@ test('changedCells: new cells and changed evidence count, notes-only edits and u
   const noVia = { ...withVia };
   delete noVia.verified_via;
   assert.deepEqual([...changedCells([withVia, withTs], [noVia, { ...withTs, archive_timestamp: '20260101000000' }])].sort(), ['a|t', 'a|v']);
+});
+
+test('changedCells: a missing-quote flag counts as a change except when added as a run adds it', () => {
+  const T = '2026-10-07';
+  const flagged = (since: string): Cell => ({ ...cell('a', 'x', 'yes'), quote_missing_since: since });
+  const plain = cell('a', 'x', 'yes');
+  const changed = (base: Cell, head: Cell) => [...changedCells([base], [head], T)];
+  // Deleting the flag claims the quote is back: the gate must confirm it.
+  assert.deepEqual(changed(flagged('2026-10-01'), plain), ['a|x']);
+  // Re-dating it moves the demotion clock; a run never does that.
+  assert.deepEqual(changed(flagged('2026-10-01'), flagged('2099-01-01')), ['a|x'], 'pushed into the future');
+  assert.deepEqual(changed(flagged('2026-10-01'), flagged('2026-10-05')), ['a|x'], 'pushed later');
+  assert.deepEqual(changed(flagged('2026-10-05'), flagged('2026-09-01')), ['a|x'], 'pulled earlier');
+  assert.deepEqual(changed(flagged('2026-10-01'), flagged('2026-10-01')), []);
+  // Added as the weekly run or the residential task adds it: today, or within the grace period.
+  assert.deepEqual(changed(plain, flagged(T)), []);
+  assert.deepEqual(changed(plain, flagged('2026-10-01')), [], `${GRACE_DAYS} days ago`);
+  // Added with any other date it is a claim of its own.
+  assert.deepEqual(changed(plain, flagged('2026-09-30')), ['a|x'], 'older than the grace period');
+  assert.deepEqual(changed(plain, flagged('2026-10-08')), ['a|x'], 'in the future');
+  assert.deepEqual(changed(plain, flagged('soon')), ['a|x'], 'not a date');
+  // An unknown cell has no quote to confirm, flag or not.
+  const unknownFlagged: Cell = { ...cell('a', 'u', 'unknown', '', ''), quote_missing_since: '2026-10-07' };
+  assert.deepEqual([...changedCells([unknownFlagged], [cell('a', 'u', 'unknown', '', '')], T)], []);
+});
+
+test('untouchedFailures splits failed quotes on unchanged cells by whether a run has flagged them', () => {
+  // 2026-10-07: Genspark rewrote a page; the weekly pull request that flagged the quote failed its own check on it.
+  const reports = [missingReport('a', 'changed', 'yes'), missingReport('a', 'flagged', 'no'), missingReport('a', 'news', 'no')];
+  const split = untouchedFailures(reports, new Set(['a|changed']), new Set(['a|flagged', 'a|changed']));
+  assert.deepEqual(split.flagged.map((r) => r.question), ['flagged'], 'reported, not failed');
+  assert.deepEqual(split.unflagged.map((r) => r.question), ['news'], 'still fails: a vendor change no run has flagged, or broken matching');
+  // A changed cell is the gate's business (unverifiedChanges), flag or not.
+  assert.ok(![...split.flagged, ...split.unflagged].some((r) => r.question === 'changed'));
+});
+
+test('exitCode: failed, structural, missing and unverified fail; --fix forgives missing cells; --soft never fails', () => {
+  const none = { failed: 0, structural: 0, missing: 0, unverified: 0 };
+  const o = { fix: false, soft: false };
+  assert.equal(exitCode(none, o), 0);
+  for (const k of ['failed', 'structural', 'missing', 'unverified'] as const) assert.equal(exitCode({ ...none, [k]: 1 }, o), 1, k);
+  assert.equal(exitCode({ ...none, missing: 1 }, { ...o, fix: true }), 0);
+  assert.equal(exitCode({ ...none, structural: 1 }, { ...o, fix: true }), 1);
+  assert.equal(exitCode({ failed: 3, structural: 1, missing: 1, unverified: 2 }, { ...o, soft: true }), 0);
+});
+
+test('unverifiedChanges: removing a flag needs a confirmation from after the flag', () => {
+  const c = cell('a', 'x', 'yes');
+  const removed = new Map([['a|x', '2026-09-20']]);
+  const gate = (r: CellReport, cells: Cell[] = [c], since = removed) => unverifiedChanges([r], new Set(['a|x']), byKey(cells), new Set(['a']), new Set(['a']), TODAY, undefined, since);
+  // A live read is today's.
+  assert.equal(gate(okReport(c)).confirmed, 1);
+  // A capture from before the flag, or the same day, cannot show the quote came back.
+  assert.match(gate(archiveOk('a', 'x', '20260915000000')).unverified[0]!, /removes the missing-quote flag of 2026-09-20.*not later than the flag/);
+  assert.equal(gate(archiveOk('a', 'x', '20260920120000')).unverified.length, 1, 'same day');
+  assert.equal(gate(archiveOk('a', 'x', '20260921000000')).confirmed, 1, 'a later capture confirms');
+  // Without a removed flag, an older capture confirms as before.
+  assert.equal(gate(archiveOk('a', 'x', '20260915000000'), [c], new Map()).confirmed, 1);
+  // A maintainer's reading from before the flag does not stand in for one after it.
+  const read = (date: string): Cell => {
+    const m: Cell = { ...c, verified_via: 'manual', verified_at: date };
+    return { ...m, manual_fingerprint: fingerprint(m) };
+  };
+  const unreadable = (m: Cell) => classifyCell(m, { error: 'HTTP 403' });
+  const before = read('2026-09-19');
+  assert.match(gate(unreadable(before), [before]).unverified[0]!, /reading of 2026-09-19 is not later than it/);
+  const after = read('2026-09-21');
+  assert.equal(gate(unreadable(after), [after]).attested.length, 1);
+});
+
+test('structuralProblems: an unknown cell carries no quote', () => {
+  const apps = [{ id: 'a', name: 'A', vendor: 'V', homepage: 'https://a.example', repo: null, sources: [] }] as unknown as App[];
+  const qs = [{ id: 'x', group: 'g', name: 'X', question: 'Q?', rubric: 'R' }] as unknown as Question[];
+  const { problems } = structuralProblems([{ ...cell('a', 'x', 'unknown', 'An invented sentence shown as verbatim.', 'https://a.example/p'), verified: false, verified_at: '' }], apps, qs);
+  assert.ok(problems.some((p) => p === 'a|x: unknown cells carry no quote (keep a former quote in the notes)'), problems.join('; '));
 });
 
 test('unverifiedChanges: an invented quote the cloud cannot confirm fails the pull request (Codex probe 1)', () => {
