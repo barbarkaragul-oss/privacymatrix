@@ -1,15 +1,8 @@
 {
-  "run_at": "2026-10-07T13:45:30.816Z",
+  "run_at": "2026-10-12T17:52:23.008Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
-  "pending": [
-    {
-      "app": "genspark",
-      "question": "business_no_training",
-      "evidence_url": "https://www.genspark.ai/helpcenter/team-enterprise-plans",
-      "since": "2026-10-07"
-    }
-  ],
+  "pending": [],
   "stats": {
     "apps_checked": 28,
     "apps_failed": [],
