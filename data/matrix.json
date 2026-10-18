@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-10-17T17:02:06.822Z",
+  "generated_at": "2026-10-18T17:02:42.684Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -655,7 +655,7 @@
       "notes": "The same article states that for Free, Perplexity Pro and Perplexity Max users the 'AI Data Retention' setting is enabled by default and 'Some data may be used to train AI models and improve search quality, unless you opt out through Account Settings'. The Privacy Notice lists 'Improve or create services and products, including our AI models' as a use of data. Only Enterprise data is excluded without action.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -666,7 +666,7 @@
       "notes": "Free, Pro and Max users have a self-service 'AI data retention' toggle (Account settings > Preferences; the Memory article calls the same control Settings > Preferences > Artificial Intelligence) that stops their data being used for AI training. The article states that opt-outs apply only to data collected after the opt-out date and that previously collected training data cannot be deleted, which the revised rubric still counts as YES (prospective settings count; earlier conversations are not covered). Enterprise data is excluded without any action; Incognito mode is an additional per-session option.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -677,7 +677,7 @@
       "notes": "The help article says uploaded files are used only to customise responses, but the Privacy Notice lists 'uploads' under User Content that it processes and lists improving 'our AI models' as a purpose, and the training opt-out article never says whether the toggle covers files. Documents are not fully consistent, so partial rather than yes. Files attached to sessions are retained 30 days (7 days for Enterprise Pro).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -688,7 +688,7 @@
       "notes": "Enterprise Terms 'Model Training' clause; the help center repeats that Enterprise data is 'never' used for training and the API docs (docs.perplexity.ai/docs/resources/privacy-security) state a Zero Data Retention policy for the Chat Completions API with no training on customer data. Applies to Enterprise Pro/Max and API; does not cover individual Pro/Max plans.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -699,7 +699,7 @@
       "notes": "Incognito mode exists in the app and web; sessions 'expire within 24 hours and are not recoverable' (Incognito Mode Troubleshooting article) and are not saved to history or memory. No document explicitly states that incognito queries are excluded from model training, so the training half of the rubric is not confirmed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -710,7 +710,7 @@
       "notes": "Settings > Memory offers separate toggles for 'Use search history' and 'Notes' (memory), a 'Manage memories' view to search and delete individual entries, and clear-all. Turning memory off does not clear existing memories; a log of cleared memories may be kept up to 30 days for safety/debugging. Memory content may be used for training unless 'AI Data Retention' is off.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -721,7 +721,7 @@
       "notes": "Account deletion is self-service at perplexity.ai/account/details; individual threads, all threads, projects and pages can be deleted from the Library/History menu. Files can only be deleted by deleting the session (or via a form for immediate deletion).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -732,7 +732,7 @@
       "notes": "Self-service 'Export my data' button at https://www.perplexity.ai/account/details, described as covering the Right to Access; the article does not itemise whether the export contains all threads. Formal portability requests can also go through the Data Privacy Form.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -743,7 +743,7 @@
       "notes": "A 30-day window is stated for account deletion (and files expire after 30 days), but no timeline is given for deleting individual threads, and the Privacy Notice says data may be kept 'to comply with legal obligations, resolve disputes, enforce agreements, or for other business purposes' and in backups, which is broader than legal/safety holds.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -754,7 +754,7 @@
       "notes": "The July 2026 Privacy Notice headline says queries, prompts and conversation content are not sent to advertisers, but its disclosure table lists 'Internet or other electronic network activity information', defined to include search history, under 'Sharing for Targeted Advertising' with Advertising Partners, and describes first-party advertising measurement with third parties that 'may use this data to serve ads tailored to your interests'. Because search history is conversation content for a search product, the documents contradict each other, so partial rather than yes; opt-outs exist via the cookie banner, Global Privacy Control and mobile settings. Enterprise plans are not affected.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -765,7 +765,7 @@
       "notes": "No sale for money, but the disclosure table lists 'Sharing for Targeted Advertising' of identifiers, commercial information, internet activity and non-precise geolocation with Advertising Partners, and the notice says third parties may use it to serve ads tailored to your interests; opt-out via cookie consent, Global Privacy Control or mobile settings. Sensitive data is not sold or shared.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -787,7 +787,7 @@
       "notes": "The Privacy Notice says the services collect only general location derived from the IP address, and the disclosure table lists geolocation as 'non-precise'; precise location is collected only when the user opts in through the 'Share location' setting documented in the Account Settings help article (an older account-settings article adds that browser-level permission must be granted first). Precise geolocation is otherwise mentioned only as sensitive data a user might type into a prompt. An explicit, declinable opt-in for a named feature is the rubric's partial branch, not yes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "perplexity",
@@ -798,7 +798,7 @@
       "notes": "The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-12"
+      "verified_at": "2026-10-18"
     },
     {
       "app": "grok",
