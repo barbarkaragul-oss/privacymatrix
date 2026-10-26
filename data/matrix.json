@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-10-25T17:02:30.636Z",
+  "generated_at": "2026-10-26T17:02:03.201Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -766,7 +766,7 @@
       "notes": "No sale for money, but the disclosure table lists 'Sharing for Targeted Advertising' of identifiers, commercial information, internet activity and non-precise geolocation with Advertising Partners, and the notice says third parties may use it to serve ads tailored to your interests; opt-out via cookie consent, Global Privacy Control or mobile settings. Sensitive data is not sold or shared.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-25"
+      "verified_at": "2026-10-26"
     },
     {
       "app": "perplexity",
