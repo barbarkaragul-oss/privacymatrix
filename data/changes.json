@@ -1,13 +1,31 @@
 {
-  "run_at": "2026-10-07T13:45:30.816Z",
+  "run_at": "2026-10-26T15:08:27.725Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
   "pending": [
     {
+      "app": "claude",
+      "question": "memory_controls",
+      "evidence_url": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+      "since": "2026-10-26"
+    },
+    {
+      "app": "gemini",
+      "question": "uploads_excluded",
+      "evidence_url": "https://support.google.com/gemini/answer/13594961",
+      "since": "2026-10-26"
+    },
+    {
+      "app": "kimi",
+      "question": "memory_controls",
+      "evidence_url": "https://www.kimi.ai/help/features/memory-space",
+      "since": "2026-10-26"
+    },
+    {
       "app": "genspark",
-      "question": "business_no_training",
-      "evidence_url": "https://www.genspark.ai/helpcenter/team-enterprise-plans",
-      "since": "2026-10-07"
+      "question": "user_deletion",
+      "evidence_url": "https://www.genspark.ai/helpcenter/account-management",
+      "since": "2026-10-26"
     }
   ],
   "stats": {
