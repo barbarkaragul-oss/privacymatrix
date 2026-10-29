@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-10-28T17:03:40.064Z",
+  "generated_at": "2026-10-29T17:02:22.031Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -15,9 +15,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -33,9 +33,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -51,9 +51,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "616aeaeeb7996a043facba5220156dc0",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 31
+        "age_days": 32
       }
     },
     {
@@ -69,9 +69,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -87,9 +87,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -105,9 +105,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "4d3208779f5231930c0cde6d6d3ba897",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 31
+        "age_days": 32
       }
     },
     {
@@ -123,9 +123,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "46a77136aec9904033aa324482194817",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 31
+        "age_days": 32
       }
     },
     {
@@ -141,9 +141,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "9c90cf5b22a08dd199db572a3c44d89f",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 31
+        "age_days": 32
       }
     },
     {
@@ -159,9 +159,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "9fefff8a7152013d1384b64067577374",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 31
+        "age_days": 32
       }
     },
     {
@@ -177,9 +177,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261004013032",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 24
+        "age_days": 25
       }
     },
     {
@@ -195,9 +195,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -213,9 +213,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261003054544",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 25
+        "age_days": 26
       }
     },
     {
@@ -231,9 +231,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -249,9 +249,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261005015841",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 23
+        "age_days": 24
       }
     },
     {
@@ -265,9 +265,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -281,9 +281,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -297,9 +297,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -313,9 +313,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -329,9 +329,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -345,9 +345,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -361,9 +361,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -377,9 +377,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -393,9 +393,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -409,9 +409,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -425,9 +425,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -441,9 +441,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -457,9 +457,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -473,9 +473,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -489,9 +489,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -505,9 +505,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -521,9 +521,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -537,9 +537,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -553,9 +553,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -569,9 +569,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -585,9 +585,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -601,9 +601,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -617,9 +617,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -633,9 +633,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -649,9 +649,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -665,9 +665,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -681,9 +681,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -697,9 +697,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -713,9 +713,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -729,9 +729,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -745,9 +745,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -761,9 +761,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -777,7 +777,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -793,9 +793,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -809,9 +809,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -825,9 +825,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -841,9 +841,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -857,9 +857,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -873,9 +873,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -889,9 +889,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -905,9 +905,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -921,9 +921,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -935,11 +935,11 @@
       "notes": "The same article states that for Free, Perplexity Pro and Perplexity Max users the 'AI Data Retention' setting is enabled by default and 'Some data may be used to train AI models and improve search quality, unless you opt out through Account Settings'. The Privacy Notice lists 'Improve or create services and products, including our AI models' as a use of data. Only Enterprise data is excluded without action.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -951,11 +951,11 @@
       "notes": "Free, Pro and Max users have a self-service 'AI data retention' toggle (Account settings > Preferences; the Memory article calls the same control Settings > Preferences > Artificial Intelligence) that stops their data being used for AI training. The article states that opt-outs apply only to data collected after the opt-out date and that previously collected training data cannot be deleted, which the revised rubric still counts as YES (prospective settings count; earlier conversations are not covered). Enterprise data is excluded without any action; Incognito mode is an additional per-session option.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -967,11 +967,11 @@
       "notes": "The help article says uploaded files are used only to customise responses, but the Privacy Notice lists 'uploads' under User Content that it processes and lists improving 'our AI models' as a purpose, and the training opt-out article never says whether the toggle covers files. Documents are not fully consistent, so partial rather than yes. Files attached to sessions are retained 30 days (7 days for Enterprise Pro).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -983,11 +983,11 @@
       "notes": "Enterprise Terms 'Model Training' clause; the help center repeats that Enterprise data is 'never' used for training and the API docs (docs.perplexity.ai/docs/resources/privacy-security) state a Zero Data Retention policy for the Chat Completions API with no training on customer data. Applies to Enterprise Pro/Max and API; does not cover individual Pro/Max plans.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -999,11 +999,11 @@
       "notes": "Incognito mode exists in the app and web; sessions 'expire within 24 hours and are not recoverable' (Incognito Mode Troubleshooting article) and are not saved to history or memory. No document explicitly states that incognito queries are excluded from model training, so the training half of the rubric is not confirmed.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1015,11 +1015,11 @@
       "notes": "Settings > Memory offers separate toggles for 'Use search history' and 'Notes' (memory), a 'Manage memories' view to search and delete individual entries, and clear-all. Turning memory off does not clear existing memories; a log of cleared memories may be kept up to 30 days for safety/debugging. Memory content may be used for training unless 'AI Data Retention' is off.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1031,11 +1031,11 @@
       "notes": "Account deletion is self-service at perplexity.ai/account/details; individual threads, all threads, projects and pages can be deleted from the Library/History menu. Files can only be deleted by deleting the session (or via a form for immediate deletion).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1047,11 +1047,11 @@
       "notes": "Self-service 'Export my data' button at https://www.perplexity.ai/account/details, described as covering the Right to Access; the article does not itemise whether the export contains all threads. Formal portability requests can also go through the Data Privacy Form.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1063,11 +1063,11 @@
       "notes": "A 30-day window is stated for account deletion (and files expire after 30 days), but no timeline is given for deleting individual threads, and the Privacy Notice says data may be kept 'to comply with legal obligations, resolve disputes, enforce agreements, or for other business purposes' and in backups, which is broader than legal/safety holds.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1082,9 +1082,9 @@
       "verified_at": "2026-10-18",
       "quote_missing_since": "2026-10-24",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 10
+        "age_days": 11
       }
     },
     {
@@ -1096,9 +1096,9 @@
       "notes": "No sale for money, but the disclosure table lists 'Sharing for Targeted Advertising' of identifiers, commercial information, internet activity and non-precise geolocation with Advertising Partners, and the notice says third parties may use it to serve ads tailored to your interests; opt-out via cookie consent, Global Privacy Control or mobile settings. Sensitive data is not sold or shared.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-28",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
         "age_days": 0
       }
@@ -1114,7 +1114,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1128,11 +1128,11 @@
       "notes": "The Privacy Notice says the services collect only general location derived from the IP address, and the disclosure table lists geolocation as 'non-precise'; precise location is collected only when the user opts in through the 'Share location' setting documented in the Account Settings help article (an older account-settings article adds that browser-level permission must be granted first). Precise geolocation is otherwise mentioned only as sensitive data a user might type into a prompt. An explicit, declinable opt-in for a named feature is the rubric's partial branch, not yes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-24",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1147,9 +1147,9 @@
       "verified_at": "2026-10-18",
       "quote_missing_since": "2026-10-24",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 10
+        "age_days": 11
       }
     },
     {
@@ -1165,9 +1165,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "e608917ca9ad8b52897698d7bd9e87a0",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1183,9 +1183,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "93d441c3a562092dca480b425bd6794c",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1201,9 +1201,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261003113542",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 25
+        "age_days": 26
       }
     },
     {
@@ -1219,9 +1219,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261003113534",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 25
+        "age_days": 26
       }
     },
     {
@@ -1237,9 +1237,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20260928235916",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 30
+        "age_days": 31
       }
     },
     {
@@ -1253,7 +1253,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1271,9 +1271,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "f7ba04bf44038df8c38cb6548abb1b45",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1289,9 +1289,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20260928235916",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 30
+        "age_days": 31
       }
     },
     {
@@ -1307,9 +1307,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20260928235916",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 30
+        "age_days": 31
       }
     },
     {
@@ -1323,7 +1323,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1341,9 +1341,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20260928235916",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 30
+        "age_days": 31
       }
     },
     {
@@ -1359,9 +1359,9 @@
       "verified_via": "manual",
       "manual_fingerprint": "aa590df17cd4769214d1e01d652b5e67",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1377,9 +1377,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20261003113542",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 25
+        "age_days": 26
       }
     },
     {
@@ -1395,9 +1395,9 @@
       "verified_via": "archive",
       "archive_timestamp": "20260928235916",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "stale",
-        "age_days": 30
+        "age_days": 31
       }
     },
     {
@@ -1411,9 +1411,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1427,9 +1427,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1443,9 +1443,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1459,9 +1459,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1475,7 +1475,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1491,9 +1491,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1507,9 +1507,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1523,9 +1523,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1539,9 +1539,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1555,9 +1555,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1571,9 +1571,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1587,9 +1587,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1603,9 +1603,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1619,9 +1619,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1635,9 +1635,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1651,9 +1651,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1667,9 +1667,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1683,7 +1683,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1699,7 +1699,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1715,7 +1715,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1731,9 +1731,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1747,9 +1747,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1763,7 +1763,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1779,9 +1779,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1795,9 +1795,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1811,9 +1811,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1827,9 +1827,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1843,9 +1843,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1859,9 +1859,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1875,9 +1875,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1891,9 +1891,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1907,9 +1907,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1923,7 +1923,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -1939,9 +1939,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1955,9 +1955,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1971,9 +1971,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -1987,9 +1987,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2003,9 +2003,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2019,9 +2019,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2035,9 +2035,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2051,9 +2051,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2067,9 +2067,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2083,9 +2083,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2099,9 +2099,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2115,9 +2115,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2131,7 +2131,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2147,7 +2147,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2163,7 +2163,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2179,9 +2179,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2195,9 +2195,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2211,7 +2211,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2227,9 +2227,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2243,9 +2243,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2259,7 +2259,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2275,9 +2275,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2291,9 +2291,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2307,9 +2307,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2323,9 +2323,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2339,9 +2339,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2355,9 +2355,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2371,9 +2371,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2387,9 +2387,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2403,9 +2403,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2419,7 +2419,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2435,9 +2435,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2451,7 +2451,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2467,7 +2467,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2483,9 +2483,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2499,9 +2499,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2515,9 +2515,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2531,9 +2531,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2547,9 +2547,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2563,7 +2563,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2579,7 +2579,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2595,7 +2595,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2611,9 +2611,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2627,9 +2627,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2643,9 +2643,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2659,9 +2659,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2675,9 +2675,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2691,9 +2691,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2707,9 +2707,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2723,9 +2723,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2739,9 +2739,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2755,9 +2755,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2771,9 +2771,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2787,9 +2787,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2803,9 +2803,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2819,7 +2819,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2835,7 +2835,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2851,9 +2851,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2867,9 +2867,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2883,7 +2883,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2899,9 +2899,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2915,9 +2915,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2931,7 +2931,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2947,7 +2947,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -2963,9 +2963,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2979,9 +2979,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -2995,9 +2995,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3011,9 +3011,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3027,9 +3027,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3043,7 +3043,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3059,9 +3059,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3075,9 +3075,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3091,9 +3091,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3107,9 +3107,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3123,7 +3123,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3139,9 +3139,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3155,7 +3155,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3171,9 +3171,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3187,9 +3187,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3203,9 +3203,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3219,9 +3219,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3235,9 +3235,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3251,9 +3251,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3267,7 +3267,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3283,7 +3283,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3299,9 +3299,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3315,9 +3315,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3331,7 +3331,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3347,7 +3347,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3363,7 +3363,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3379,7 +3379,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3395,7 +3395,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3411,9 +3411,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3427,9 +3427,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3443,9 +3443,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3459,9 +3459,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3475,7 +3475,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3491,9 +3491,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3507,7 +3507,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3523,9 +3523,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3539,9 +3539,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3555,9 +3555,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3571,9 +3571,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3587,9 +3587,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3603,9 +3603,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3619,9 +3619,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3635,9 +3635,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3651,9 +3651,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3667,9 +3667,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3683,9 +3683,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3699,7 +3699,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3715,9 +3715,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3731,7 +3731,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -3747,9 +3747,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3763,9 +3763,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3779,9 +3779,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3795,9 +3795,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3811,9 +3811,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3827,9 +3827,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3843,9 +3843,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3859,9 +3859,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3875,9 +3875,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3891,9 +3891,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3907,9 +3907,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3923,9 +3923,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3939,9 +3939,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3955,9 +3955,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3971,9 +3971,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -3987,9 +3987,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4003,9 +4003,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4019,9 +4019,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4035,9 +4035,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4051,9 +4051,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4067,9 +4067,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4083,9 +4083,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4099,9 +4099,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4115,9 +4115,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4131,9 +4131,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4147,9 +4147,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4163,7 +4163,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4179,7 +4179,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4195,9 +4195,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4211,9 +4211,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4227,9 +4227,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4243,7 +4243,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4259,9 +4259,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4275,9 +4275,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4291,7 +4291,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4307,9 +4307,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4323,9 +4323,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4339,9 +4339,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4355,9 +4355,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4371,7 +4371,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4387,7 +4387,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4403,9 +4403,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4419,9 +4419,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4435,9 +4435,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4451,9 +4451,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4467,9 +4467,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4483,9 +4483,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4499,9 +4499,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4515,9 +4515,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4531,9 +4531,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4547,9 +4547,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4563,9 +4563,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4579,9 +4579,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4595,7 +4595,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4611,7 +4611,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4627,9 +4627,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4643,9 +4643,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4659,9 +4659,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4675,9 +4675,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4691,9 +4691,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4707,9 +4707,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4723,9 +4723,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4739,9 +4739,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4755,9 +4755,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -4769,11 +4769,11 @@
       "notes": "The Alexa Privacy Hub states that Alexa requests are used by default to train speech recognition and natural language understanding systems, and that voice recordings, transcripts and typed requests help Alexa learn preferences; saving is on by default. The pages predate Alexa+ branding but cover the same Alexa requests; no Alexa+-specific exclusion is documented.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4785,11 +4785,11 @@
       "notes": "A self-service control exists (Alexa app: More > Alexa Privacy > Manage Your Alexa Data), but it is scoped to voice recordings being used to develop new features or manually reviewed; typed Alexa+ chats and attachments are not addressed, and the training statement itself covers all Alexa requests, so the cell is partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4803,7 +4803,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4819,7 +4819,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4833,11 +4833,11 @@
       "notes": "There is no per-chat incognito mode; the closest control is the account-level Don’t save recordings option among four retention choices (save until deleted, 18 months, 3 months, don’t save). Even then transcripts and typed requests are kept until the chat has been inactive for 30 days so the history can be reviewed, and the page does not say whether requests under this setting are excluded from training, which makes an account-level setting partial under the rubric.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4851,7 +4851,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4865,11 +4865,11 @@
       "notes": "Individual recordings and transcripts can be deleted self-service online, in the Alexa app or on Echo Show devices (by day, device or profile), and a retention period can be set. Deleting the Amazon account itself is not described on the Alexa privacy pages and is a separate account-wide process, so only the conversation half is documented here.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4883,7 +4883,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4897,11 +4897,11 @@
       "notes": "A 30-day automatic deletion is stated for transcripts and typed requests of inactive chats, and manually deleted recordings and transcripts are said to be deleted from Amazon’s cloud, but no period is given for completing a manual deletion or an account deletion, and the Don’t save recordings setting can take up to 36 hours to apply. A period stated for one mechanism only is partial. The quote reproduces the page’s own spelling of transcripts.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4915,7 +4915,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4931,7 +4931,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4945,11 +4945,11 @@
       "notes": "Human review of requests is disclosed as part of training and quality improvement, not limited to safety or support cases, with a self-service opt-out for voice recordings; that is the rubric’s partial branch (review for broader purposes with a documented limit).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4963,7 +4963,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -4977,11 +4977,11 @@
       "notes": "An in-product Alexa Privacy dashboard (Alexa app > More > Alexa Privacy, or amazon.com/alexaprivacysettings) is documented for reviewing and deleting Alexa/Alexa+ interactions and attachments, but a general channel for access, portability or full-account deletion requests is only described in the unfetchable Privacy Notice/Request Your Data pages.",
       "confidence": "low",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-29",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "recent",
-        "age_days": 5
+        "age_days": 0
       }
     },
     {
@@ -4995,9 +4995,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5011,9 +5011,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5027,9 +5027,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5043,7 +5043,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5059,9 +5059,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5075,9 +5075,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5091,9 +5091,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5107,9 +5107,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5123,9 +5123,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5139,9 +5139,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5155,9 +5155,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5171,9 +5171,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5187,9 +5187,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5203,9 +5203,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5219,9 +5219,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5235,9 +5235,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5251,9 +5251,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5267,9 +5267,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5283,9 +5283,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5299,7 +5299,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5315,9 +5315,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5331,9 +5331,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5347,9 +5347,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5363,9 +5363,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5379,9 +5379,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5395,7 +5395,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5411,9 +5411,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5427,9 +5427,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5443,9 +5443,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5459,9 +5459,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5475,9 +5475,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5491,9 +5491,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5507,9 +5507,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5523,9 +5523,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5539,9 +5539,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5555,9 +5555,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5571,9 +5571,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5587,9 +5587,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5603,7 +5603,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5619,9 +5619,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5635,9 +5635,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5651,9 +5651,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5667,9 +5667,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5683,7 +5683,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5699,7 +5699,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5715,7 +5715,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5731,7 +5731,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5747,7 +5747,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5763,9 +5763,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5779,9 +5779,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5795,7 +5795,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5811,7 +5811,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5827,9 +5827,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5843,7 +5843,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5859,9 +5859,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5875,9 +5875,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5891,9 +5891,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5907,7 +5907,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5923,7 +5923,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5939,9 +5939,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -5955,7 +5955,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5971,7 +5971,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -5987,9 +5987,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6003,9 +6003,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6019,9 +6019,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6035,9 +6035,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6051,9 +6051,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6067,7 +6067,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6083,7 +6083,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6099,9 +6099,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6115,9 +6115,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6131,9 +6131,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6147,9 +6147,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6163,9 +6163,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6179,7 +6179,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6195,7 +6195,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6211,9 +6211,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6227,9 +6227,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6243,9 +6243,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6259,7 +6259,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6275,7 +6275,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6291,7 +6291,7 @@
       "verified": false,
       "verified_at": "",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unknown",
         "age_days": null
       }
@@ -6307,9 +6307,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     },
     {
@@ -6323,9 +6323,9 @@
       "verified": true,
       "verified_at": "2026-10-07",
       "freshness": {
-        "as_of": "2026-10-28",
+        "as_of": "2026-10-29",
         "status": "unconfirmed",
-        "age_days": 21
+        "age_days": 22
       }
     }
   ],
