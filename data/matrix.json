@@ -748,14 +748,13 @@
     {
       "app": "perplexity",
       "question": "no_ads_use",
-      "value": "partial",
-      "quote": "We also clarified that we do not sell your personal data or send your queries, prompts, or conversation content to advertisers.",
-      "evidence_url": "https://www.perplexity.ai/hub/legal/privacy-notice",
-      "notes": "The July 2026 Privacy Notice headline says queries, prompts and conversation content are not sent to advertisers, but its disclosure table lists 'Internet or other electronic network activity information', defined to include search history, under 'Sharing for Targeted Advertising' with Advertising Partners, and describes first-party advertising measurement with third parties that 'may use this data to serve ads tailored to your interests'. Because search history is conversation content for a search product, the documents contradict each other, so partial rather than yes; opt-outs exist via the cookie banner, Global Privacy Control and mobile settings. Enterprise plans are not affected.",
-      "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-10-18",
-      "quote_missing_since": "2026-10-24"
+      "value": "unknown",
+      "quote": "",
+      "evidence_url": "",
+      "notes": "UNVERIFIED on 2026-10-30 (quote not found on page since 2026-10-24; was partial): \"We also clarified that we do not sell your personal data or send your queries, prompts, or conversation content to advertisers.\" at https://www.perplexity.ai/hub/legal/privacy-notice | The July 2026 Privacy Notice headline says queries, prompts and conversation content are not sent to advertisers, but its disclosure table lists 'Internet or other electronic network activity information', defined to include search history, under 'Sharing for Targeted Advertising' with Advertising Partners, and describes first-party advertising measurement with third parties that 'may use this data to serve ads tailored to your interests'. Because search history is conversation content for a search product, the documents contradict each other, so partial rather than yes; opt-outs exist via the cookie banner, Global Privacy Control and mobile settings. Enterprise plans are not affected.",
+      "confidence": "low",
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "perplexity",
@@ -793,14 +792,13 @@
     {
       "app": "perplexity",
       "question": "rights_channel",
-      "value": "yes",
-      "quote": "To submit a data privacy request directly to Perplexity, please use",
-      "evidence_url": "https://www.perplexity.ai/hub/legal/privacy-notice",
-      "notes": "The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
-      "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-10-18",
-      "quote_missing_since": "2026-10-24"
+      "value": "unknown",
+      "quote": "",
+      "evidence_url": "",
+      "notes": "UNVERIFIED on 2026-10-30 (quote not found on page since 2026-10-24; was yes): \"To submit a data privacy request directly to Perplexity, please use\" at https://www.perplexity.ai/hub/legal/privacy-notice | The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
+      "confidence": "low",
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "grok",
