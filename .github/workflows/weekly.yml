@@ -3,9 +3,12 @@ name: Weekly verification
 # Free mode (default): re-fetch every source page and re-check every quote. A quote that is not
 # found is reported in an issue and its cell is kept; if it is still missing a week later the cell
 # is demoted to "unknown" and a pull request is opened for a human. With main protected, the dates
-# and first-miss flags themselves arrive through a pull request (bot/weekly-dates; in a week with
-# value changes, the demotion pull request carries them). A flag carries the date of the run that set
-# it, and must reach main before the next weekly run, or that run sets it again from scratch.
+# and first-miss flags reach main through the MAIN_PUSH_TOKEN secret (a fine-grained token of a
+# maintainer, this repository only, Contents read and write), as the residential task's commits do;
+# value changes still wait in a pull request. Without the secret, or when its push is refused, they
+# arrive through a pull request (bot/weekly-dates; in a week with value changes, the demotion pull
+# request carries them). A flag carries the date of the run that set it, and must reach main before
+# the next weekly run, or that run sets it again from scratch.
 # Claude mode: only when the ANTHROPIC_API_KEY secret is set (or mode=claude is chosen), every
 # cell is re-derived from the documentation with the Claude API, then verified the same way.
 #
@@ -50,6 +53,12 @@ jobs:
       MODE_INPUT: ${{ github.event.inputs.mode || 'auto' }}
       APP_INPUT: ${{ github.event.inputs.app || '' }}
       HAS_KEY: ${{ secrets.ANTHROPIC_API_KEY != '' }}
+      # Whether the token may be used: it exists and this run is on main (a run dispatched on another
+      # branch must not push that branch to main). It is also used in free mode only (see the steps):
+      # a Claude run rewrites quotes and notes, which a human reviews in a pull request. The token
+      # itself is given to the two push steps alone, which run git and nothing else, so npm ci, the
+      # check and the build never see it.
+      HAS_PUSH_TOKEN: ${{ secrets.MAIN_PUSH_TOKEN != '' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -142,6 +151,7 @@ jobs:
         env:
           MODE: ${{ steps.mode.outputs.mode }}
           SUMMARY: ${{ steps.changes.outputs.summary }}
+          PUSH_TOKEN: ${{ github.ref == 'refs/heads/main' && steps.mode.outputs.mode == 'free' && secrets.MAIN_PUSH_TOKEN || '' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -150,13 +160,30 @@ jobs:
             echo "Nothing to commit"
           else
             git commit -m "matrix: weekly re-verification ($MODE mode): $SUMMARY"
-            git push
+            # actions/checkout leaves GITHUB_TOKEN as an extra header for github.com, which would win
+            # over the token in the URL; an empty value clears it for this push only. No hooks run.
+            if [ -n "$PUSH_TOKEN" ]; then
+              git -c core.hooksPath=/dev/null -c "http.https://github.com/.extraheader=" push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
+            else
+              git push
+            fi
           fi
 
-      # Main is protected, so the direct push above is refused and the dates and first-miss flags go to
-      # a pull request. It has a branch of its own: on the demotion branch, a week without value
-      # changes (a page that timed out, say) would rewrite an open demotion pull request into a
-      # dates-only one, and the demotion would drop out of review.
+      # The dates and flags are on main now, so a dates pull request left from an earlier week is out
+      # of date: merging it would bring back flags this run cleared.
+      - name: Close the dates pull request the direct push replaces
+        if: steps.changes.outputs.count == '0' && steps.commit.outcome == 'success' && env.HAS_PUSH_TOKEN == 'true' && steps.mode.outputs.mode == 'free' && env.APP_INPUT == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh pr view bot/weekly-dates --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            gh pr close bot/weekly-dates --delete-branch --comment "The dates and flags of $(date -u +%F) went to main directly (MAIN_PUSH_TOKEN), so this pull request is out of date."
+          fi
+
+      # Without the token (or when its push is refused) main rejects the push above, and the dates and
+      # first-miss flags go to a pull request. It has a branch of its own: on the demotion branch, a
+      # week without value changes (a page that timed out, say) would rewrite an open demotion pull
+      # request into a dates-only one, and the demotion would drop out of review.
       - name: Open pull request (dates and flags, the direct push was rejected)
         if: steps.changes.outputs.count == '0' && steps.commit.outcome == 'failure'
         uses: peter-evans/create-pull-request@v8
@@ -174,6 +201,47 @@ jobs:
             data/changes.md
             README.md
             docs/
+
+      # With the token, a week with value changes is split as the residential task splits it: main
+      # gets the dates and flags now, and only the value changes wait in the pull request below.
+      # If any of this fails, the step after the push puts the full result back and the pull request
+      # carries everything, as it does without the token (including a dates commit that was not pushed).
+      - name: Commit the dates and flags for main, keeping the value changes out
+        id: split
+        if: steps.changes.outputs.count != '0' && env.HAS_PUSH_TOKEN == 'true' && steps.mode.outputs.mode == 'free'
+        continue-on-error: true
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/full"
+          cp data/matrix.json data/changes.json data/changes.md "$RUNNER_TEMP/full/"
+          npx tsx scripts/split-value-changes.ts
+          npm run build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/matrix.json data/changes.json data/changes.md README.md docs/
+          if git diff --cached --quiet; then
+            echo "Nothing but value changes; nothing to commit to main"
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "matrix: weekly re-verification ($MODE mode): dates and flags; the value changes are in a pull request"
+            echo "committed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Push the dates and flags to main
+        id: splitpush
+        if: steps.split.outcome == 'success' && steps.split.outputs.committed == 'true'
+        continue-on-error: true
+        env:
+          PUSH_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.MAIN_PUSH_TOKEN || '' }}
+        run: |
+          git -c core.hooksPath=/dev/null -c "http.https://github.com/.extraheader=" push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
+
+      - name: Put the full result back for the pull request
+        if: steps.changes.outputs.count != '0' && env.HAS_PUSH_TOKEN == 'true' && steps.mode.outputs.mode == 'free' && !cancelled()
+        run: |
+          cp "$RUNNER_TEMP/full/matrix.json" "$RUNNER_TEMP/full/changes.json" "$RUNNER_TEMP/full/changes.md" data/
+          npm run build
 
       - name: Open pull request (value changes)
         if: steps.changes.outputs.count != '0'
@@ -238,3 +306,12 @@ jobs:
           if gh pr view bot/weekly-verification --json state --jq .state 2>/dev/null | grep -q OPEN; then
             gh pr close bot/weekly-verification --delete-branch --comment "A complete reading on $(date -u +%F) found every quote and demoted nothing, so this pull request is out of date."
           fi
+
+      # A refused push with the token configured (expired or revoked, say) would otherwise leave the
+      # run green while the dates and flags quietly went back to a pull request that waits for an
+      # approval: the state that kept every flag off main for four weeks in October 2026.
+      - name: Fail the run when the token's push to main was refused
+        if: always() && env.HAS_PUSH_TOKEN == 'true' && steps.mode.outputs.mode == 'free' && (steps.commit.outcome == 'failure' || steps.split.outcome == 'failure' || steps.splitpush.outcome == 'failure')
+        run: |
+          echo "::error::The dates and flags did not reach main with MAIN_PUSH_TOKEN (commit: ${{ steps.commit.outcome }}, split: ${{ steps.split.outcome }}, push: ${{ steps.splitpush.outcome }}); they are in a pull request. Renew or fix the token."
+          exit 1

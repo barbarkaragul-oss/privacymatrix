@@ -42,6 +42,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, unlinkSync 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dueSources, loadSourceState, sourceSignatures } from '../src/source-state.ts';
+import { withoutDemotions } from '../src/split.ts';
 
 export const MAX_AGE_DAYS = 6;
 export const BOT_BRANCH = 'bot/residential-verification';
@@ -154,17 +155,7 @@ interface MatrixFile {
   [key: string]: unknown;
 }
 
-/**
- * The matrix that goes to main when a run also demotes cells: the run's result, except that every
- * demoted cell keeps its version from before the run (still flagged, so the next run demotes it
- * again until the pull request is merged or the quote is fixed).
- */
-export function withoutDemotions(result: MatrixFile, before: MatrixFile, demoted: Array<{ app: string; question: string }>): MatrixFile {
-  const key = (c: { app: string; question: string }): string => `${c.app}|${c.question}`;
-  const demotedKeys = new Set(demoted.map(key));
-  const beforeByKey = new Map(before.cells.map((c) => [key(c), c]));
-  return { ...result, cells: result.cells.map((c) => (demotedKeys.has(key(c)) ? (beforeByKey.get(key(c)) ?? c) : c)) };
-}
+export { withoutDemotions } from '../src/split.ts';
 
 // ---------------------------------------------------------------------------------------------
 // Side effects
