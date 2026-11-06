@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-06T18:08:05.832Z",
+  "generated_at": "2026-11-06T19:12:49.410Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -724,7 +724,7 @@
       "notes": "Account deletion is self-service at perplexity.ai/account/details; individual threads, all threads, projects and pages can be deleted from the Library/History menu. Files can only be deleted by deleting the session (or via a form for immediate deletion).",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-04"
+      "verified_at": "2026-11-06"
     },
     {
       "app": "perplexity",
@@ -735,7 +735,7 @@
       "notes": "Self-service 'Export my data' button at https://www.perplexity.ai/account/details, described as covering the Right to Access; the article does not itemise whether the export contains all threads. Formal portability requests can also go through the Data Privacy Form.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-04"
+      "verified_at": "2026-11-06"
     },
     {
       "app": "perplexity",

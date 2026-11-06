@@ -1,8 +1,8 @@
 ## Weekly re-verification: 0 value changes
 
-Run: 2026-11-06T18:08:05.832Z · Method: none (mechanical quote re-check) · Apps checked: 28 · Cells verified: 314/392 · Unknown: 78
+Run: 2026-11-06T19:12:49.410Z · Method: none (mechanical quote re-check) · Apps checked: 28 · Cells verified: 314/392 · Unknown: 78
 
-25 quotes on pages that refused the checker were found in Internet Archive captures; 19 cells were re-dated to a capture newer than their last verification (oldest 2026-10-13), and the rest keep their dates. A capture can confirm a quote; it never demotes a cell.
+22 quotes on pages that refused the checker were found in Internet Archive captures; no capture was newer than the cell it confirmed, so every date is unchanged. A capture can confirm a quote; it never demotes a cell.
 
 Quotes not found at their source this run (17). The cells keep their value for now and are demoted to unknown if the quote is still missing a week later. A human look now is cheaper than a demotion later:
 - Claude / Memory can be inspected and switched off — missing since 2026-11-06 — [source](https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context)
@@ -28,7 +28,7 @@ Quotes to re-quote (1). Each matches its page only when punctuation is ignored, 
 
 Pages that could not be fetched or confirmed this run (cells left untouched):
 - ChatGPT: 3 cells on 2 pages (quote not found in Internet Archive capture 20261101232003, which cannot show the live page lacks it / quote not found in Internet Archive capture 20260725052952, which cannot show the live page lacks it)
-- Perplexity: 2 cells on 2 pages (quote not found in Internet Archive capture 20260722172831, which cannot show the live page lacks it / quote not found in Internet Archive capture 20261023095653, which cannot show the live page lacks it)
+- Perplexity: 2 cells on 1 page (quote not found on the page the cloud run received; this vendor refuses cloud IP ranges or serves them a page without its text, so only the residential re-check can show the quote is gone)
 - Grok: 2 cells on 2 pages (quote not found in Internet Archive capture 20261102113021, which cannot show the live page lacks it / quote not found in Internet Archive capture 20261020194213, which cannot show the live page lacks it)
 - Character.AI: 7 cells on 2 pages (fetch failed: HTTP 404)
 - Apple Intelligence / Siri: 1 cell on 1 page (fetch failed: HTTP 429; no Internet Archive capture)

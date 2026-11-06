@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-11-06T18:08:05.832Z",
+  "run_at": "2026-11-06T19:12:49.410Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
   "pending": [
@@ -112,6 +112,6 @@
     "cells_total": 392,
     "cells_verified": 314,
     "cells_unknown": 78,
-    "cells_verified_via_archive": 22
+    "cells_verified_via_archive": 21
   }
 }
