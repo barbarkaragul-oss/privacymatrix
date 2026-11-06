@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-06T19:12:49.410Z",
+  "generated_at": "2026-11-06T19:29:25.253Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -338,17 +338,16 @@
       "app": "claude",
       "question": "memory_controls",
       "value": "yes",
-      "quote": "When a conversation expires or is deleted, related memory entries generated from it won’t be removed, but you can delete individual memories at any time.",
+      "quote": "See exactly what Claude remembers about you in Settings > Your Claude by selecting \"Manage\" next to Your memory (or in Settings > Memory in the older Settings layout). Everything Claude remembers is listed under Topics . Select any topic to read it, then use the edit icon to change it or select \"Delete\" to remove it.",
       "evidence_url": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
-      "notes": "Memory is on by default for Free, Pro and Max; Settings > Memory lists everything remembered under Topics where each entry can be read, edited or deleted, and the toggle offers 'Pause memory' (stop using and creating memories) or 'Reset memory' (delete all). A separate 'Search and reference chats' toggle (paid plans) can also be turned off; sensitive topics are excluded from memory unless opted in.",
+      "notes": "Memory is on by default for Free, Pro, Max and Ultra on web, Desktop and Mobile. Settings > Your Claude > Manage lists everything remembered under Topics; each topic can be read, edited or deleted, and Claude can also be told in chat to forget something. The account toggle offers 'Pause memory' (keeps existing memory but stops using or creating it) or 'Reset memory' (permanently deletes all memories, including project memories); memory can also be switched off for a single chat from the '+' menu before the first message. Deleting a conversation does not remove memory entries generated from it; individual memories can be deleted while memory is on. A separate 'Search and reference chats' toggle (paid plans) can be turned off. Sensitive topics are excluded unless the user opts in. Projects keep their own memory. On Team/Enterprise, owners decide whether memory is available; a few such orgs still use the legacy experience with a viewable, editable memory summary.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -371,17 +370,16 @@
       "app": "claude",
       "question": "data_export",
       "value": "yes",
-      "quote": "Data exports are available to individual Claude users on Free, Pro, and Max plans. Data exports include conversation data and the user data for your account.",
+      "quote": "Data exports are available to individual Claude users on Free, Pro, Max, and Ultra plans. Data exports include conversation data and the user data for your account. Data exports don’t yet include your saved Personal Finance dashboard.",
       "evidence_url": "https://privacy.claude.com/en/articles/9450526-export-your-claude-data",
-      "notes": "Settings > Privacy > Export data on web or Claude Desktop emails a download link valid 24 hours (not available from the iOS/Android apps); memory entries are included. On Team/Enterprise only the organization's Primary Owner can export.",
+      "notes": "Settings > Privacy > Export data on the web app or Claude Desktop emails a download link valid 24 hours (not available from the iOS/Android apps). The export does not yet include a saved Personal Finance dashboard; the memory help page says all memory data is included in data exports. On Team/Enterprise, members can export their own chats (excluding uploaded file contents) only if an owner turns on the 'Allow members to export their own data' setting; Primary Owners export the whole organization's data instead. Exports cannot be imported into another personal account.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -516,17 +514,16 @@
       "app": "gemini",
       "question": "uploads_excluded",
       "value": "partial",
-      "quote": "Your chats and what you share with Gemini (like files, videos, screens, and photos) will be saved in your Activity.",
+      "quote": "Your chats and what you share with Gemini (like uploads and screens ) will be saved in your Activity.",
       "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "notes": "Uploaded files, photos, videos and screens are treated like chats: saved to Gemini Apps Activity and used to improve services (including model training) while Keep Activity is on, which is the default. Exclusion depends on turning Keep Activity off (same opt-out as chats); audio and Gemini Live video/screenshares are excluded by default under a separate off-by-default setting.",
+      "notes": "Uploads and shared screens are saved to Gemini Apps Activity like chats while Keep Activity is on, which is the default for users 18+. The same page says activity is used to improve services, including training generative AI models, and states that Gemini Live uploads are used to improve AI models when Keep Activity is on. Turning Keep Activity off keeps future chats and their uploads out of training unless you send feedback, and feedback can include uploads. Files added as Notebook sources are not used directly for training. Audio and Gemini Live video/screenshares are excluded by default under a separate setting.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -3055,17 +3052,16 @@
       "app": "kimi",
       "question": "memory_controls",
       "value": "yes",
-      "quote": "Note: Memory is entirely under your control. It is not used for model training and can be turned off or cleared at any time.",
+      "quote": "When memory is off, Kimi does not use any form of memory or create new memories in new chats. To remove information already saved, delete it separately in Memory Space.",
       "evidence_url": "https://www.kimi.ai/help/features/memory-space",
-      "notes": "Memory Space (Settings → Personalization → Memory Space on web and mobile) lets users view all entries, edit or delete individual entries, clear all, and turn memory off; up to 50 entries of 500 characters. The help center, not the Privacy Policy, is the source.",
+      "notes": "The page describes a new memory experience rolling out from October 2026; it says features may vary by platform, version and region. Settings → Personalization → Chat memory has a switch, and when it is off Kimi uses no memory and creates none in new chats. Memory Space shows saved information and when it was last updated. Users can delete individual memories, clear the whole space, and import or export memories. Memory also draws on past chats, and deleting a conversation stops it from being used. Accounts still on the older Memory Instructions view may not have some of the new controls yet. Kimi says it refuses to save sensitive data such as ID or bank card numbers. The source is the help center, not the Privacy Policy.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -3247,18 +3243,17 @@
     {
       "app": "qwen-chat",
       "question": "business_no_training",
-      "value": "yes",
-      "quote": "Alibaba Cloud protects data privacy and will never use your data for model training.",
-      "evidence_url": "https://www.alibabacloud.com/help/en/model-studio/what-is-model-studio",
-      "notes": "Statement is an FAQ answer in the Alibaba Cloud Model Studio documentation, the API/business platform for Qwen models; it is documentation rather than contract language, and Qwen Chat itself documents no team or enterprise tier.",
+      "value": "unknown",
+      "quote": "",
+      "evidence_url": "",
+      "notes": "Alibaba Cloud Model Studio, the API platform for Qwen models, is a business/API offering, but no current source says whether its customer data is used for training. Its overview page (last updated Nov 06, 2026) is now an API quickstart, and its mention of 'model training' describes a feature, not data use. Qwen Chat's privacy policy and terms cover only the consumer service, where de-identified User Content may train models, and describe no team or enterprise tier. Previously yes: \"Alibaba Cloud protects data privacy and will never use your data for model training.\" at https://www.alibabacloud.com/help/en/model-studio/what-is-model-studio; that FAQ answer was gone from the page by Nov 06, 2026.",
       "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified": false,
+      "verified_at": "",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "unknown",
+        "age_days": null
       }
     },
     {
@@ -4337,17 +4332,16 @@
       "app": "replika",
       "question": "training_opt_out",
       "value": "partial",
-      "quote": "your right to object to the processing of your personal data for the processing activities based on our legitimate interest and to request that we restrict our use of your personal data",
+      "quote": "You can object at any time to processing based on our legitimate interests — including product analytics — via the controls in Section 7 or by contacting us; we will stop unless we have compelling legitimate grounds required by law.",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Training on anonymised 'small portions' of messages for safety algorithms and chatbot performance rests on legitimate interest, and the only documented way to stop it is the Section 7.D right to object to legitimate-interest processing, exercised by request to my@replika.com or the postal address with identity verification; no in-app training toggle exists and deleting the account is not an opt-out. This is the rubric's 'legal right to object' partial branch; which rights apply is stated to depend on location. Optional in-chat feedback prompts can simply be dismissed.",
+      "notes": "Replika immediately anonymises small portions of Messages and Content data and uses them to train its proprietary safety algorithms and enhance chatbot performance (not third-party LLMs). The legal basis is legitimate interest (Section 2.A). No in-app training toggle is documented: the 'Your Privacy Choices' controls cover only advertising and product-analytics choices. The quoted right to object to legitimate-interest processing appears in Section 10 under 'European Economic Area and United Kingdom'. It is exercised via the Section 7 controls or by contacting my@replika.com, and Replika may refuse on compelling legitimate grounds. Section 7 gives no general right to object for users elsewhere, so the opt-out is a regional legal right. Deleting the account is not an opt-out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4434,67 +4428,64 @@
       "app": "replika",
       "question": "data_export",
       "value": "partial",
-      "quote": "Where applicable, we will provide the information in a portable, machine-readable, readily usable format.",
+      "quote": "Right to Know / Access / Portability . Depending on where you live, you may have the right to request that we confirm whether we are processing your information, obtain details about the processing activities, and obtain a copy of such information, subject to certain exceptions.",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Access to a copy of personal data is available only on request to Luka (email my@replika.com) with identity verification and 'Depending on your location'; no in-app export of conversations is documented.",
+      "notes": "A copy of personal data is available only through a request-based access/portability right that applies 'depending on where you live'. Requests go through Section 7, which points to my@replika.com or the San Francisco postal address, and identity verification may be required. No self-service export of conversations is documented in the policy or help center. The in-product 'Your Privacy Choices' controls cover advertising and analytics choices only, and account deletion is a separate setting. The policy no longer promises a machine-readable format. Portability is named explicitly for Brazil (LGPD) and the US states covered in Section 9.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "replika",
       "question": "deletion_timeline",
       "value": "partial",
-      "quote": "we process your profile information, messages and content, interests and preferences for up to 60 days after termination of the contract;",
+      "quote": "we keep your profile information, memories, diary, interests and preferences, your Replika’s customization, and items you have purchased for as long as your account exists, and delete them within 60 days after your account is deleted or closed;",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Messages and content are retained up to 60 days after account termination (longer than 30 days), while account information, financial records and automatically collected data are kept 'for a minimum period of 10 years' for legal retention; the Terms separately claim data is 'removed permanently' as soon as the account is deleted, so the documents are not consistent.",
+      "notes": "After the account is deleted or closed, Replika deletes profile information, memories, diary, interests and preferences, customisation and purchased items within 60 days, which is longer than 30. While the account is open, conversation history is kept for 24 months (text) and 12 months (photos, videos, voice). The retention section gives no separate post-deletion period for conversation history, only a general statement that data is deleted after the contract ends. Other periods: financial records 10 years, legal-obligation data up to 10 years, consent records 5 years after account deletion. Analytics data is deleted when the account is deleted. The help center says account deletion erases all data permanently but gives no timeframe. It also says message history cannot be deleted without deleting the account.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "replika",
       "question": "no_ads_use",
       "value": "yes",
-      "quote": "We may also use information about your visit to our Website to promote our Services, but we will never use or disclose the content of your Replika conversations for marketing or advertising purposes.",
+      "quote": "We will never share your conversations with your Replika AI companion, or any photos or other content you provide within the Apps, with advertising partners — and we never use that content for marketing or advertising purposes.",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Advertising partners receive only Website-visit data (clicks, pages, IP, advertising ID, browser) and 'will never have access to your conversations with your Replika AI Companion or any photos or other content you submit through the Apps'; the statement is repeated in Sections 2.B and 3.D.",
+      "notes": "Replika shares limited non-conversation data with its advertising partners to advertise its own services and measure its ads. The partners are Meta, Google and the mobile measurement partner AppsFlyer. The data is device and advertising/cookie identifiers, Website and App activity including purchase events, and a hashed account identifier. Outside the EEA, UK, Brazil and Switzerland it also includes a hashed email address. In those regions the sharing needs opt-in consent. In US states with privacy laws it is treated as a 'sale'/'sharing' that users can opt out of, and GPC is honoured. The policy says conversations, photos and other in-app content are never shared with advertising partners or used for marketing or advertising. This is repeated in the introduction and Sections 1.B, 2.A, 2.B, 3.A and 3.D. Precise location is also never used for advertising.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "replika",
       "question": "no_sale_sharing",
       "value": "partial",
-      "quote": "Our disclosure of information to these partners may be considered a \"sale\" or \"sharing\" of personal information or \"targeted advertising\" under applicable laws.",
+      "quote": "In US states with applicable privacy laws, this disclosure may be considered a “sale” or “sharing” of personal information for cross-context behavioral advertising. You can opt out at any time via “Your Privacy Choices” (Section 7), and we honour Global Privacy Control (GPC) signals as a valid opt-out.",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Website-visitor data (not app or conversation data) is shared with third-party advertising partners for interest-based advertising 'to you and others', with an opt-out via the cookie settings at replika.com/legal/cookies; Do Not Track is not honoured. The help center article 'Do you sell my personal information?' states 'We do not sell your personal information or share it with third parties for profit', which conflicts with the policy's own characterisation.",
-      "confidence": "medium",
+      "notes": "To advertise its own services, Replika sends advertising partners (Meta, Google and AppsFlyer) data from both its Website and Apps. This includes device and advertising identifiers, page visits, installs, sign-ups and purchases (including the amount paid), and a hashed account ID. Outside the EEA, UK, Brazil and Switzerland it also includes a hashed email address, which partners match to accounts they hold. Sections 8 and 9 state that Replika 'sells' and 'shares' personal data under US state laws. US users can opt out via 'Your Privacy Choices', and GPC is honoured. In opt-in regions nothing is shared without consent. Conversations, photos and other in-app content are never shared with advertising partners.",
+      "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4533,51 +4524,48 @@
       "app": "replika",
       "question": "rights_channel",
       "value": "yes",
-      "quote": "To exercise your rights or make a request, please contact us as provided in Section 11.A below. We may ask for specific information from you to help us confirm your identity.",
+      "quote": "To exercise your rights or make a request, you can use the in-product controls where available — “Your Privacy Choices” in the Apps’ settings and in our Website footer (advertising consent and opt-outs, analytics objection) and account deletion in your account settings — or contact us as provided in Section 14.A below.",
       "evidence_url": "https://replika.com/legal/privacy",
-      "notes": "Channels for all users: email my@replika.com (privacy@replika.com is also named for sensitive-data deletion), postal address in San Francisco, in-app account deletion, and a help-center support form (help.replika.com/hc/en-us/requests/new, 'Privacy & Safety' category) for full erasure with a one-month response commitment; EU/UK users additionally get EDPO representative forms and a DPO address. Which rights apply is stated to depend on location.",
-      "confidence": "medium",
+      "notes": "Channels open to all users: the in-product 'Your Privacy Choices' controls (advertising consent and opt-outs, analytics objection), account deletion in account settings, and the Section 14.A contact (email my@replika.com or the San Francisco postal address). Section 14 designates that contact 'For all data subject requests'. privacy@replika.com is also named for deleting sensitive information. Identity verification may be required, and authorised agents are accepted where local law allows. EU/UK users can also use the EDPO representative request forms or contact the DPO (heyData). The policy says which rights apply depends on location.",
+      "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "apple-intelligence",
       "question": "no_training_default",
-      "value": "no",
-      "quote": "Apple may retain and use this data for up to two years to develop and improve Siri, Dictation, Search, and limited other language processing functionality in Apple products and services. For example, transcripts may be used to fine-tune Siri, Search, Voice Control, Translate, and automatic speech recognition models.",
+      "value": "partial",
+      "quote": "When you make requests with Siri, Apple stores usage data, like whether a message was sent. For Search requests like playing an album or searching for world knowledge, the query will also be stored by Apple and used to improve Search, Siri, and related features.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "notes": "Scored on the least protective component (convention 3), which is Siri: Apple stores transcripts of Siri and Dictation requests, keyed to a rotating device identifier rather than the Apple Account, and uses them by default for up to two years to develop and improve Siri and to fine-tune Siri, Search, Voice Control, Translate and speech-recognition models; audio is stored only with the separate opt-in Improve Siri and Dictation. Apple Intelligence itself is more protective: requests sent to Private Cloud Compute are not stored or accessible to Apple, and aggregated content trends are collected only if the user opts in to Device Analytics. Because a default consumer user of this product is exposed to Siri, the Siri default decides the cell.",
+      "notes": "Scored on Siri, the least protective component a default user is exposed to. The Siri page (revised 2026-10-26) says that by default Apple stores usage data for Siri requests. For Search requests (playing an album, web or world-knowledge questions, including those made with Siri) it also stores the query and uses it to improve Search, Siri and related features. The page does not say whether this improvement includes model training. Turning off Help Apple Improve Search (Settings > Search) stops this, unless the user has opted in to Improve Siri, in which case Siri searches are still stored. Audio and text of what users say to Siri, Dictation and Translate, and Siri app conversation history, are sent to Apple to process requests but are stored and reviewed only if the user opts in to Improve Siri and Dictation or Improve Siri & Apple Intelligence. Request metadata (category, success, device and performance data, and approximate location if Location Services for Siri is on) is kept for up to two years and 'may be used to fine-tune' Siri, Search, Voice Control, Translate and speech-recognition models. The Apple Privacy Policy states that private personal data is not used to train Apple's foundational AI models. Siri AI and Apple Intelligence requests sent to Private Cloud Compute are not stored or accessible to Apple, and aggregated Apple Intelligence trends are collected only with the Share Device Analytics opt-in. An earlier version of the Siri page said Siri transcripts were used by default to fine-tune models.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "apple-intelligence",
       "question": "training_opt_out",
-      "value": "no",
-      "quote": "Apple may retain and use this data for up to two years to develop and improve Siri, Dictation, Search, and limited other language processing functionality in Apple products and services. For example, transcripts may be used to fine-tune Siri, Search, Voice Control, Translate, and automatic speech recognition models.",
+      "value": "yes",
+      "quote": "For Search requests like playing an album or searching for world knowledge, the query will also be stored by Apple and used to improve Search, Siri, and related features. You can turn off Help Apple Improve Search in Settings.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "notes": "Siri request transcripts are used by default to develop Siri and to fine-tune models, and no setting is documented that stops that use short of turning Siri and Dictation off entirely: the Improve Siri and Dictation toggle governs only whether audio is stored and reviewed, and Share Device Analytics governs aggregated Apple Intelligence improvement data. Scored on the least protective component (Siri); Apple Intelligence requests sent to Private Cloud Compute are not retained and need no opt-out.",
+      "notes": "The only conversation content the page says Apple stores and uses by default is Search requests, including those made with Siri. Turning off Help Apple Improve Search (Settings > Search) stops Search queries being stored and used to improve Search. Users who opted in to Improve Siri and Dictation or Improve Siri & Apple Intelligence still have their Siri searches stored. Those opt-in programmes, which cover audio, text and Siri app conversation history, can be turned off in Settings > Privacy & Security > Analytics & Improvements. Share Device Analytics, which controls aggregated Apple Intelligence improvement data, can be turned off there too. The page does not say whether queries stored earlier are deleted. Request metadata, kept up to two years and usable for model fine-tuning, has no separate switch other than turning Siri off. Private Cloud Compute requests are not retained.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4648,17 +4636,16 @@
       "app": "apple-intelligence",
       "question": "user_deletion",
       "value": "partial",
-      "quote": "You can delete the transcripts of your Siri and Dictation requests that are stored on your device by going to Settings > Siri > Siri & Dictation History and tapping Delete Siri & Dictation History.",
+      "quote": "You can delete the transcripts of your Siri and Dictation requests that are stored on your device by going to Settings > Siri and tapping Turn Off Siri.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "notes": "Account deletion is self-service: the Apple Data and Privacy page (privacy.apple.com, described in support article 102283) lets users delete their Apple Account and the data associated with it permanently, in over 240 countries and regions. Conversation deletion is bulk only: the documents describe deleting the whole Siri & Dictation History stored on the device, not individual requests, and the Siri transcripts held on Apple servers are keyed to a rotating device identifier with no user deletion path described. Apple Intelligence requests are not retained by Private Cloud Compute, so nothing needs deleting there.",
+      "notes": "Account deletion is self-service at privacy.apple.com (support article 102283). Conversation deletion is not item-level: the page now says on-device Siri and Dictation transcripts are deleted by going to Settings > Siri and tapping Turn Off Siri (turning off both Siri and Dictation also deletes them), which disables the feature. It describes no deletion of individual requests, of Siri app conversation history synced through iCloud, or of the request data and Search queries Apple stores under a rotating identifier. Private Cloud Compute does not retain requests. The earlier version pointed to a Delete Siri & Dictation History button under Settings > Siri > Siri & Dictation History.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4697,17 +4684,16 @@
       "app": "apple-intelligence",
       "question": "no_ads_use",
       "value": "yes",
-      "quote": "This contextual data, as well as your Siri transcripts and related request data, are not used to build a marketing profile, and are never sold to anyone.",
+      "quote": "This contextual data, as well as your related request data, is not used to build a marketing profile, and is never sold to anyone.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "notes": "Apple runs an advertising platform in the App Store, News and Stocks, but Siri transcripts and request data are excluded from marketing profiles and Apple Intelligence request content is not stored by Apple at all; Personalized Ads can additionally be disabled in Settings > Privacy & Security > Apple Advertising.",
-      "confidence": "high",
+      "notes": "Apple's ad platform shows ads in the App Store, Apple News, Stocks and the Apple TV app, depending on location. The Siri page says contextual data (contact names, app names and similar) and related request data are not used to build a marketing profile and are never sold. On that page, request data means metadata such as the request category, whether it completed, device details and approximate location. The sentence no longer names Siri transcripts. By default Apple does not store Siri audio, and audio and text of what you say are collected only if you opt in to Improve Siri and Dictation or Improve Siri & Apple Intelligence. Search requests made through Siri are stored by default and used to improve Search, Siri and related features; Help Apple Improve Search turns this off. No ad exclusion names them, but the page describes the use of Siri data as providing and improving Siri, Dictation, Search and limited other language processing functionality, and says Siri data is not associated with the Apple Account. Apple Intelligence requests processed on Private Cloud Compute are not stored or made accessible to Apple. Personalized Ads can be turned off in Settings > Privacy & Security > Apple Advertising.",
+      "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4730,17 +4716,16 @@
       "app": "apple-intelligence",
       "question": "human_review_limited",
       "value": "partial",
-      "quote": "Apple may also review a subset of the transcripts of your interactions with Siri, and this small subset of interactions that has been reviewed may be kept beyond two years for the ongoing improvement of these products and services.",
+      "quote": "If you opt in to Improve Siri and Dictation or Improve Siri & Apple Intelligence, Apple will collect, store, and review additional data, including audio and text of what you say to Siri, Dictation, and Translate, as well as your conversation history with Siri if you use the Siri app.",
       "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "notes": "Human review is disclosed but its purpose is model/quality improvement rather than safety-only: a subset of Siri transcripts may be reviewed by default, and audio is reviewed by Apple employees only for users who opt in to Improve Siri and Dictation. Apple Intelligence requests processed by Private Cloud Compute are not accessible to Apple.",
-      "confidence": "high",
+      "notes": "Review is now described only for users who opt in to Improve Siri and Dictation or Improve Siri & Apple Intelligence. For them, Apple collects, stores and reviews the audio and text of Siri, Dictation and Translate requests and the Siri app conversation history. These are product-improvement programmes, a broader purpose than safety or user-submitted feedback. The page says 'review' without saying whether reviewers are Apple employees or contractors. With default settings no review is described, and audio is not stored. The page does not say default data is never read: Search requests made through Siri are stored and used to improve Search and Siri unless Help Apple Improve Search is turned off. Siri data uses a rotating random identifier that is not tied to the Apple Account. The opt-in can be turned off in Settings > Privacy & Security > Analytics & Improvements. Data processed in Private Cloud Compute is not stored or made accessible to Apple. Earlier versions said a subset of Siri transcripts could be reviewed by default and kept beyond two years.",
+      "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -4768,11 +4753,11 @@
       "notes": "The Apple Data and Privacy page (privacy.apple.com) offers access/copy, correction, transfer, deactivation and deletion tools globally, and the Privacy Policy directs remaining requests to the privacy inquiry form at apple.com/legal/privacy/contact; California residents can also call 1-800-275-2273.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -5035,17 +5020,16 @@
       "app": "snapchat-my-ai",
       "question": "uploads_excluded",
       "value": "no",
-      "quote": "When you interact with My AI, we use the content you share and your location (if you have enabled location sharing with Snapchat) to improve Snap’s products, including enhancing My AI’s safety and security, and to personalize your experience, including ads.",
+      "quote": "My AI retains the content you have sent to and received from My AI (like Snaps and Chats), but only uses content from the previous 24 hours to power its responses. When you interact with My AI, we also use the content you share and your location (if you have enabled location sharing with Snapchat) to improve Snap’s products, including enhancing My AI’s safety and security",
       "evidence_url": "https://values.snap.com/privacy/privacy-by-product",
-      "notes": "Snaps (images/video) sent to My AI are treated the same as text: 'we retain the content you send to and receive from My AI (like Snaps and Chats)' and the Privacy Policy defines AI 'Inputs' as text, images, video, audio and precise location, all usable for improvement. No upload-specific opt-out exists.",
+      "notes": "Snaps (photos/videos) sent to My AI are retained like Chats, and the content shared with My AI is used to improve Snap's products and to personalise ads. The Privacy Policy defines AI 'Inputs' as text, images, video, audio and precise location, and says Snap's machine learning models take My AI conversations into account to improve My AI. No documented setting stops this use for uploads: 'Delete My AI Data' only deletes stored data. EEA/UK users have a regional right to object, but the documents do not tie it to training.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -5996,17 +5980,16 @@
       "app": "genspark",
       "question": "user_deletion",
       "value": "partial",
-      "quote": "all your data will be permanently removed and cannot be recovered under any circumstances.",
+      "quote": "On the page that opens, check that it shows your email address, then click Permanently delete my account.",
       "evidence_url": "https://www.genspark.ai/helpcenter/account-management",
-      "notes": "Account deletion is self-service (Settings > \"Delete User\", confirm in dialog and email) and covers \"All conversation history\". Deleting an individual conversation is not documented anywhere fetched (History view and AI Drive file trash exist, but no per-chat delete).",
+      "notes": "Account deletion is self-service: Settings > Account > \"Delete User\", type your email to confirm, then open the one-time emailed link (expires after 24 hours) and click \"Permanently delete my account\"; the iOS/Android apps use the same flow. Credits, projects and history are removed from the account. Card-paid subscriptions must be cancelled first; App Store/Google Play subscriptions are not cancelled by deletion. Users who can no longer open the registered mailbox must contact support, and Team/Enterprise admins can hide the option. The Privacy Policy says account data is deleted from servers within 30 days of closure. No fetched Genspark page documents deleting an individual conversation (the help page only describes finding past projects in the task list and My Library > History).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
-      "quote_missing_since": "2026-11-06",
+      "verified_at": "2026-11-06",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "stale",
-        "age_days": 30
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
