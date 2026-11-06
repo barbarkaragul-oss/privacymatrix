@@ -748,14 +748,13 @@
     {
       "app": "perplexity",
       "question": "no_ads_use",
-      "value": "partial",
-      "quote": "We also clarified that we do not sell your personal data or send your queries, prompts, or conversation content to advertisers.",
-      "evidence_url": "https://www.perplexity.ai/hub/legal/privacy-notice",
-      "notes": "The July 2026 Privacy Notice headline says queries, prompts and conversation content are not sent to advertisers, but its disclosure table lists 'Internet or other electronic network activity information', defined to include search history, under 'Sharing for Targeted Advertising' with Advertising Partners, and describes first-party advertising measurement with third parties that 'may use this data to serve ads tailored to your interests'. Because search history is conversation content for a search product, the documents contradict each other, so partial rather than yes; opt-outs exist via the cookie banner, Global Privacy Control and mobile settings. Enterprise plans are not affected.",
-      "confidence": "medium",
-      "verified": true,
-      "verified_at": "2026-10-18",
-      "quote_missing_since": "2026-10-24"
+      "value": "unknown",
+      "quote": "",
+      "evidence_url": "",
+      "notes": "The live Privacy Notice (last updated October 23, 2026) no longer carries the July 2026 sentence saying queries, prompts and conversation content are not sent to advertisers. No live page now states whether conversation content is used for advertising or excluded from it. The notice's disclosure table lists 'Internet or other electronic network activity information' under 'Sharing for Targeted Advertising' with Advertising Partners. That is the statutory category, which 'may include' browsing and search history. Its 'Targeted Advertising Technology' section says third parties that receive cookie, pixel or server-to-server data 'may use this data to serve ads tailored to your interests'. Neither names prompts or queries. Sensitive personal data, including sensitive prompt content, is not sold or shared for cross-context behavioral advertising. The Data Collection help article says information is only shared with service providers or when required by law. Users can opt out of targeted advertising through the cookie banner, Global Privacy Control (where required by law) and mobile device settings. Enterprise and API data are outside the notice. Earlier value: partial, which quoted the removed sentence. Former cell (partial): \"We also clarified that we do not sell your personal data or send your queries, prompts, or conversation content to advertisers.\" at https://www.perplexity.ai/hub/legal/privacy-notice.",
+      "confidence": "low",
+      "verified": false,
+      "verified_at": ""
     },
     {
       "app": "perplexity",
@@ -794,13 +793,14 @@
       "app": "perplexity",
       "question": "rights_channel",
       "value": "yes",
-      "quote": "To submit a data privacy request directly to Perplexity, please use",
+      "quote": "You may also submit a privacy request to our team using our Data Request Form: https://perplexity.typeform.com/datarequest",
       "evidence_url": "https://www.perplexity.ai/hub/legal/privacy-notice",
-      "notes": "The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
-      "confidence": "medium",
+      "notes": "Privacy Notice (updated October 23, 2026), 'Data Subject Rights Contact Information' section: two ways to make a privacy request, with no regional limit. One is self-service 'Export my data' and 'Delete account' at perplexity.ai/account/details; the other is the Data Request Form quoted here. 'Submitting Requests' sends the listed rights to that contact information. A denial can be appealed with the subject line 'Appeal'. 'Your Choices' opens 'Some jurisdictions give you a right', so the rights vary by location, but the channel is offered to everyone. Perplexity AI, Inc. is the controller globally. VeraSafe is the EU/UK Article 27 representative and DPO (experts@verasafe.com). No support@perplexity.ai address is given; other privacy questions go to the Help Center or Support.",
+      "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-18",
-      "quote_missing_since": "2026-10-24"
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "b3d4d78226570fcca404e9e0fc95233e"
     },
     {
       "app": "grok",
