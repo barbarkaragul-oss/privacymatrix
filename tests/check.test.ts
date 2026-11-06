@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, authorityFromEnv, UsageError, structuralProblems, unusablePage, exitCode, untouchedFailures, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
+import { applyFix, classifyAll, classifyCell, groupFetchErrors, needsRequote, parseArgs, changedCells, unverifiedChanges, authorityFromEnv, UsageError, structuralProblems, unusablePage, exitCode, untouchedFailures, verifiedFromArchive, BOT_CHALLENGE, GRACE_DAYS, type ArchivedPage, type CellReport } from '../src/check.js';
 import { fingerprint } from '../src/fingerprint.js';
 import { prepareText } from '../src/quotes.js';
 import type { App, Question, Cell } from '../src/types.js';
@@ -609,4 +609,17 @@ test('a live, archive or demoting run drops the reading\'s fingerprint with the 
   const demoted = applyFix([flagged], [{ ...live, status: 'fail', method: 'none', problems: ['quote not found on page'] }], [], '2026-09-28').cells[0]!;
   assert.equal(demoted.value, 'unknown');
   assert.equal(demoted.manual_fingerprint, undefined);
+});
+
+test('verifiedFromArchive: a capture from before a flag, or the same day, does not re-date the flagged cell', () => {
+  // 2026-11-06: the weekly run dated perplexity/rights_channel to a 2026-10-23 capture while the live page had lacked the quote since 2026-10-24.
+  const flagged: Cell = { ...cell('perplexity', 'rights_channel', 'yes'), verified_at: '2026-10-18', quote_missing_since: '2026-10-24' };
+  assert.deepEqual(verifiedFromArchive(flagged, '20261023095653'), flagged, 'before the flag');
+  assert.deepEqual(verifiedFromArchive(flagged, '20261024120000'), flagged, 'the day of the flag');
+  const later = verifiedFromArchive(flagged, '20261101000000');
+  assert.equal(later.verified_at, '2026-11-01');
+  assert.equal(later.quote_missing_since, '2026-10-24', 'a capture never touches the flag');
+  // An unflagged cell is dated to a newer capture as before.
+  const plain: Cell = { ...cell('a', 'x', 'yes'), verified_at: '2026-10-18' };
+  assert.equal(verifiedFromArchive(plain, '20261023095653').verified_at, '2026-10-23');
 });

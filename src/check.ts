@@ -510,11 +510,14 @@ function verifiedLive(cell: Cell, today: string): Cell {
 /**
  * A quote confirmed in an archive capture dates the cell to the capture, but only when that is
  * newer than what the cell already has: an old capture must not roll back a live or manual read.
- * It leaves quote_missing_since alone, because only a live read can start or stop that clock.
+ * It leaves quote_missing_since alone, because only a live read can start or stop that clock, and
+ * a capture from before (or on the day of) the flag does not date a flagged cell at all: the live
+ * page lacked the quote by then, so the capture cannot show it is still there.
  */
-function verifiedFromArchive(cell: Cell, timestamp: string | undefined): Cell {
+export function verifiedFromArchive(cell: Cell, timestamp: string | undefined): Cell {
   const date = captureDate(timestamp ?? '');
   if (!date || date <= cell.verified_at) return cell;
+  if (cell.quote_missing_since && date <= cell.quote_missing_since) return cell;
   const { manual_fingerprint: _reading, ...rest } = cell;
   return { ...rest, verified: true, verified_at: date, verified_via: 'archive', archive_timestamp: timestamp };
 }
