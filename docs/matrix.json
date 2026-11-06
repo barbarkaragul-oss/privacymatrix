@@ -1147,14 +1147,12 @@
       "notes": "The sentence links to a Data Privacy Request form at https://perplexity.typeform.com/datarequest, offered in the Contact section without regional restriction, plus support@perplexity.ai and an EU/UK representative (VeraSafe). Access and deletion are also self-service in-product. The notice frames the rights themselves as depending on jurisdiction.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-23",
+      "verified_at": "2026-10-18",
       "quote_missing_since": "2026-10-24",
-      "verified_via": "archive",
-      "archive_timestamp": "20261023095653",
       "freshness": {
         "as_of": "2026-11-06",
         "status": "unconfirmed",
-        "age_days": 14
+        "age_days": 19
       }
     },
     {
