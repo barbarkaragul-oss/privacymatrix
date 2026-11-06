@@ -173,13 +173,13 @@
       "notes": "Ads are shown to Free and Go users (US test from February 9, 2026; not to under-18s, Plus, Pro, Business, Enterprise or Edu); the current conversation's context is always used to select ads, and with ad personalization on, past chats and memories may be used too. Settings > Ad Controls lets users turn off personalization and clear ads data (retained up to 30 days), but current-thread context still drives ads; personalized ads are initially unavailable in the EEA and Switzerland; conversations are not shared with advertisers.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-26",
-      "verified_via": "archive",
-      "archive_timestamp": "20261026042100",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "d85d7c0d770ad41e64055b7a9d791dcb",
       "freshness": {
         "as_of": "2026-11-06",
         "status": "recent",
-        "age_days": 11
+        "age_days": 0
       }
     },
     {
@@ -1161,13 +1161,13 @@
       "notes": "Training is on unless the user turns off 'Improve the model' (Settings > Data Controls); the Europe addendum lists training under legitimate interests rather than consent, and the Terms say unauthenticated users 'grant us full rights' to use their data for training. Private Chat content and business/enterprise data are excluded.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "33ddb9358e55cb80ca2f0e2cfa3f717e",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1179,13 +1179,13 @@
       "notes": "A self-service 'Improve the model' toggle exists in the mobile app (Settings > Data Controls) and on grok.com (Settings > Data); the FAQ says it stops training on new conversations only, that Private Chat is an alternative, and that voluntarily submitted feedback may still be used. Caveats: unauthenticated users in some regions outside the EU/UK cannot opt out, and Grok on X uses X's own setting. Under the revised rubric a documented prospective setting counts as YES; the unauthenticated limitation keeps confidence at medium.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "b27155f0ce64609325d03a354c5750fa",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1197,13 +1197,13 @@
       "notes": "Files, images, audio and video are 'Input' and form part of User Content; the Privacy Policy lists 'to train our models' among its purposes and the Terms say logged-in users 'can select whether or not' User Content is used for training, so uploads are trained on by default and covered by the same 'Improve the model' opt-out. Google-connected content is never used for training and business/enterprise data is excluded. Default-on with a self-service opt-out is the rubric's partial branch, not yes.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-11-02",
-      "verified_via": "archive",
-      "archive_timestamp": "20261102113537",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "966ce111a2f2206a1c3a5bdb6368fe87",
       "freshness": {
         "as_of": "2026-11-06",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1233,13 +1233,13 @@
       "notes": "Private Chat (ghost icon) exists in the app and on grok.com, keeps conversations out of history and the FAQ says its content is not used for model training 'where available' (Grok on X may differ). The Privacy Policy promises deletion within 30 days except for legal, compliance or safety purposes, but the FAQ adds that de-identified or pseudonymised copies of Private Chat conversations may be kept beyond 30 days, an exception wider than safety retention and a contradiction between the two documents, so partial, consistent with the deletion_timeline cell.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "e69dd8d2c2cb2ea9128d06ffe3cea4ff",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1267,13 +1267,13 @@
       "notes": "FAQ also states 'you can delete your account at any time' and gives in-product steps: hold a conversation > 'Delete Conversation', Settings > Data Controls > 'Delete All Conversations' and 'Delete Account' (app), or the trash button and Settings buttons on grok.com. Grok on X deletion goes through X.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "f6c40cd6abecd9aabc0e6cd8ef6a0af8",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1285,13 +1285,13 @@
       "notes": "FAQ directs users to the Grok app or grok.com Settings > Data Controls to download their data; additional requests via https://x.ai/privacy-portal/. The documents do not itemise what the download contains.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "71942a0d88471e361eb2a5173b955d0c",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1303,13 +1303,13 @@
       "notes": "The Privacy Policy commits to deleting conversations and accounts within 30 days except for legal, compliance or safety purposes, which alone would meet the rubric; the FAQ adds that de-identified or pseudonymised copies may be kept, an exception beyond legal/safety holds, hence partial.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "69bb6707fdada51f38d42474996c3080",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1355,13 +1355,13 @@
       "notes": "Human review is disclosed and limited to 'authorized personnel', but the stated purposes include 'improving model performance' / 'improving product features' (Terms), which is broader than safety, abuse, legal or user-initiated support, so partial per the rubric.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "203dcdfb9b21b7506ca90aea73581f4a",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1373,13 +1373,13 @@
       "notes": "By default only the general area derived from IP address is determined; precise data such as 'your device’s GPS location' is collected only if the user chooses to provide it and after consent. The policy does not tie it to one named feature.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-02",
-      "verified_via": "archive",
-      "archive_timestamp": "20261102113537",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "84ed389377d7627f4d91d75ca08dc1fb",
       "freshness": {
         "as_of": "2026-11-06",
         "status": "recent",
-        "age_days": 4
+        "age_days": 0
       }
     },
     {
@@ -1391,13 +1391,13 @@
       "notes": "The sentence links to the privacy portal https://x.ai/privacy-portal/, which the Privacy Policy names as the channel 'for world-wide requests and in the USA', alongside in-product access/download/delete controls, appeals via the same portal, a DPO address (privacy@x.ai) and UK/EU/Swiss representatives.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-20",
-      "verified_via": "archive",
-      "archive_timestamp": "20261020194213",
+      "verified_at": "2026-11-06",
+      "verified_via": "manual",
+      "manual_fingerprint": "360ade81bcf7e220d1ddf3cded4e504c",
       "freshness": {
         "as_of": "2026-11-06",
-        "status": "unconfirmed",
-        "age_days": 17
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
