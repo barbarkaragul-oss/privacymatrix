@@ -1,117 +1,21 @@
 {
-  "run_at": "2026-11-06T19:12:49.410Z",
+  "run_at": "2026-11-09T18:42:40.160Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
   "pending": [
     {
       "app": "claude",
-      "question": "memory_controls",
-      "evidence_url": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "claude",
       "question": "data_export",
       "evidence_url": "https://privacy.claude.com/en/articles/9450526-export-your-claude-data",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "gemini",
-      "question": "uploads_excluded",
-      "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "kimi",
-      "question": "memory_controls",
-      "evidence_url": "https://www.kimi.ai/help/features/memory-space",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "qwen-chat",
-      "question": "business_no_training",
-      "evidence_url": "https://www.alibabacloud.com/help/en/model-studio/what-is-model-studio",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "replika",
-      "question": "training_opt_out",
-      "evidence_url": "https://replika.com/legal/privacy",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "replika",
-      "question": "data_export",
-      "evidence_url": "https://replika.com/legal/privacy",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "replika",
-      "question": "deletion_timeline",
-      "evidence_url": "https://replika.com/legal/privacy",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "replika",
-      "question": "no_sale_sharing",
-      "evidence_url": "https://replika.com/legal/privacy",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "replika",
-      "question": "rights_channel",
-      "evidence_url": "https://replika.com/legal/privacy",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "apple-intelligence",
-      "question": "no_training_default",
-      "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "apple-intelligence",
-      "question": "training_opt_out",
-      "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "apple-intelligence",
-      "question": "user_deletion",
-      "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "apple-intelligence",
-      "question": "no_ads_use",
-      "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "apple-intelligence",
-      "question": "human_review_limited",
-      "evidence_url": "https://www.apple.com/legal/privacy/data/en/ask-siri-dictation/",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "snapchat-my-ai",
-      "question": "uploads_excluded",
-      "evidence_url": "https://values.snap.com/privacy/privacy-by-product",
-      "since": "2026-11-06"
-    },
-    {
-      "app": "genspark",
-      "question": "user_deletion",
-      "evidence_url": "https://www.genspark.ai/helpcenter/account-management",
-      "since": "2026-11-06"
+      "since": "2026-11-09"
     }
   ],
   "stats": {
     "apps_checked": 28,
     "apps_failed": [],
     "cells_total": 392,
-    "cells_verified": 314,
-    "cells_unknown": 78,
-    "cells_verified_via_archive": 21
+    "cells_verified": 312,
+    "cells_unknown": 80,
+    "cells_verified_via_archive": 12
   }
 }
