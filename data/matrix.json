@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-10T17:02:47.513Z",
+  "generated_at": "2026-11-13T17:02:04.391Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -766,7 +766,7 @@
       "notes": "No sale for money, but the disclosure table lists 'Sharing for Targeted Advertising' of identifiers, commercial information, internet activity and non-precise geolocation with Advertising Partners, and the notice says third parties may use it to serve ads tailored to your interests; opt-out via cookie consent, Global Privacy Control or mobile settings. Sensitive data is not sold or shared.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-11-09"
+      "verified_at": "2026-11-13"
     },
     {
       "app": "perplexity",
@@ -799,7 +799,7 @@
       "notes": "Privacy Notice (updated October 23, 2026), 'Data Subject Rights Contact Information' section: two ways to make a privacy request, with no regional limit. One is self-service 'Export my data' and 'Delete account' at perplexity.ai/account/details; the other is the Data Request Form quoted here. 'Submitting Requests' sends the listed rights to that contact information. A denial can be appealed with the subject line 'Appeal'. 'Your Choices' opens 'Some jurisdictions give you a right', so the rights vary by location, but the channel is offered to everyone. Perplexity AI, Inc. is the controller globally. VeraSafe is the EU/UK Article 27 representative and DPO (experts@verasafe.com). No support@perplexity.ai address is given; other privacy questions go to the Help Center or Support.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-09"
+      "verified_at": "2026-11-13"
     },
     {
       "app": "grok",
