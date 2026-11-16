@@ -1,23 +1,23 @@
 {
   "version": 1,
-  "generated_at": "2026-11-16T20:14:58.149Z",
+  "generated_at": "2026-11-16T20:38:31.411Z",
   "cells": [
     {
       "app": "chatgpt",
       "question": "no_training_default",
       "value": "no",
-      "quote": "When you use our services for individuals, such as ChatGPT and Codex, we may use your content to train our models. You can choose whether your conversations help improve our models. To opt out, turn off Improve the model for everyone under Settings > Data controls in ChatGPT, or select Do not train on my content in our Privacy Portal",
+      "quote": "When you use our services for individuals (Free, Plus, Pro) , we may use your content to train our models. You can choose whether your conversations help improve our models. To opt out, turn off Improve the model for everyone under Settings > Data controls in ChatGPT, or select Do not train on my content in our Privacy Portal",
       "evidence_url": "https://help.openai.com/en/articles/5722486-how-your-data-is-used-to-improve-model-performance",
-      "notes": "Training is on by default for consumer ChatGPT and Codex, and the control is an opt-out: the page tells users to turn off \"Improve the model for everyone\" under Settings > Data controls, or select \"Do not train on my content\" in the Privacy Portal. OpenAI Support conversations are used as well while that toggle is on, and a conversation attached to thumbs up/down feedback may be used even after opting out. Excluded by default: ChatGPT Business, Enterprise, Edu, Academic Researchers workspaces and the API (see business_no_training), and temporary chats while they stay temporary (see temporary_chat). Codex has a separate \"Include environments\" setting that neither control changes.",
+      "notes": "Training is on by default for individual plans, now named 'Free, Plus, Pro' (was 'ChatGPT and Codex'). Opt out with 'Improve the model for everyone' (Settings > Data controls) or 'Do not train on my content' in the Privacy Portal; either covers ChatGPT and Codex. Rated (thumbs up/down) conversations may still be used after opting out. Business, Enterprise, Edu, Academic Researchers and API are excluded by default; temporary chats are not used.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-05",
-      "verified_via": "archive",
-      "archive_timestamp": "20261005015841",
+      "verified_at": "2026-11-16",
+      "verified_via": "manual",
+      "manual_fingerprint": "c1e2840493f2c6d4f652653ee7042e06",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 42
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -42,18 +42,18 @@
       "app": "chatgpt",
       "question": "uploads_excluded",
       "value": "partial",
-      "quote": "Content may include files that are uploaded. To learn more about how content may be used to improve model performance and the choices you have",
+      "quote": "How uploaded documents and images may be used to improve models depends on the service you use and your data settings.",
       "evidence_url": "https://help.openai.com/en/articles/8555545-file-uploads-faq",
-      "notes": "Uploaded files and images are part of \"Content\" and follow the same rule as chats: used for training by default on consumer plans and covered by the same \"Improve the model for everyone\" opt-out, so exclusion depends on a setting that is on by default. Business, Enterprise and API uploads are not used for training (see business_no_training). The previous quote was a four-word fragment that would have kept matching even if the page dropped the training framing entirely; this one carries it.",
+      "notes": "The uploads page replaced 'Content may include files that are uploaded' with this sentence and links to the consumer data-use pages. The privacy policy counts uploaded files, images, audio and video as Content that may be used to train models, with an opt-out, so uploads follow chats: used by default on consumer plans, excluded by turning off 'Improve the model for everyone'. API and Enterprise uploads are not used.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27",
+      "verified_at": "2026-11-16",
       "verified_via": "manual",
-      "manual_fingerprint": "616aeaeeb7996a043facba5220156dc0",
+      "manual_fingerprint": "ad7b5dfd74de84630eb46ce440fa25e1",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 50
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1212,18 +1212,18 @@
       "app": "grok",
       "question": "business_no_training",
       "value": "yes",
-      "quote": "SpaceXAI will not use any User Content to train any foundation models, large language models, or other artificial intelligence systems or to develop any new products, services, or features, subject to disclosures to Customer and Customer-controlled user settings.",
+      "quote": "SpaceXSI will not use any User Content to train any foundation models, large language models, or other artificial intelligence systems or to develop any new products, services, or features, subject to disclosures to Customer and Customer-controlled user settings.",
       "evidence_url": "https://x.ai/legal/terms-of-service-enterprise",
-      "notes": "Enterprise Terms (API and business offerings); the Consumer FAQ likewise states 'we do not use content from our business and enterprise customers to improve our models'. The clause is 'subject to ... Customer-controlled user settings', i.e. a customer could enable it, but the default is no training.",
+      "notes": "Enterprise Terms (API and business offerings): no training on User Content, 'subject to ... Customer-controlled user settings', so a customer could enable it but the default is no training. The Consumer FAQ likewise says 'we do not use content from our business and enterprise customers to improve our models'. Nov 2026: the company name changed from SpaceXAI to SpaceXSI; the wording is otherwise unchanged.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-03",
-      "verified_via": "archive",
-      "archive_timestamp": "20261003113534",
+      "verified_at": "2026-11-16",
+      "verified_via": "manual",
+      "manual_fingerprint": "1c1d0d62d1c2239317fbe5e90785ab1e",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 44
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -1333,19 +1333,19 @@
     {
       "app": "grok",
       "question": "no_sale_sharing",
-      "value": "yes",
-      "quote": "No. We do not sell your data or share it with third parties for marketing or advertising purposes.",
-      "evidence_url": "https://x.ai/legal/faq",
-      "notes": "Stated without regional limitation in the Consumer FAQ; the CCPA notice adds that xAI does not 'sell' or 'share' personal information as defined by the CCPA. Disclosures are limited to service providers, related companies, legal purposes, business transfers and third parties the user chooses to share with.",
-      "confidence": "high",
+      "value": "partial",
+      "quote": "Targeting Cookies – used by us and our partners to track the effectiveness of specific ads on third-party properties through to SpaceXSI account sign ups and subscriptions. Our third-party advertising partners may use these cookies to show you relevant ads on other third-party websites and platforms. If you do not allow these cookies, you will experience less targeted advertising.",
+      "evidence_url": "https://x.ai/legal/cookie-policy",
+      "notes": "Nov 2026: the Consumer FAQ now says only 'We do not sell your data to third parties as defined by applicable laws'; its promise not to share data for marketing or advertising was dropped. The Cookie Policy lists Meta Ads and Google Ads advertising cookies that third-party ad partners may use to show ads on other sites; they are non-essential and can be turned off in Cookie Settings. The CCPA report says xAI did not 'share' data under the CCPA in 2025 (California only). Earlier value: yes.",
+      "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-09-28",
-      "verified_via": "archive",
-      "archive_timestamp": "20260928235916",
+      "verified_at": "2026-11-16",
+      "verified_via": "manual",
+      "manual_fingerprint": "1c506121a4c0a22b4bdbceb120c1b20b",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 49
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2079,15 +2079,15 @@
       "question": "no_training_default",
       "value": "no",
       "quote": "Analyze, maintain, improve, modify, customize, and measure the Services, including to train our artificial intelligence/machine learning models;",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
       "notes": "User content including chat communications is used to train and improve models by default; the 'Improve the Model for Everyone' setting is on until the user de-selects it, and the Regional Privacy Disclosures state 'we train the AI systems and improve AI models that support our Services' before de-identification steps.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2111,15 +2111,15 @@
       "question": "uploads_excluded",
       "value": "partial",
       "quote": "Your content you submit, such as chat communications, posted images or videos, biography description, and shared Characters;",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
       "notes": "Submitted content including posted images/videos and voice recordings is collected and used for training by default; the training opt-out states 'new content will not be used to train our generative AI models', which covers content broadly, but it requires the user to act and is documented with the regional caveats noted for training_opt_out.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2175,15 +2175,15 @@
       "question": "user_deletion",
       "value": "partial",
       "quote": "You may delete your account through your account profile page.",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
       "notes": "Account deletion is self-service (Settings > Account > Manage Account & Data > Delete Account; app: Remove Account) and permanent. No vendor document found describes deleting individual conversations, and the policy reserves the right to keep public Characters active after account deletion.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2223,31 +2223,31 @@
       "question": "no_ads_use",
       "value": "no",
       "quote": "Your content you submit Voice data, if you chose to use certain voice features Technical information Information we collect from other sources | To carry out advertising activities, including: recruiting new users; sending you advertising communications, including to inform you about features or aspects of the Services we believe might be of interest to you (sending tailored advertising)",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-d6d1e02db80cf5eb.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-48144f0f73014bda.js",
       "notes": "The EEA/UK legal-basis chart lists 'Your content you submit' (defined in the Privacy Policy to include chat communications) among the data processed 'To carry out advertising activities', a purpose that expressly includes 'sending tailored advertising' (legal basis: consent where legally required), and the global Privacy Policy lists 'provision of tailored advertising' as a purpose for the information it collects. Because the chart groups several data categories and three sub-purposes in one row, it does not say in so many words that chat content drives ad selection; the US State Privacy Notice shows chat content is not 'sold' to advertising providers. No document states that conversation content is excluded from advertising, so the cell stays no with medium confidence.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
       "app": "character-ai",
       "question": "no_sale_sharing",
       "value": "partial",
-      "quote": "While these disclosures may be considered sales under certain state laws, we do not sell personal information for monetary consideration, and Character.AI is not a data broker.",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-d6d1e02db80cf5eb.js",
-      "notes": "The U.S. State Privacy Notice discloses that identifiers, demographic data, IP-based geolocation, device/activity data and inferences were 'sold' (state-law sense) to advertising providers in the preceding 12 months, with an opt-out via 'Your Privacy Choices'; chat content is not listed as sold.",
-      "confidence": "medium",
+      "quote": "To opt out of targeted advertising or the sale of personal information to third parties, please navigate to",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-48144f0f73014bda.js",
+      "notes": "The U.S. State Privacy Notice (effective July 1, 2026) says some disclosures for targeted advertising count as 'sales' under state laws and lists identifiers, demographics, IP-based location, device/activity data and inferences as 'sold' to advertising providers in the past 12 months; chat content is not. Opt-out via 'Your Privacy Choices'.",
+      "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2271,15 +2271,15 @@
       "question": "no_precise_location",
       "value": "yes",
       "quote": "Geolocation data (i.e., approximate location based on IP address)",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-d6d1e02db80cf5eb.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/regional-48144f0f73014bda.js",
       "notes": "The Privacy Policy lists 'general geolocation information' and 'geolocation data' (Technical Information, also received from ad platforms); the U.S. State Privacy Notice defines the geolocation category as approximate IP-based location. No precise/GPS location collection or device permission is documented.",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -2287,15 +2287,15 @@
       "question": "rights_channel",
       "value": "yes",
       "quote": "If you would like information regarding your rights or would like to exercise any rights you may have under applicable law, contact us at [https://support.character.ai/hc/en-us/requests/new](https://support.character.ai/hc/en-us/requests/new)",
-      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
+      "evidence_url": "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
       "notes": "A support request form, the privacy@character.ai address and a postal address are given for all users, alongside in-product export and account deletion; the EEA/UK notice adds EU/UK representatives (VeraSafe) and identity verification may be required.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-10-07",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
-        "status": "stale",
-        "age_days": 40
+        "status": "recent",
+        "age_days": 0
       }
     },
     {
@@ -6431,7 +6431,8 @@
         "https://x.ai/legal/terms-of-service",
         "https://x.ai/legal/terms-of-service-enterprise",
         "https://x.ai/legal/europe-privacy-policy-addendum",
-        "https://x.ai/legal/ccpa"
+        "https://x.ai/legal/ccpa",
+        "https://x.ai/legal/cookie-policy"
       ],
       "blocked_from_cloud": true
     },
@@ -6486,8 +6487,8 @@
       "homepage": "https://character.ai",
       "repo": null,
       "sources": [
-        "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
-        "https://character.ai/_next/static/chunks/pages/regional-d6d1e02db80cf5eb.js",
+        "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
+        "https://character.ai/_next/static/chunks/pages/regional-48144f0f73014bda.js",
         "https://support.character.ai/api/v2/help_center/en-us/articles/42788047758747.json",
         "https://support.character.ai/api/v2/help_center/en-us/articles/30299431702555.json",
         "https://support.character.ai/api/v2/help_center/en-us/articles/15063461160475.json",
