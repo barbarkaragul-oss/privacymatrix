@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-16T20:38:31.411Z",
+  "generated_at": "2026-11-16T20:57:41.613Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -341,22 +341,22 @@
     {
       "app": "gemini",
       "question": "no_training_default",
-      "value": "no",
-      "quote": "Google uses your activity to provide, develop, and improve its services (including training generative AI models), as well as to protect Google, its users, and the public with the help of human reviewers.",
-      "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "notes": "The Keep Activity setting is on by default for users 18 or over (help article 13278892: 'If you're 18 or over, Keep Activity is on by default.'), and while it is on chats and shared files are used to improve services including training generative AI models. Only audio and Gemini Live video/screenshare recordings are excluded from improvement by default; work/school accounts are covered by separate Workspace terms.",
-      "confidence": "high",
+      "value": "partial",
+      "quote": "Manage whether your chat content and audio & Gemini Live recordings are used to train generative AI models Important: These settings are off by default.",
+      "evidence_url": "https://support.google.com/gemini/answer/13278892?hl=en",
+      "notes": "the 'Chat content including text & uploads' training setting is now off by default (History stays on by default for 18+), so chats are not used to train generative AI models unless the user opts in. Partial because History is still used to 'develop and improve its services with the help of human reviewers', Live transcripts and attachments improve 'Google services, including AI models' while History is on, and settings don't cover anonymized-data processing. Earlier value: no.",
+      "confidence": "medium",
       "verified": true,
       "verified_at": "2026-11-16"
     },
     {
       "app": "gemini",
       "question": "training_opt_out",
-      "value": "partial",
-      "quote": "Your future chats won’t appear in your Activity, and won’t be used to train our AI models, unless you choose to send Google feedback.",
+      "value": "yes",
+      "quote": "You can control whether Google uses your chat content, including text & attachments, to train generative AI models in Gemini History.",
       "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "notes": "Self-service: turn off Keep Activity in Gemini Apps Activity. Qualified because it applies only to future chats, is voided if you submit feedback, disables chat history and most Connected Apps (e.g. Google Workspace) as a side effect, and does not stop processing to create anonymized data or safety/abuse review; already-reviewed chats are kept up to 3 years.",
-      "confidence": "high",
+      "notes": "Self-service 'Chat content including text & uploads' checkbox under Settings > History; it is off by default and separate from History, so staying opted out no longer costs chat history. It covers future chats only. Caveats: chats you send feedback on are still used, chats are still used to improve services 'in other ways' and for anonymized data, Live transcripts improve AI models while History is on, and reviewed chats are kept up to 3 years. Earlier value: partial.",
+      "confidence": "medium",
       "verified": true,
       "verified_at": "2026-11-16"
     },
@@ -364,10 +364,10 @@
       "app": "gemini",
       "question": "uploads_excluded",
       "value": "partial",
-      "quote": "Your chats and what you share with Gemini (like uploads and screens ) will be saved in your Activity.",
+      "quote": "If History is on, transcripts of your Live chats and attachments you share with Gemini Live are used to improve Google services, including AI models.",
       "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "notes": "Uploads and shared screens are saved to Gemini Apps Activity like chats while Keep Activity is on, which is the default for users 18+. The same page says activity is used to improve services, including training generative AI models, and states that Gemini Live uploads are used to improve AI models when Keep Activity is on. Turning Keep Activity off keeps future chats and their uploads out of training unless you send feedback, and feedback can include uploads. Files added as Notebook sources are not used directly for training. Audio and Gemini Live video/screenshares are excluded by default under a separate setting.",
-      "confidence": "high",
+      "notes": "Uploads are named in the 'Chat content including text & uploads' training setting, now off by default (article 13278892), so ordinary uploads are not used to train generative AI models unless the user opts in. Only some upload types are covered: with History on (the default for 18+), Gemini Live attachments improve 'Google services, including AI models', and shared media-gallery photos/videos and screen-automation screenshots are used to improve Google services.",
+      "confidence": "medium",
       "verified": true,
       "verified_at": "2026-11-16"
     },
@@ -385,11 +385,11 @@
     {
       "app": "gemini",
       "question": "temporary_chat",
-      "value": "yes",
-      "quote": "Temporary chats are not used to train Google’s AI models. If Keep Activity is off and you don’t submit feedback, Google also does not use your future chats to improve its AI models.",
+      "value": "partial",
+      "quote": "Temporary chats and chats you have when your History setting is off are retained with your account for around two months and used to: respond to you, using the last 24 hours of your chat as context, and help protect Google, our users, and the public.",
       "evidence_url": "https://support.google.com/gemini/answer/13594961",
-      "notes": "Temporary chat is available in the Gemini web and mobile apps for personal accounts (not Gemini in Chrome, Gemini in Google Messages, or work/school accounts); such chats do not appear in recent chats or Gemini Apps Activity, are not used for personalization or training, and are retained with the account for 72 hours to respond and for safety/abuse protection (which can include human review).",
-      "confidence": "medium",
+      "notes": "Temporary chat (Gemini web and mobile apps, personal accounts; not Gemini in Chrome or Google Messages) keeps chats out of Gemini Apps Activity and recent chats, and the Privacy Hub says 'Temporary chats are not used to train Google's AI models.' Partial because retention is now around two months (previously 72 hours), above the rubric's 30-day limit; Google says chats may be reviewed by humans for protection regardless of settings. Earlier value: yes.",
+      "confidence": "high",
       "verified": true,
       "verified_at": "2026-11-16"
     },
@@ -408,9 +408,9 @@
       "app": "gemini",
       "question": "user_deletion",
       "value": "yes",
-      "quote": "You can review your prompts, delete your Gemini Apps activity, and turn off Keep Activity in My Activity at any time.",
+      "quote": "You can review your prompts, delete your Gemini history, and turn off the History setting at any time.",
       "evidence_url": "https://support.google.com/gemini/answer/13278892?hl=en",
-      "notes": "Individual chats can be deleted in Gemini Apps Activity (per activity item, per day, custom range or all) and from Recent chats, and the Google Privacy Policy in the sources states 'You can edit or delete your account at any time through your Google Account settings', so both conversation and account deletion are self-service for personal accounts. Caveats: chats already reviewed by human reviewers are disconnected from the account and kept up to 3 years regardless of deletion, and work/school accounts are controlled by the Workspace administrator.",
+      "notes": "Chats can be deleted in Gemini History (Settings > History or myactivity.google.com/product/gemini) per item, last hour/day, day, custom range or all time, and the Google Privacy Policy says 'You can edit or delete your account at any time through your Google Account settings', so both are self-service for personal accounts. Caveats: human-reviewed chats are kept up to 3 years after deletion; work/school accounts are admin-controlled.",
       "confidence": "high",
       "verified": true,
       "verified_at": "2026-11-16"
@@ -4131,11 +4131,11 @@
     {
       "app": "genspark",
       "question": "user_deletion",
-      "value": "partial",
-      "quote": "On the page that opens, check that it shows your email address, then click Permanently delete my account.",
-      "evidence_url": "https://www.genspark.ai/helpcenter/account-management",
-      "notes": "Account deletion is self-service: Settings > Account > \"Delete User\", type your email to confirm, then open the one-time emailed link (expires after 24 hours) and click \"Permanently delete my account\"; the iOS/Android apps use the same flow. Credits, projects and history are removed from the account. Card-paid subscriptions must be cancelled first; App Store/Google Play subscriptions are not cancelled by deletion. Users who can no longer open the registered mailbox must contact support, and Team/Enterprise admins can hide the option. The Privacy Policy says account data is deleted from servers within 30 days of closure. No fetched Genspark page documents deleting an individual conversation (the help page only describes finding past projects in the task list and My Library > History).",
-      "confidence": "medium",
+      "value": "yes",
+      "quote": "Chats are kept until you delete them, and they don't expire. Deleting a chat removes it from your chat list, and it can't be opened again. To remove all of your data, use Delete User under Settings → Account",
+      "evidence_url": "https://www.genspark.ai/helpcenter/ai-chat",
+      "notes": "Chats are kept until deleted; Delete in a chat's menu removes it and it can't be opened again (shown only on chats you own; a Team/Enterprise admin can turn deletion off). Account deletion is self-service: Settings > Account > Delete User, type your email, then click the one-time emailed link (expires after 24 hours); same flow in the mobile apps. Card-paid subscriptions must be cancelled first. The Privacy Policy says account data is deleted within 30 days of closure. Earlier value: partial.",
+      "confidence": "high",
       "verified": true,
       "verified_at": "2026-11-16"
     },
