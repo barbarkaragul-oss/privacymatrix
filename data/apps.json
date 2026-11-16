@@ -99,7 +99,8 @@
         "https://x.ai/legal/terms-of-service",
         "https://x.ai/legal/terms-of-service-enterprise",
         "https://x.ai/legal/europe-privacy-policy-addendum",
-        "https://x.ai/legal/ccpa"
+        "https://x.ai/legal/ccpa",
+        "https://x.ai/legal/cookie-policy"
       ],
       "blocked_from_cloud": true
     },
@@ -154,8 +155,8 @@
       "homepage": "https://character.ai",
       "repo": null,
       "sources": [
-        "https://character.ai/_next/static/chunks/pages/privacy-645bfcb925495ab4.js",
-        "https://character.ai/_next/static/chunks/pages/regional-d6d1e02db80cf5eb.js",
+        "https://character.ai/_next/static/chunks/pages/privacy-2f5244274ffc5b8e.js",
+        "https://character.ai/_next/static/chunks/pages/regional-48144f0f73014bda.js",
         "https://support.character.ai/api/v2/help_center/en-us/articles/42788047758747.json",
         "https://support.character.ai/api/v2/help_center/en-us/articles/30299431702555.json",
         "https://support.character.ai/api/v2/help_center/en-us/articles/15063461160475.json",
