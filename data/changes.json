@@ -1,7 +1,17 @@
 {
   "run_at": "2026-11-16T18:25:52.524Z",
   "model": "none (mechanical quote re-check)",
-  "changes": [],
+  "changes": [
+    {
+      "app": "claude",
+      "question": "data_export",
+      "from": "yes",
+      "to": "unknown",
+      "quote": "",
+      "evidence_url": "",
+      "notes": "UNVERIFIED on 2026-11-16 (quote not found on page since 2026-11-09; was yes): \"Data exports are available to individual Claude users on Free, Pro, Max, and Ultra plans. Data exports include conversation data and the user data for your account. Data exports don’t yet include your saved Personal Finance dashboard.\" at https://privacy.claude.com/en/articles/9450526-export-your-claude-data | Settings > Privacy > Export data on the web app or Claude Desktop emails a download link valid 24 hours (not available from the iOS/Android apps). The export does not yet include a saved Personal Finance dashboard; the memory help page says all memory data is included in data exports. On Team/Enterprise, members can export their own chats (excluding uploaded file contents) only if an owner turns on the 'Allow members to export their own data' setting; Primary Owners export the whole organization's data instead. Exports cannot be imported into another personal account."
+    }
+  ],
   "pending": [],
   "stats": {
     "apps_checked": 28,
