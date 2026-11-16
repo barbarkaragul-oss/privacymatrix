@@ -1,21 +1,14 @@
 {
-  "run_at": "2026-11-09T18:42:40.160Z",
+  "run_at": "2026-11-16T18:25:52.524Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
-  "pending": [
-    {
-      "app": "claude",
-      "question": "data_export",
-      "evidence_url": "https://privacy.claude.com/en/articles/9450526-export-your-claude-data",
-      "since": "2026-11-09"
-    }
-  ],
+  "pending": [],
   "stats": {
     "apps_checked": 28,
     "apps_failed": [],
     "cells_total": 392,
-    "cells_verified": 312,
-    "cells_unknown": 80,
-    "cells_verified_via_archive": 12
+    "cells_verified": 311,
+    "cells_unknown": 81,
+    "cells_verified_via_archive": 23
   }
 }
