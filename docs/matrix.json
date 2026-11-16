@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-16T18:25:52.524Z",
+  "generated_at": "2026-11-16T20:14:58.149Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -370,17 +370,16 @@
       "app": "claude",
       "question": "data_export",
       "value": "yes",
-      "quote": "Data exports are available to individual Claude users on Free, Pro, Max, and Ultra plans. Data exports include conversation data and the user data for your account. Data exports don’t yet include your saved Personal Finance dashboard.",
+      "quote": "Data exports are available to individual Claude users on Free, Pro, Max, and Ultra plans. Data exports include conversation data and the user data for your account, along with any voice recordings you've shared with Anthropic. They don't include the original files you uploaded.",
       "evidence_url": "https://privacy.claude.com/en/articles/9450526-export-your-claude-data",
-      "notes": "Settings > Privacy > Export data on the web app or Claude Desktop emails a download link valid 24 hours (not available from the iOS/Android apps). The export does not yet include a saved Personal Finance dashboard; the memory help page says all memory data is included in data exports. On Team/Enterprise, members can export their own chats (excluding uploaded file contents) only if an owner turns on the 'Allow members to export their own data' setting; Primary Owners export the whole organization's data instead. Exports cannot be imported into another personal account.",
+      "notes": "Settings > Privacy > Export data on the web app or Claude Desktop emails a download link that expires after 24 hours and may work only once (not available from the iOS/Android apps). The export includes conversations, account data and shared voice recordings, but not the original uploaded files or a saved Personal Finance dashboard; the memory help page says all memory data is included in data exports. On Team/Enterprise, members can export their own chats (excluding uploaded file contents) only if an owner turns on the 'Allow members to export their own data' setting; Primary Owners export the whole organization's data instead. Exports cannot be imported into another personal account.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-06",
-      "quote_missing_since": "2026-11-09",
+      "verified_at": "2026-11-16",
       "freshness": {
         "as_of": "2026-11-16",
         "status": "recent",
-        "age_days": 10
+        "age_days": 0
       }
     },
     {
