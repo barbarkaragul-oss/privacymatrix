@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-11-19T17:03:12.822Z",
+  "generated_at": "2026-11-21T17:02:04.188Z",
   "cells": [
     {
       "app": "chatgpt",
@@ -11,9 +11,7 @@
       "notes": "Training is on by default for individual plans, now named 'Free, Plus, Pro' (was 'ChatGPT and Codex'). Opt out with 'Improve the model for everyone' (Settings > Data controls) or 'Do not train on my content' in the Privacy Portal; either covers ChatGPT and Codex. Rated (thumbs up/down) conversations may still be used after opting out. Business, Enterprise, Edu, Academic Researchers and API are excluded by default; temporary chats are not used.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-16",
-      "verified_via": "manual",
-      "manual_fingerprint": "c1e2840493f2c6d4f652653ee7042e06"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -24,9 +22,7 @@
       "notes": "Two self-service routes, both free and in-product: the \"Improve the model for everyone\" toggle under Settings > Data controls, or \"Do not train on my content\" in OpenAI’s Privacy Portal; the page states either is sufficient for ChatGPT conversations and Codex tasks. The effect is prospective, covering new conversations, and the page describes no side effect on chat history. Two carve-outs are stated on the same page: the whole conversation attached to thumbs up/down feedback may still be used after opting out, and Codex’s separate \"Include environments\" setting is not changed by either control.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-15",
-      "verified_via": "archive",
-      "archive_timestamp": "20261115123242"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -37,9 +33,7 @@
       "notes": "The uploads page replaced 'Content may include files that are uploaded' with this sentence and links to the consumer data-use pages. The privacy policy counts uploaded files, images, audio and video as Content that may be used to train models, with an opt-out, so uploads follow chats: used by default on consumer plans, excluded by turning off 'Improve the model for everyone'. API and Enterprise uploads are not used.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-16",
-      "verified_via": "manual",
-      "manual_fingerprint": "ad7b5dfd74de84630eb46ce440fa25e1"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -50,9 +44,7 @@
       "notes": "Exclusion is the default — no contract term and no setting to flip — for ChatGPT Business, Enterprise, Edu, the API and ChatGPT for Academic Researchers workspaces. The only route in is opt-in: API organization owners can enable data sharing, after which members can choose to share feedback and the current API Playground chat. Cited from this help article because openai.com pages answer HTTP 403 to the checker.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-15",
-      "verified_via": "archive",
-      "archive_timestamp": "20261115123242"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -63,9 +55,7 @@
       "notes": "A per-chat mode: the page states temporary chats are excluded from model improvement and from chat history and do not create or update memories. \"While they remain temporary\" is not a plan or region limit — saving the chat converts it to a regular chat, which then follows the account’s settings. On retention, the Privacy Policy says temporary chats \"will be automatically deleted within 30 days (unless we have to retain them for safety or legal reasons, as described further below).\" That sentence sits on openai.com/policies/privacy-policy/, not on this cell’s source, and openai.com answers HTTP 403 to the checker, so the 30-day element rests on a capture taken by hand on 2026-09-23 rather than on the weekly check.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-15",
-      "verified_via": "archive",
-      "archive_timestamp": "20261115123242"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -76,9 +66,7 @@
       "notes": "Memory is managed at Settings > Personalization > Memory: the memory summary can be edited, individual saved memories deleted, and \"Delete and turn off memory\" removes what the summary shows and turns Memory off. Partial for two reasons the page states outright: turning Memory off does not disable limited safety and security uses of context, so it cannot be switched off entirely; and the summary \"does not necessarily include every detail or source that Memory can reference\", so what the controls show is not guaranteed to be everything the model can draw on. The page was rewritten (now titled \"Memory in ChatGPT\"), which is why the previous quote is gone.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27",
-      "verified_via": "manual",
-      "manual_fingerprint": "4d3208779f5231930c0cde6d6d3ba897"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -89,9 +77,7 @@
       "notes": "Individual chats are deleted from the sidebar (three-dot menu > Delete) or all at once in Settings > Data controls; account deletion is in Settings > Account > Delete account on web and mobile. Self-service account deletion is not available in Business, Enterprise, Edu or Healthcare workspaces.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27",
-      "verified_via": "manual",
-      "manual_fingerprint": "46a77136aec9904033aa324482194817"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -102,9 +88,7 @@
       "notes": "Settings > Data controls > Export data emails a ZIP with chat history and account data (link valid 24 hours, may take up to 7 days); available on Free, Go, Plus, Pro and eligible Edu, not while logged out and not in Business/Enterprise/Healthcare workspaces, where the workspace owner controls exports. The Privacy Portal offers an alternative 'Download my data' request.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27",
-      "verified_via": "manual",
-      "manual_fingerprint": "9c90cf5b22a08dd199db572a3c44d89f"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -115,9 +99,7 @@
       "notes": "30-day commitment applies to deleted chats, deleted accounts and Temporary Chats, but the exceptions go beyond legal/security holds: content already de-identified for model training (the default for consumer accounts with training on) is not removed, and content or accounts banned for usage-policy violations may be kept to protect against abuse.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-09-27",
-      "verified_via": "manual",
-      "manual_fingerprint": "9fefff8a7152013d1384b64067577374"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -128,9 +110,7 @@
       "notes": "Ads are shown to Free and Go users (US test from February 9, 2026; not to under-18s, Plus, Pro, Business, Enterprise or Edu); the current conversation's context is always used to select ads, and with ad personalization on, past chats and memories may be used too. Settings > Ad Controls lets users turn off personalization and clear ads data (retained up to 30 days), but current-thread context still drives ads; personalized ads are initially unavailable in the EEA and Switzerland; conversations are not shared with advertisers.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-13",
-      "verified_via": "archive",
-      "archive_timestamp": "20261113133956"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -141,9 +121,7 @@
       "notes": "The ads FAQ says OpenAI does not sell data to advertisers, but the Privacy Policy states that limited information is shared with \"select marketing partners who are not service providers in order to promote our products and services on third-party properties\", some of them through cookies, with a choice offered \"depending on applicable law\" (Settings > Data Controls > Marketing Privacy). That is sharing for the vendor’s own marketing with an opt-out, which the rubric puts at partial rather than yes. Earlier notes here also attributed a \"cross-context behavioral advertising\" characterisation and a list of hashed identifiers to a separate help article; neither phrase occurs in the cited Privacy Policy, so both have been dropped rather than carried unverified.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-16",
-      "verified_via": "archive",
-      "archive_timestamp": "20261116151755"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -154,9 +132,7 @@
       "notes": "OpenAI discloses a combination of automated systems and human review for monitoring content that may violate its terms, and the Data Controls FAQ says Temporary Chats 'may be reviewed only to monitor for abuse'; however the consumer documents contain no general statement that staff or contractors cannot otherwise read conversations (for example during model-training data preparation), so the limits are only partially stated. The Enterprise Privacy page, which addresses employee access for business plans, could not be fetched (403).",
       "confidence": "medium",
       "verified": true,
-      "verified_at": "2026-11-07",
-      "verified_via": "archive",
-      "archive_timestamp": "20261107171202"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -167,9 +143,7 @@
       "notes": "By default only the general area derived from IP address is determined (for security and better responses); precise GPS location is collected only if the user chooses to grant it for a feature. The ads FAQ adds that advertisers never receive precise location or IP address.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-16",
-      "verified_via": "archive",
-      "archive_timestamp": "20261116151755"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "chatgpt",
@@ -180,9 +154,7 @@
       "notes": "The privacy policy offers the Privacy Portal (privacy.openai.com) and the designated mailbox dsar@openai.com to all users for access, deletion, correction, portability and objection requests, while noting that statutory rights depend on where you live, which does not demote under the revised rubric; in-product controls also cover export, chat and account deletion, and the training and marketing opt-outs. The portal itself returns 403 to the crawler, so the policy sentence is the citable evidence; the DPO is reachable at dpo@openai.com.",
       "confidence": "high",
       "verified": true,
-      "verified_at": "2026-11-16",
-      "verified_via": "archive",
-      "archive_timestamp": "20261116151755"
+      "verified_at": "2026-11-21"
     },
     {
       "app": "claude",
