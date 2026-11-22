@@ -20,7 +20,7 @@
 </p>
 
 <!-- stats:start -->
-**28 apps × 14 questions · 312/392 cells verified against their source (10 via archived copies) · last verification 2026-11-21** · ✅ 143 · 🟡 137 · ❌ 32 · ❔ 80
+**28 apps × 14 questions · 312/392 cells verified against their source (10 via archived copies) · last verification 2026-11-22** · ✅ 143 · 🟡 137 · ❌ 32 · ❔ 80
 <!-- stats:end -->
 
 Privacy policies are long, change quietly, and are almost never compared side by side with the actual sentences that matter. When someone asks "does ChatGPT train on my conversations?" the answer usually comes from a months-old news article. This repository answers from the policies themselves, and shows its work:
@@ -88,7 +88,7 @@ Values follow a written rubric per question (see [`data/questions.json`](data/qu
 ## Recent changes
 
 <!-- changes:start -->
-_Last run 2026-11-16: no value changed; no quote is missing from any page the checker could read, and 10 cells rest on Internet Archive captures of pages that block the checker._
+_Last run 2026-11-16: no value changed; 3 quotes are missing from their sources and wait for a human (see the [open issues](https://github.com/barbarkaragul-oss/privacymatrix/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-recheck%2Cresidential-recheck))._
 <!-- changes:end -->
 
 ## How it works
@@ -122,9 +122,9 @@ Two loops, one free and one that costs API credits.
 These vendors answer automated requests from cloud IP ranges (GitHub's runners among them) with HTTP 403, a bot challenge or a page that lacks its text. For them a cloud run can confirm a quote, on the page or in the most recent Internet Archive capture of it, but a quote it cannot find is not evidence that the quote was removed, so it never flags or demotes a cell. The residential re-check reads them from an ordinary connection, and some of their pages block that too. Each cell says whether it was last confirmed live, from an archive capture or by a maintainer against the page in their browser; the dates below are the last successful confirmation, which can be older than the latest scheduled run. A pull request that adds or changes one of their quotes must have it confirmed by the checker, or vouched for by a maintainer who read the page in the last 14 days.
 
 - **ChatGPT** (openai.com, help.openai.com): 14 verified cells — 14 read live; verified 2026-11-21.
-- **Perplexity** (www.perplexity.ai): 12 verified cells — 12 read live; verified between 2026-11-16 and 2026-11-19.
+- **Perplexity** (www.perplexity.ai): 12 verified cells — 12 read live; verified between 2026-11-19 and 2026-11-22.
 - **Grok** (x.ai): 12 verified cells — 2 read by hand, 10 confirmed from archive captures; verified between 2026-11-12 and 2026-11-16.
-- **Alexa+** (www.amazon.com, www.aboutamazon.com): 7 verified cells — 7 read live; verified 2026-11-16.
+- **Alexa+** (www.amazon.com, www.aboutamazon.com): 7 verified cells — 7 read live; verified between 2026-11-16 and 2026-11-22.
 <!-- blocked:end -->
 
 **When a policy changes, with an API key (`npm run verify`, run by whoever has a key):**
