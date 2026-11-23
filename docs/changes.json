@@ -1,14 +1,63 @@
 {
-  "run_at": "2026-11-16T18:25:52.524Z",
+  "run_at": "2026-11-23T20:06:19.918Z",
   "model": "none (mechanical quote re-check)",
   "changes": [],
-  "pending": [],
+  "pending": [
+    {
+      "app": "gemini",
+      "question": "no_training_default",
+      "evidence_url": "https://support.google.com/gemini/answer/13278892?hl=en",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "no_training_default",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "training_opt_out",
+      "evidence_url": "https://www.kimi.ai/user/agreement/modelUse?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "uploads_excluded",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "data_export",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "no_sale_sharing",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "no_precise_location",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    },
+    {
+      "app": "kimi",
+      "question": "rights_channel",
+      "evidence_url": "https://www.kimi.ai/user/agreement/userPrivacy?version=v2",
+      "since": "2026-11-23"
+    }
+  ],
   "stats": {
     "apps_checked": 28,
     "apps_failed": [],
     "cells_total": 392,
-    "cells_verified": 311,
-    "cells_unknown": 81,
-    "cells_verified_via_archive": 23
+    "cells_verified": 312,
+    "cells_unknown": 80,
+    "cells_verified_via_archive": 11
   }
 }
